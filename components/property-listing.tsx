@@ -43,6 +43,7 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  Newspaper,
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -303,10 +304,12 @@ export default function PropertyListing() {
                 </p>
               </div>
 
-              <Button className="w-full mb-4">Request Viewing</Button>
-              <Button variant="outline" className="w-full">
-                <Phone className="h-4 w-4 mr-2" />
-                Contact Agent
+              <Button variant="outline" className="w-full mb-4">
+                Request Viewing
+              </Button>
+              <Button className="w-full">
+                <Newspaper className="h-4 w-4 mr-2" />
+                Apply now
               </Button>
 
               <Separator className="my-6" />
