@@ -60,7 +60,8 @@ export default function ApplicationForm() {
     termsAndConditions: false,
   };
 
-  const addField = () => {
+  const addField = React.useCallback(() => {
+    console.log(rentalHistory);
     if (rentalHistory.length < 3)
       setRentalHistory((prev) => [
         ...prev,
@@ -80,7 +81,7 @@ export default function ApplicationForm() {
           reasonForLeaving: "",
         },
       ]);
-  };
+  }, [inputFields]);
 
   const removeRentalHistory = (id: number) => {
     console.log({ id });

@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { ProspectInfo, BackgroundCheckResult } from "@/types";
+import React, { useState } from "react";
+import { ProspectInfo } from "@/types";
 
 import { UserCheck, AlertCircle } from "lucide-react";
 

@@ -11,18 +11,18 @@ const membershipPlans = [
   {
     id: "bronze",
     name: "Bronze",
-    price: 29,
+    price: 4.99,
     benefits: [
       "Standard application processing",
       "Basic background check",
-      "Email support",
+      "Landlord certification check and reference letter",
       "48-hour response time",
     ],
   },
   {
     id: "silver",
     name: "Silver",
-    price: 49,
+    price: 9.99,
     benefits: [
       "Priority application processing",
       "Comprehensive background check",
@@ -35,7 +35,7 @@ const membershipPlans = [
   {
     id: "gold",
     name: "Gold",
-    price: 99,
+    price: 24.99,
     benefits: [
       "Instant application processing",
       "Advanced background check",

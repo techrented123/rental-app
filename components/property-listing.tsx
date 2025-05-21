@@ -296,9 +296,7 @@ export default function PropertyListing() {
           <div className="md:col-span-1">
             <Card className="p-6">
               <div className="text-center mb-6">
-                <h3 className="text-xl font-semibold mb-2">
-                  Next Steps
-                </h3>
+                <h3 className="text-xl font-semibold mb-2">Next Steps</h3>
                 <p className="text-gray-500">
                   <Calendar className="h-5 w-5 inline mr-2" />
                   Available for showings
@@ -306,8 +304,8 @@ export default function PropertyListing() {
               </div>
 
               <Button
-                variant="secondary"
-                className="w-full mb-4 bg-white text-[#2563EB]"
+                className="w-full mb-4 border-primary hover:bg-primary/90 hover:text-white"
+                variant="outline"
               >
                 Request Viewing
               </Button>

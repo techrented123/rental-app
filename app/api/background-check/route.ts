@@ -1,6 +1,5 @@
 import OpenAI from "openai";
 import { ProspectInfo, BackgroundCheckResult } from "../../../types";
-import { NextResponse } from "next/server";
 
 // Initialize OpenAI client with your API key
 const client = new OpenAI({

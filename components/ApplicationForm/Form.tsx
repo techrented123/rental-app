@@ -459,9 +459,9 @@ export const Form: React.FC<ApplicationFormProps> = ({
         {/*Rental History */}
         <div className="space-y-4">
           <h3 className="font-medium">Rental History</h3>
-          {inputFields.rentalHistory.map((item, index) => {
+          {formData.rentalHistory.map((item, index) => {
             const fieldName = `rentalHistory_${index}_address`;
-            console.log({ fieldName });
+
             return (
               <div key={item.id} className="space-y-4 ">
                 <div>
@@ -472,11 +472,24 @@ export const Form: React.FC<ApplicationFormProps> = ({
                     Street Address
                   </label>
                   <input
-                    type="address"
+                    type="text"
                     id={fieldName}
                     name={fieldName}
                     value={item.address}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      setFormData((prev) => {
+                        const rentalHistory = prev.rentalHistory;
+                        const updatedRentalHistory = rentalHistory.map(
+                          (history) => {
+                            if (history.id === item.id)
+                              return { ...history, address: e.target.value };
+                            return { ...history };
+                          }
+                        );
+                        console.log({ updatedRentalHistory });
+                        return { ...prev, rentalHistory: updatedRentalHistory };
+                      });
+                    }}
                     className={`
                       w-full px-3 py-2 border rounded-md 
                       focus:outline-none focus:ring-2 focus:ring-blue-500
