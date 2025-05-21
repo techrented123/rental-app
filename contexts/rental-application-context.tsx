@@ -2,47 +2,58 @@
 
 import React, { createContext, useState } from "react";
 
-interface RentalApplicationData {
-  selectedPlan?: string;
-  personalInfo: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-  };
-}
+type RentalApplicationStatus = Array<any>;
+/* membership: boolean;
+  idVerification: boolean;
+  creditCheck: boolean;
+  backgroundCheck: boolean;
+  applicationForm: boolean;
+  documents: boolean;
+  payments: boolean; */
 
 interface RentalApplicationContextType {
-  formData: RentalApplicationData;
-  updateFormData: (data: Partial<RentalApplicationData>) => void;
+  rentApplicationStatus: RentalApplicationStatus;
+  updateRentApplicationStatus: (index: number) => void;
 }
 
 const defaultContext: RentalApplicationContextType = {
-  formData: {
-    personalInfo: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-    },
-  },
-  updateFormData: () => {},
+  rentApplicationStatus: [
+    { done: true },
+    { done: false },
+    { done: false },
+    { done: false },
+    { done: false },
+    { done: false },
+    { done: false },
+  ],
+  updateRentApplicationStatus: (index: number) => {},
 };
 
-export const RentalApplicationContext = createContext<RentalApplicationContextType>(defaultContext);
+export const RentalApplicationContext =
+  createContext<RentalApplicationContextType>(defaultContext);
 
-export function RentalApplicationProvider({ children }: { children: React.ReactNode }) {
-  const [formData, setFormData] = useState<RentalApplicationData>(defaultContext.formData);
+export function RentalApplicationProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [rentApplicationStatus, setRentApplicationStatus] =
+    useState<RentalApplicationStatus>(defaultContext.rentApplicationStatus);
 
-  const updateFormData = (newData: Partial<RentalApplicationData>) => {
-    setFormData((prev) => ({
-      ...prev,
-      ...newData,
-    }));
-  };
+  const updateRentApplicationStatus = React.useCallback((index: number) => {
+    setRentApplicationStatus((prev) => {
+      const copy = [...prev];
+      return copy.map((item, itemIndex) => {
+        if (index === itemIndex) return { done: !item.done };
+        return item;
+      });
+    });
+  }, []);
 
   return (
-    <RentalApplicationContext.Provider value={{ formData, updateFormData }}>
+    <RentalApplicationContext.Provider
+      value={{ rentApplicationStatus, updateRentApplicationStatus }}
+    >
       {children}
     </RentalApplicationContext.Provider>
   );

@@ -51,6 +51,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import Link from "next/link";
 
 /* const propertyImages = [
   "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
@@ -296,7 +297,7 @@ export default function PropertyListing() {
             <Card className="p-6">
               <div className="text-center mb-6">
                 <h3 className="text-xl font-semibold mb-2">
-                  Schedule a Viewing
+                  Next Steps
                 </h3>
                 <p className="text-gray-500">
                   <Calendar className="h-5 w-5 inline mr-2" />
@@ -304,28 +305,20 @@ export default function PropertyListing() {
                 </p>
               </div>
 
-              <Button variant="outline" className="w-full mb-4">
+              <Button
+                variant="secondary"
+                className="w-full mb-4 bg-white text-[#2563EB]"
+              >
                 Request Viewing
               </Button>
-              <Button className="w-full">
-                <Newspaper className="h-4 w-4 mr-2" />
-                Apply now
+              <Button className="w-full" variant="default">
+                <Link href="/apply" className="flex items-center text-white">
+                  <Newspaper className="h-4 w-4 mr-2" />
+                  Apply now
+                </Link>
               </Button>
 
               <Separator className="my-6" />
-
-              <div>
-                <h4 className="font-semibold mb-4">Property Features</h4>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li>Built in 1912</li>
-                  <li>Fully renovated in 2022</li>
-                  <li>Hardwood floors throughout</li>
-                  <li>Gourmet kitchen</li>
-                  <li>Central heating and cooling</li>
-                  <li>Double garage</li>
-                  <li>Private backyard</li>
-                </ul>
-              </div>
             </Card>
           </div>
         </div>

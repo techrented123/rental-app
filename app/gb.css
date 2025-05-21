@@ -1,0 +1,33 @@
+/* global.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 1) Reset all backgrounds to white, texts to black. */
+/* 2) Make primary (#2563EB) your only accent color. */
+@layer base {
+  html,
+  body {
+    @apply bg-white text-black;
+  }
+
+  a {
+    @apply text-primary no-underline;
+  }
+
+  button,
+  .btn {
+    @apply bg-primary text-white border border-primary rounded;
+  }
+
+  input,
+  select,
+  textarea {
+    @apply border border-black bg-white text-black focus:outline-none focus:ring-2 focus:ring-primary;
+  }
+
+  /* If you have cards or panels: */
+  .card {
+    @apply bg-white border border-black text-black;
+  }
+}
