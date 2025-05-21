@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-
+import { useSearchParams } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import FormStepper from "@/components/ui/stepper";
 import Link from "next/link";
@@ -75,10 +75,13 @@ const steps = [
 ];
 
 export default function Home() {
+  const params = useSearchParams();
+  const slug = params.get("slug") || "";
+
   return (
     <div className="mt-4 ml-4">
       <div className="p-2 hover:bg-slate-300 w-[40px] h-[40px] rounded-full border-b">
-        <Link href="/" className="">
+        <Link href={`/?slug=${slug}`} className="">
           <ChevronLeft />
         </Link>
       </div>

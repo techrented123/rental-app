@@ -137,7 +137,6 @@ export default function PropertyListing() {
   const images: string[] = Array.isArray(files)
     ? files.map((f) => f.Src)
     : [files.Src];
-  console.log(images, sqft, rent, baths, beds);
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
@@ -155,14 +154,15 @@ export default function PropertyListing() {
     setMobileImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 rounded-xl ">
       {/* Image Gallery Section */}
-      <div className="grid md:grid-cols-2 gap-2 h-[40vh] md:h-[60vh]">
+      <div className="p-3 grid md:grid-cols-2 gap-2 h-[40vh] md:h-[60vh]">
         {/* Main Image */}
         <div
-          className="relative bg-cover bg-center cursor-pointer col-span-2 md:col-span-1"
+          className="rounded-xl relative bg-cover bg-center cursor-pointer col-span-2 md:col-span-1"
           style={{
             backgroundImage: `url('${images[mobileImageIndex]}')`,
+            borderRadius: "12px",
           }}
           onClick={() => {
             setCurrentImageIndex(mobileImageIndex);
@@ -223,15 +223,6 @@ export default function PropertyListing() {
             {images.length} Photos
           </div>
         </div>
-
-        {/* Property Title Overlay */}
-        {/*  <div className="absolute bottom-8 left-4 right-4 md:left-8 md:right-8 z-10">
-          <div className="container mx-auto">
-            <h1 className="text-3xl md:text-5xl font-bold text-white mb-2 md:mb-4">
-              1008 E 24th Avenue
-            </h1>
-          </div>
-        </div> */}
       </div>
 
       <div className="container mx-auto px-4 py-8">
@@ -310,7 +301,10 @@ export default function PropertyListing() {
                 Request Viewing
               </Button>
               <Button className="w-full" variant="default">
-                <Link href="/apply" className="flex items-center text-white">
+                <Link
+                  href={`/apply/?slug=${slug}`}
+                  className="flex items-center text-white"
+                >
                   <Newspaper className="h-4 w-4 mr-2" />
                   Apply now
                 </Link>

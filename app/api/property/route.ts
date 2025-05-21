@@ -36,7 +36,6 @@ export async function GET(request: Request) {
         .replace(/(^-+|-+$)/g, "");
       return s === slug;
     });
-    console.log(property.Floorplan.EffectiveRent.$.Min);
     if (!property) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
