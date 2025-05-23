@@ -4,90 +4,8 @@ import { ApplicationFormInfo, RentalHistoryEntry } from "@/types";
 
 export default function ApplicationForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const [rentalHistory, setRentalHistory] = useState<RentalHistoryEntry[]>([
-    {
-      id: 0,
-      address: "",
-      city: "",
-      state: "",
-      postalCode: "",
-      landlordPhone: "",
-      landlordEmail: "",
-      landlordName: "",
-      fromDate: "",
-      toDate: "",
-      country: "",
-      rent: "",
-      reasonForLeaving: "",
-    },
-  ]);
 
-  const inputFields: ApplicationFormInfo = {
-    applicant: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      address: "",
-      city: "",
-      state: "",
-      postalCode: "",
-      country: "",
-      phone: "",
-      emergencyContactFirstName: "",
-      emergencyContactLastName: "",
-      emergencyContactPhone: "",
-      emergencyContactRelationship: "",
-    },
-    rentalHistory,
-    employment: [
-      {
-        id: 0,
-        employerName: "",
-        employerPhone: "",
-        employerEmail: "",
-        positionHeld: "",
-        salary: "",
-        supervisor: { firstName: "", lastName: "", contact: "" },
-        employerAddress: "",
-        employerCity: "",
-        employerState: "",
-        employerPostalCode: "",
-        employerCountry: "",
-        fromDate: "",
-        toDate: "",
-      },
-    ],
-    termsAndConditions: false,
-  };
-
-  const addField = React.useCallback(() => {
-    console.log(rentalHistory);
-    if (rentalHistory.length < 3)
-      setRentalHistory((prev) => [
-        ...prev,
-        {
-          id: prev[prev.length - 1]?.id + 1,
-          address: "",
-          city: "",
-          state: "",
-          postalCode: "",
-          landlordPhone: "",
-          landlordEmail: "",
-          landlordName: "",
-          fromDate: "",
-          toDate: "",
-          country: "",
-          rent: "",
-          reasonForLeaving: "",
-        },
-      ]);
-  }, [inputFields]);
-
-  const removeRentalHistory = (id: number) => {
-    console.log({ id });
-    setRentalHistory((prev) => [...prev].filter((item) => item.id !== id));
-  };
-
+  
   const [errors, setErrors] = useState<
     Partial<Record<keyof ApplicationFormInfo, string>>
   >({});
@@ -199,12 +117,9 @@ export default function ApplicationForm() {
           <Form
             onSubmit={handleSubmit}
             isLoading={isLoading}
-            onAddField={addField}
             onValidateForm={validateForm}
-            inputFields={inputFields}
             errors={errors}
             toggleErrors={toggleErrors}
-            onRemoveRentalHistory={removeRentalHistory}
           />
         </div>
       </main>

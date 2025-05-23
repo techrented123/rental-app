@@ -53,15 +53,6 @@ import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Link from "next/link";
 
-/* const propertyImages = [
-  "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
-  "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
-  "https://images.pexels.com/photos/1571463/pexels-photo-1571463.jpeg",
-  "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg",
-  "https://images.pexels.com/photos/1571458/pexels-photo-1571458.jpeg",
-  "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
-]; */
-
 export default function PropertyListing() {
   const params = useSearchParams();
   const slug = params.get("slug") || "";
@@ -169,7 +160,7 @@ export default function PropertyListing() {
             setLightboxOpen(true);
           }}
         >
-          <div className="absolute inset-0 bg-black/20 hover:bg-black/30 transition-colors" />
+          <div className="absolute inset-0 bg-black/20 hover:bg-black/30 transition-colors rounded-xl" />
 
           {/* Mobile Navigation Arrows */}
           <div className="md:hidden absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4">
@@ -300,15 +291,15 @@ export default function PropertyListing() {
               >
                 Request Viewing
               </Button>
-              <Button className="w-full" variant="default">
-                <Link
-                  href={`/apply/?slug=${slug}`}
-                  className="flex items-center text-white"
-                >
+              <Link
+                href={`/apply/?slug=${slug}`}
+                className="flex items-center text-white"
+              >
+                <Button className="w-full" variant="default">
                   <Newspaper className="h-4 w-4 mr-2" />
                   Apply now
-                </Link>
-              </Button>
+                </Button>
+              </Link>
 
               <Separator className="my-6" />
             </Card>

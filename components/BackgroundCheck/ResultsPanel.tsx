@@ -9,6 +9,7 @@ interface ResultsPanelProps {
 }
 
 const ResultsPanel: React.FC<ResultsPanelProps> = ({ results, isLoading }) => {
+  console.log({ results });
   const handleDownloadPDF = () => {
     if (results) {
       generatePDF(results);

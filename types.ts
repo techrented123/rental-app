@@ -35,7 +35,8 @@ export interface RentalHistoryEntry {
   country: string;
   landlordPhone: string;
   landlordEmail: string;
-  landlordName: string;
+  landlordFirstName: string;
+  landlordLastName: string;
   fromDate: string;
   toDate: string;
   rent: string;
@@ -48,28 +49,10 @@ interface Supervisor {
   contact: string;
 }
 
-interface EmploymentEntry {
-  id: number;
-  employerName: string;
-  employerPhone: string;
-  employerEmail: string;
-  positionHeld: string;
-  salary: string;
-  supervisor: Supervisor;
-  employerAddress: string;
-  employerCity: string;
-  employerState: string;
-  employerPostalCode: string;
-  employerCountry: string;
-  fromDate: string;
-  toDate: string;
-}
-
 export interface ApplicationFormInfo {
   applicant: ApplicantInfo;
   rentalHistory: RentalHistoryEntry[];
-  employment: EmploymentEntry[];
-  termsAndConditions: boolean;
+  truthConfirmation: any;
 }
 
 export interface BackgroundCheckResult {

@@ -6,9 +6,9 @@ interface ApplicationFormProps {
   onSubmit: (info: ApplicationFormInfo) => void;
   isLoading: boolean;
   onValidateForm: (formData: ApplicationFormInfo) => boolean;
-  onAddField: () => void;
-  onRemoveRentalHistory: (id: number) => void;
-  inputFields: ApplicationFormInfo;
+  //onAddField: () => void;
+  //onRemoveRentalHistory: (id: number) => void;
+  //inputFields: ApplicationFormInfo;
   errors: Partial<Record<keyof ApplicationFormInfo, any>>;
   toggleErrors: (name: string) => void;
 }
@@ -17,15 +17,45 @@ export const Form: React.FC<ApplicationFormProps> = ({
   onSubmit,
   isLoading,
   onValidateForm,
-  inputFields,
   errors,
   toggleErrors,
-  onAddField,
-  onRemoveRentalHistory,
 }) => {
   const [preventSubmit, setPreventSubmit] = useState<boolean>(false);
   const [formData, setFormData] = useState<ApplicationFormInfo>({
-    ...inputFields,
+    applicant: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      address: "",
+      city: "",
+      state: "",
+      postalCode: "",
+      country: "",
+      phone: "",
+      emergencyContactFirstName: "",
+      emergencyContactLastName: "",
+      emergencyContactPhone: "",
+      emergencyContactRelationship: "",
+    },
+    rentalHistory: [
+      {
+        id: 0,
+        address: "",
+        city: "",
+        state: "",
+        postalCode: "",
+        landlordPhone: "",
+        landlordEmail: "",
+        landlordFirstName: "",
+        landlordLastName: "",
+        fromDate: "",
+        toDate: "",
+        country: "",
+        rent: "",
+        reasonForLeaving: "",
+      },
+    ],
+    truthConfirmation: { name: "", dateSigned: "" },
   });
 
   /*  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -58,6 +88,52 @@ export const Form: React.FC<ApplicationFormProps> = ({
     // clear any error on that exact key
     if (errors[name]) toggleErrors(name);
   } */
+
+  const addRentalHistory = React.useCallback(() => {
+    setFormData((prev) => {
+      const { rentalHistory } = { ...prev };
+      if (rentalHistory.length < 3) {
+        let updatedRentalHistory;
+        updatedRentalHistory = [
+          ...rentalHistory,
+          {
+            id: rentalHistory[rentalHistory.length - 1]?.id + 1,
+            address: "",
+            city: "",
+            state: "",
+            postalCode: "",
+            landlordPhone: "",
+            landlordEmail: "",
+            landlordFirstName: "",
+            landlordLastName: "",
+            fromDate: "",
+            toDate: "",
+            country: "",
+            rent: "",
+            reasonForLeaving: "",
+          },
+        ];
+
+        return {
+          ...prev,
+          rentalHistory: updatedRentalHistory,
+        };
+      }
+      return { ...prev };
+    });
+  }, []);
+
+  const removeRentalHistory = (id: number) => {
+    console.log({ id });
+    setFormData((prev) => {
+      const { rentalHistory } = { ...prev };
+
+      const updatedRentalHistory = rentalHistory.filter(
+        (item) => item.id !== id
+      );
+      return { ...prev, rentalHistory: updatedRentalHistory };
+    });
+  };
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
@@ -347,7 +423,7 @@ export const Form: React.FC<ApplicationFormProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <span
-                //htmlFor="applicant_city"
+                //htmlFor="applicant_emergencyContactFirstName"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
                 Emergency Contact Name
@@ -398,12 +474,12 @@ export const Form: React.FC<ApplicationFormProps> = ({
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <span
-                //htmlFor="applicant_city"
+              <label
+                htmlFor="applicant_emergencyContactRelationship"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
                 Emergency Contact Relationship
-              </span>
+              </label>
               <input
                 type="text"
                 id="applicant_emergencyContactRelationship"
@@ -459,22 +535,33 @@ export const Form: React.FC<ApplicationFormProps> = ({
         {/*Rental History */}
         <div className="space-y-4">
           <h3 className="font-medium">Rental History</h3>
-          {formData.rentalHistory.map((item, index) => {
-            const fieldName = `rentalHistory_${index}_address`;
+          {formData.rentalHistory.map((item, index, arr) => {
+            const addressFieldName = `rentalHistory_${index}_address`;
+            const cityFieldName = `rentalHistory_${index}_city`;
+            const stateFieldName = `rentalHistory_${index}_state`;
+            const countryFieldName = `rentalHistory_${index}_country`;
+            const postalCodeFieldName = `rentalHistory_${index}_postalCode`;
+            const landlordFirstNameFieldName = `rentalHistory_${index}_landlordFirstName`;
+            const landlordLastNameFieldName = `rentalHistory_${index}_landlordLastName`;
+            const landlordPhoneFieldName = `rentalHistory_${index}_landlordPhone`;
+            const fromDateFieldName = `rentalHistory_${index}_fromDate`;
+            const toDateFieldName = `rentalHistory_${index}_toDate`;
+            const rentFieldName = `rentalHistory_${index}_rent`;
+            const reasonForLeavingFieldName = `rentalHistory_${index}_reasonForLeaving`;
 
             return (
               <div key={item.id} className="space-y-4 ">
                 <div>
                   <label
-                    htmlFor={fieldName}
+                    htmlFor={addressFieldName}
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
                     Street Address
                   </label>
                   <input
                     type="text"
-                    id={fieldName}
-                    name={fieldName}
+                    id={addressFieldName}
+                    name={addressFieldName}
                     value={item.address}
                     onChange={(e) => {
                       setFormData((prev) => {
@@ -511,15 +598,15 @@ export const Form: React.FC<ApplicationFormProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label
-                      htmlFor="rentalHistory_city"
+                      htmlFor={cityFieldName}
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
                       City
                     </label>
                     <input
                       type="text"
-                      id="rentalHistory_city"
-                      name="rentalHistory_city"
+                      id={cityFieldName}
+                      name={cityFieldName}
                       value={item.city}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500
@@ -535,15 +622,15 @@ ${errors.rentalHistory?.city ? "border-red-500" : "border-gray-300"}
                   </div>
                   <div>
                     <label
-                      htmlFor="applicant_state"
+                      htmlFor={stateFieldName}
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
                       Province/State
                     </label>
                     <input
                       type="text"
-                      id="applicant_state"
-                      name="applicant_state"
+                      id={stateFieldName}
+                      name={stateFieldName}
                       value={item.state}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border ${
@@ -563,15 +650,15 @@ ${errors.rentalHistory?.city ? "border-red-500" : "border-gray-300"}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label
-                      htmlFor="applicant_city"
+                      htmlFor={countryFieldName}
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
                       Country
                     </label>
                     <input
                       type="text"
-                      id="applicant_city"
-                      name="applicant_city"
+                      id={countryFieldName}
+                      name={countryFieldName}
                       value={item.country}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border ${
@@ -589,16 +676,16 @@ ${errors.rentalHistory?.city ? "border-red-500" : "border-gray-300"}
                   </div>
                   <div>
                     <label
-                      htmlFor="applicant_city"
+                      htmlFor={postalCodeFieldName}
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
                       Postal/Zip Code
                     </label>
                     <input
                       type="text"
-                      id="applicant_city"
-                      name="applicant_city"
-                      value={item.country}
+                      id={postalCodeFieldName}
+                      name={postalCodeFieldName}
+                      value={item.postalCode}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border ${
                         errors.applicant && errors.applicant.city
@@ -617,124 +704,131 @@ ${errors.rentalHistory?.city ? "border-red-500" : "border-gray-300"}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label
-                      htmlFor="applicant_city"
+                      htmlFor={fromDateFieldName}
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
                       Rental Dates
                     </label>
                     <input
                       type="date"
-                      id="applicant_city"
-                      name="applicant_city"
-                      value={item.country}
+                      id={fromDateFieldName}
+                      name={fromDateFieldName}
+                      value={item.fromDate}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border ${
-                        errors.applicant && errors.applicant.city
+                        errors.rentalHistory &&
+                        errors.rentalHistory[index].fromDate
                           ? "border-red-500"
                           : "border-gray-300"
                       } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     />
-                    {errors.applicant && errors.applicant.city && (
-                      <p className="mt-1 text-sm text-red-600 flex items-center">
-                        <AlertCircle className="h-4 w-4 mr-1" />
-                        {errors.applicant.city}
-                      </p>
-                    )}
+                    {errors.rentalHistory &&
+                      errors.rentalHistory[index].fromDate && (
+                        <p className="mt-1 text-sm text-red-600 flex items-center">
+                          <AlertCircle className="h-4 w-4 mr-1" />
+                          {errors.rentalHistory[index].fromDate}
+                        </p>
+                      )}
                   </div>
                   <div>
                     <label
-                      htmlFor="applicant_city"
+                      htmlFor={toDateFieldName}
                       className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Postal/Zip Code
-                    </label>
+                    />
+                     
                     <input
                       type="date"
-                      id="applicant_city"
-                      name="applicant_city"
-                      value={item.country}
+                      id={toDateFieldName}
+                      name={toDateFieldName}
+                      value={item.toDate}
                       onChange={handleChange}
-                      className={`w-full px-3 py-2 border ${
-                        errors.applicant && errors.applicant.city
+                      className={`w-full px-3 py-2 border mt-5 ${
+                        errors.rentalHistory &&
+                        errors.rentalHistory[index].toDateFieldName
                           ? "border-red-500"
                           : "border-gray-300"
                       } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     />
-                    {errors.applicant && errors.applicant.city && (
-                      <p className="mt-1 text-sm text-red-600 flex items-center">
-                        <AlertCircle className="h-4 w-4 mr-1" />
-                        {errors.applicant.city}
-                      </p>
-                    )}
+                    {errors.rentalHistory &&
+                      errors.rentalHistory[index].toDateFieldName && (
+                        <p className="mt-1 text-sm text-red-600 flex items-center">
+                          <AlertCircle className="h-4 w-4 mr-1" />
+                          {errors.rentalHistory[index].toDateFieldName}
+                        </p>
+                      )}
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label
-                      htmlFor="firstName"
+                      htmlFor={landlordFirstNameFieldName}
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
                       Landlord First Name
                     </label>
                     <input
                       type="text"
-                      id="firstName"
-                      name="firstName"
-                      value={formData.applicant.firstName}
+                      id={landlordFirstNameFieldName}
+                      name={landlordFirstNameFieldName}
+                      value={item.landlordFirstName}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border ${
-                        errors.applicant && errors.applicant.firstName
+                        errors.rentalHistory &&
+                        errors.rentalHistory[index].landlordFirstName
                           ? "border-red-500"
                           : "border-gray-300"
                       } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     />
-                    {errors.applicant && errors.applicant.firstName && (
-                      <p className="mt-1 text-sm text-red-600 flex items-center">
-                        <AlertCircle className="h-4 w-4 mr-1" />
-                        {errors.applicant?.firstName}
-                      </p>
-                    )}
+                    {errors.rentalHistory &&
+                      errors.rentalHistory[index].landlordFirstName && (
+                        <p className="mt-1 text-sm text-red-600 flex items-center">
+                          <AlertCircle className="h-4 w-4 mr-1" />
+                          {errors.rentalHistory[index].landlordFirstName}
+                        </p>
+                      )}
                   </div>
                   <div>
                     <label
-                      htmlFor="lastName"
+                      htmlFor={landlordLastNameFieldName}
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
                       Landlord Last Name
                     </label>
                     <input
                       type="text"
-                      id="lastName"
-                      name="lastName"
-                      value={formData.applicant.lastName}
+                      id={landlordLastNameFieldName}
+                      name={landlordLastNameFieldName}
+                      value={item.landlordLastName}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border ${
-                        errors.applicant && errors.applicant.lastName
+                        errors.rentalHistory &&
+                        errors.rentalHistory[index].landlordLastName
                           ? "border-red-500"
                           : "border-gray-300"
                       } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     />
-                    {errors.applicant && errors.applicant.lastName && (
-                      <p className="mt-1 text-sm text-red-600 flex items-center">
-                        <AlertCircle className="h-4 w-4 mr-1" />
-                        {errors.applicant.lastName}
-                      </p>
-                    )}
+                    {errors.rentalHistory &&
+                      errors.rentalHistory[index].landlordLastName && (
+                        <p className="mt-1 text-sm text-red-600 flex items-center">
+                          <AlertCircle className="h-4 w-4 mr-1" />
+                          {errors.rentalHistory[index].landlordLastName}
+                        </p>
+                      )}
                   </div>
                 </div>
 
                 <div>
                   <label
-                    htmlFor="applicant_city"
+                    htmlFor={landlordPhoneFieldName}
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
                     Landlord's Phone No.
                   </label>
                   <input
-                    type="text"
-                    id="applicant_city"
-                    name="applicant_city"
-                    value={item.country}
+                    type="phone"
+                    id={landlordPhoneFieldName}
+                    name={landlordPhoneFieldName}
+                    value={item.landlordPhone}
                     onChange={handleChange}
                     className={`w-full px-3 py-2 border ${
                       errors.applicant && errors.applicant.city
@@ -751,16 +845,16 @@ ${errors.rentalHistory?.city ? "border-red-500" : "border-gray-300"}
                 </div>
                 <div>
                   <label
-                    htmlFor="applicant_city"
+                    htmlFor={reasonForLeavingFieldName}
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
                     Reason For Leaving
                   </label>
                   <input
                     type="text"
-                    id="applicant_city"
-                    name="applicant_city"
-                    value={item.country}
+                    id={reasonForLeavingFieldName}
+                    name={reasonForLeavingFieldName}
+                    value={item.reasonForLeaving}
                     onChange={handleChange}
                     className={`w-full px-3 py-2 border ${
                       errors.applicant && errors.applicant.city
@@ -775,28 +869,85 @@ ${errors.rentalHistory?.city ? "border-red-500" : "border-gray-300"}
                     </p>
                   )}
                 </div>
-                {item.id !== 0 && (
-                  <span
-                    className="flex hover:underline hover:cursor-pointer"
-                    onClick={() => onRemoveRentalHistory(item.id)}
-                  >
-                    <X /> Remove rental history
-                  </span>
-                )}
+                <div className="relative flex w-full mt-4">
+                  {item.id === arr.length - 1 && arr.length !== 3 && (
+                    <span
+                      className="absoulte left-0 flex text-sm hover:underline hover:cursor-pointer"
+                      onClick={addRentalHistory}
+                    >
+                      <Plus size={20} /> Add additional rental history
+                    </span>
+                  )}
+                  {item.id !== 0 && (
+                    <span
+                      className="absolute right-0 flex text-sm hover:underline hover:cursor-pointer"
+                      onClick={() => removeRentalHistory(item.id)}
+                    >
+                      <X size={20} /> Remove rental history
+                    </span>
+                  )}
+                </div>
               </div>
             );
           })}
-
-          <span
-            className="flex hover:underline hover:cursor-pointer "
-            onClick={onAddField}
-          >
-            <Plus /> Add additional rental history
-          </span>
         </div>
 
         <hr className="my-8" />
+        {/**Agree */}
+        <h3 className="font-medium mb-[-5px]">Truth Confirmation </h3>
+        <span className="block text-sm font-medium">
+          I confirm that all the information entered above is true to the best
+          of my knowledge
+        </span>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="truthConfirmation"
+              className="block text-sm  text-gray-700 mb-1"
+            >
+              Full Name
+            </label>
 
+            <input
+              id="truthConfirmation"
+              name="truthConfirmation"
+              type="text"
+              value={formData.applicant.firstName}
+              onChange={handleChange}
+              className={`
+      w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500
+      ${errors.applicant?.firstName ? "border-red-500" : "border-gray-300"}
+    `}
+            />
+
+            {errors.applicant?.firstName && (
+              <p className="mt-1 text-sm text-red-600 flex items-center">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {errors.applicant.firstName}
+              </p>
+            )}
+          </div>{" "}
+          <div>
+            <label
+              htmlFor="applicant_firstName"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Date Signed
+            </label>
+            <input
+              type="date"
+              id="applicant_city"
+              name="applicant_city"
+              value={""}
+              onChange={handleChange}
+              className={`w-full px-3 py-2 border ${
+                errors.applicant && errors.applicant.city
+                  ? "border-red-500"
+                  : "border-gray-300"
+              } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            />
+          </div>
+        </div>
         <div className="mt-6">
           <button
             type="submit"
