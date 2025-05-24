@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import { Form } from "./Form";
-import { ApplicationFormInfo, RentalHistoryEntry } from "@/types";
+import { ApplicationFormInfo,  } from "@/types";
+
+type ErrorMap = Record<string, string>;
 
 export default function ApplicationForm() {
   const [isLoading, setIsLoading] = useState(false);
 
-  
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof ApplicationFormInfo, string>>
-  >({});
+  const [errors, setErrors] = useState<ErrorMap>({});
 
   const toggleErrors = (name: string) => {
-    const path = name.split("_"); // same delimiter as handleChange
-
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+    /* const path = name.split("_"); // same delimiter as handleChange
+    console.log({ path });
     setErrors((prev) => {
       // 1) shallow‐clone the root of your errors object
       const updated = { ...prev } as any;
@@ -34,17 +34,12 @@ export default function ApplicationForm() {
       // cursor[lastKey] = undefined;
 
       return updated;
-    });
+    }); */
   };
-
-  console.log({ errors });
-
-  type ErrorMap = Record<string, string>;
 
   const validateForm = (formData: ApplicationFormInfo): boolean => {
     const newErrors: ErrorMap = {};
     let isValid = true;
-
     // Recursive helper
     function check(value: any, path: string) {
       if (typeof value === "string") {
@@ -77,7 +72,7 @@ export default function ApplicationForm() {
     Object.entries(formData).forEach(([key, val]) => {
       check(val, key);
     });
-
+    console.log({ newErrors });
     // Update state and return validity
     setErrors(newErrors);
     return isValid;
@@ -88,6 +83,7 @@ export default function ApplicationForm() {
 
   const handleSubmit = async (prospectInfo: ApplicationFormInfo) => {
     setIsLoading(true);
+      console.log(prospectInfo);
 
     try {
       // Mock API delay
@@ -101,7 +97,6 @@ export default function ApplicationForm() {
       });
       const data = await response.json();
       setResults(data);
-      console.log(data);
       //updateRentApplicationStatus(4);
     } catch (error) {
       console.error("Error performing background check:", error);

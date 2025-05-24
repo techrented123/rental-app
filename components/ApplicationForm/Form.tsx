@@ -9,7 +9,7 @@ interface ApplicationFormProps {
   //onAddField: () => void;
   //onRemoveRentalHistory: (id: number) => void;
   //inputFields: ApplicationFormInfo;
-  errors: Partial<Record<keyof ApplicationFormInfo, any>>;
+  errors: Record<string, string>;
   toggleErrors: (name: string) => void;
 }
 
@@ -45,50 +45,20 @@ export const Form: React.FC<ApplicationFormProps> = ({
         state: "",
         postalCode: "",
         landlordPhone: "",
-        landlordEmail: "",
         landlordFirstName: "",
         landlordLastName: "",
         fromDate: "",
         toDate: "",
         country: "",
-        rent: "",
         reasonForLeaving: "",
       },
     ],
-    truthConfirmation: { name: "", dateSigned: "" },
   });
-
-  /*  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target;
-    // name is like "applicant_firstName" or "rentalHistory_0_address"
-    const [group, idxOrKey, maybeKey] = name.split("_");
-
-    setFormData((prev) => {
-      // if this is an array group...
-      if (Array.isArray(prev[group])) {
-        const idx = Number(idxOrKey);
-        return {
-          ...prev,
-          [group]: prev[group].map((entry, i) =>
-            i === idx ? { ...entry, [maybeKey as string]: value } : entry
-          ),
-        };
-      }
-
-      // otherwise it's a plain object group
-      return {
-        ...prev,
-        [group]: {
-          ...(prev[group] as Record<string, any>),
-          [idxOrKey]: value,
-        },
-      };
-    });
-
-    // clear any error on that exact key
-    if (errors[name]) toggleErrors(name);
-  } */
-
+  const date = new Date().toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
   const addRentalHistory = React.useCallback(() => {
     setFormData((prev) => {
       const { rentalHistory } = { ...prev };
@@ -124,7 +94,6 @@ export const Form: React.FC<ApplicationFormProps> = ({
   }, []);
 
   const removeRentalHistory = (id: number) => {
-    console.log({ id });
     setFormData((prev) => {
       const { rentalHistory } = { ...prev };
 
@@ -172,20 +141,20 @@ export const Form: React.FC<ApplicationFormProps> = ({
 
       return updated as typeof prev;
     });
-
-    if (errors[name as keyof ApplicationFormInfo]) {
+    if (errors[name]) {
+      //errors[name] = "";
       toggleErrors(name);
     }
   }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onValidateForm(formData);
     if (onValidateForm(formData)) {
       setPreventSubmit(true);
       onSubmit(formData);
     }
   };
-  console.log({ formData });
+  console.log(formData.applicant.firstName + " " + formData.applicant.lastName);
   return (
     <div className="w-full">
       <div className=" mb-6 flex flex-col items-center">
@@ -215,16 +184,17 @@ export const Form: React.FC<ApplicationFormProps> = ({
                 type="text"
                 value={formData.applicant.firstName}
                 onChange={handleChange}
+                minLength={2}
                 className={`
       w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500
-      ${errors.applicant?.firstName ? "border-red-500" : "border-gray-300"}
+      ${errors["applicant_firstName"] ? "border-red-500" : "border-gray-300"}
     `}
               />
 
-              {errors.applicant?.firstName && (
+              {errors["applicant_firstName"] && (
                 <p className="mt-1 text-sm text-red-600 flex items-center">
                   <AlertCircle className="h-4 w-4 mr-1" />
-                  {errors.applicant.firstName}
+                  {errors["applicant_firstName"]}
                 </p>
               )}
             </div>
@@ -238,20 +208,22 @@ export const Form: React.FC<ApplicationFormProps> = ({
               </label>
               <input
                 type="text"
+                minLength={2}
+                aria-required
                 id="applicant_lastName"
                 name="applicant_lastName"
                 value={formData.applicant.lastName}
                 onChange={handleChange}
                 className={`w-full px-3 py-2 border ${
-                  errors.applicant && errors.applicant.lastName
+                  errors["applicant_lastName"]
                     ? "border-red-500"
                     : "border-gray-300"
                 } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
               />
-              {errors.applicant && errors.applicant.lastName && (
+              {errors["applicant_lastName"] && (
                 <p className="mt-1 text-sm text-red-600 flex items-center">
                   <AlertCircle className="h-4 w-4 mr-1" />
-                  {errors.applicant.lastName}
+                  {errors["applicant_lastName"]}
                 </p>
               )}
             </div>
@@ -271,15 +243,15 @@ export const Form: React.FC<ApplicationFormProps> = ({
                 value={formData.applicant.email}
                 onChange={handleChange}
                 className={`w-full px-3 py-2 border ${
-                  errors.applicant && errors.applicant.email
+                  errors["applicant_email"]
                     ? "border-red-500"
                     : "border-gray-300"
                 } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
               />
-              {errors.applicant && errors.applicant.email && (
+              {errors["applicant_email"] && (
                 <p className="mt-1 text-sm text-red-600 flex items-center">
                   <AlertCircle className="h-4 w-4 mr-1" />
-                  {errors.applicant.email}
+                  {errors["applicant_email"]}
                 </p>
               )}
             </div>
@@ -295,17 +267,18 @@ export const Form: React.FC<ApplicationFormProps> = ({
                 id="applicant_phone"
                 name="applicant_phone"
                 value={formData.applicant.phone}
+                minLength={4}
                 onChange={handleChange}
                 className={`w-full px-3 py-2 border ${
-                  errors.applicant && errors.applicant.phone
+                  errors["applicant_phone"]
                     ? "border-red-500"
                     : "border-gray-300"
                 } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
               />
-              {errors.applicant && errors.applicant.phone && (
+              {errors["applicant_phone"] && (
                 <p className="mt-1 text-sm text-red-600 flex items-center">
                   <AlertCircle className="h-4 w-4 mr-1" />
-                  {errors.applicant.phone}
+                  {errors["applicant_phone"]}
                 </p>
               )}
             </div>
@@ -322,18 +295,19 @@ export const Form: React.FC<ApplicationFormProps> = ({
               type="address"
               id="applicant_address"
               name="applicant_address"
+              minLength={5}
               value={formData.applicant.address}
               onChange={handleChange}
               className={`w-full px-3 py-2 border ${
-                errors.applicant && errors.applicant.address
+                errors["applicant_address"]
                   ? "border-red-500"
                   : "border-gray-300"
               } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
             />
-            {errors.applicant && errors.applicant.address && (
+            {errors["applicant_address"] && (
               <p className="mt-1 text-sm text-red-600 flex items-center">
                 <AlertCircle className="h-4 w-4 mr-1" />
-                {errors.applicant.address}
+                {errors["applicant_address"]}
               </p>
             )}
           </div>
@@ -349,19 +323,20 @@ export const Form: React.FC<ApplicationFormProps> = ({
               <input
                 type="text"
                 id="applicant_city"
+                minLength={2}
                 name="applicant_city"
                 value={formData.applicant.city}
                 onChange={handleChange}
                 className={`w-full px-3 py-2 border ${
-                  errors.applicant && errors.applicant.city
+                  errors["applicant_city"]
                     ? "border-red-500"
                     : "border-gray-300"
                 } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
               />
-              {errors.applicant && errors.applicant.city && (
+              {errors["applicant_city"] && (
                 <p className="mt-1 text-sm text-red-600 flex items-center">
                   <AlertCircle className="h-4 w-4 mr-1" />
-                  {errors.applicant.city}
+                  {errors["applicant_city"]}
                 </p>
               )}
             </div>
@@ -376,100 +351,134 @@ export const Form: React.FC<ApplicationFormProps> = ({
                 type="text"
                 id="applicant_state"
                 name="applicant_state"
+                minLength={2}
                 value={formData.applicant.state}
                 onChange={handleChange}
                 className={`w-full px-3 py-2 border ${
-                  errors.applicant && errors.applicant.state
+                  errors["applicant_state"]
                     ? "border-red-500"
                     : "border-gray-300"
                 } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
               />
-              {errors.applicant && errors.applicant.state && (
+              {errors["applicant_state"] && (
                 <p className="mt-1 text-sm text-red-600 flex items-center">
                   <AlertCircle className="h-4 w-4 mr-1" />
-                  {errors.applicant.state}
+                  {errors["applicant_state"]}
                 </p>
               )}
             </div>
           </div>
-          <div>
-            <label
-              htmlFor="applicant_country"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Country
-            </label>
-            <input
-              type="text"
-              id="applicant_country"
-              name="applicant_country"
-              value={formData.applicant.country}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border ${
-                errors.applicant && errors.applicant.country
-                  ? "border-red-500"
-                  : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
-            />
-            {errors.applicant && errors.applicant.country && (
-              <p className="mt-1 text-sm text-red-600 flex items-center">
-                <AlertCircle className="h-4 w-4 mr-1" />
-                {errors.applicant.country}
-              </p>
-            )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label
+                htmlFor={"applicant_country"}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Country
+              </label>
+              <input
+                type="text"
+                id={"applicant_country"}
+                name={"applicant_country"}
+                value={formData.applicant.country}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 border ${
+                  errors["applicant_country"]
+                    ? "border-red-500"
+                    : "border-gray-300"
+                } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              />
+              {errors["applicant_country"] && (
+                <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <AlertCircle className="h-4 w-4 mr-1" />
+                  {errors["applicant_country"]}
+                </p>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor={"applicant_postalCode"}
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Postal/Zip Code
+              </label>
+              <input
+                type="text"
+                id={"applicant_postalCode"}
+                name={"applicant_postalCode"}
+                value={formData.applicant.postalCode}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 border ${
+                  errors["applicant_postalCode"]
+                    ? "border-red-500"
+                    : "border-gray-300"
+                } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              />
+              {errors["postalCodeFieldName"] && (
+                <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <AlertCircle className="h-4 w-4 mr-1" />
+                  {errors["postalCodeFieldName"]}
+                </p>
+              )}
+            </div>
           </div>
 
           {/*Emergency Contact */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <span
-                //htmlFor="applicant_emergencyContactFirstName"
+              <label
+                htmlFor="applicant_emergencyContactFirstName"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Emergency Contact Name
-              </span>
+                Emergency Contact First Name
+              </label>
               <input
                 type="text"
                 id="applicant_emergencyContactFirstName"
+                minLength={2}
                 name="applicant_emergencyContactFirstName"
-                placeholder="First name"
                 value={formData.applicant.emergencyContactFirstName}
                 onChange={handleChange}
                 className={`w-full px-3 py-2 border ${
-                  errors.applicant && errors.applicant.emergencyContactFirstName
+                  errors["applicant_emergencyContactFirstName"]
                     ? "border-red-500"
                     : "border-gray-300"
                 } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
               />
-              {errors.applicant &&
-                errors.applicant.emergencyContactFirstName && (
-                  <p className="mt-1 text-sm text-red-600 flex items-center">
-                    <AlertCircle className="h-4 w-4 mr-1" />
-                    {errors.applicant.emergencyContactFirstName}
-                  </p>
-                )}
+              {errors["applicant_emergencyContactFirstName"] && (
+                <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <AlertCircle className="h-4 w-4 mr-1" />
+                  {errors["applicant_emergencyContactFirstName"]}
+                </p>
+              )}
             </div>
             <div>
+              <label
+                htmlFor="applicant_emergencyContactFirstName"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Emergency Contact Last Name
+              </label>
               <input
                 type="text"
+                minLength={2}
                 id="applicant_emergencyContactLastName"
                 name="applicant_emergencyContactLastName"
                 placeholder="Last name"
                 value={formData.applicant.emergencyContactLastName}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 mt-6 border ${
-                  errors.applicant && errors.applicant.emergencyContactLastName
+                className={`w-full px-3 py-2 border ${
+                  errors["applicant_emergencyContactLastName"]
                     ? "border-red-500"
                     : "border-gray-300"
                 } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
               />
-              {errors.applicant &&
-                errors.applicant.emergencyContactLastName && (
-                  <p className="mt-1 text-sm text-red-600 flex items-center">
-                    <AlertCircle className="h-4 w-4 mr-1" />
-                    {errors.applicant.emergencyContactLastName}
-                  </p>
-                )}
+              {errors["applicant_emergencyContactLastName"] && (
+                <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <AlertCircle className="h-4 w-4 mr-1" />
+                  {errors["applicant_emergencyContactLastName"]}
+                </p>
+              )}
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -482,24 +491,23 @@ export const Form: React.FC<ApplicationFormProps> = ({
               </label>
               <input
                 type="text"
+                minLength={3}
                 id="applicant_emergencyContactRelationship"
                 name="applicant_emergencyContactRelationship"
                 value={formData.applicant.emergencyContactRelationship}
                 onChange={handleChange}
                 className={`w-full px-3 py-2 border ${
-                  errors.applicant &&
-                  errors.applicant.emergencyContactRelationship
+                  errors["applicant_emergencyContactRelationship"]
                     ? "border-red-500"
                     : "border-gray-300"
                 } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
               />
-              {errors.applicant &&
-                errors.applicant.emergencyContactRelationship && (
-                  <p className="mt-1 text-sm text-red-600 flex items-center">
-                    <AlertCircle className="h-4 w-4 mr-1" />
-                    {errors.applicant.emergencyContactRelationship}
-                  </p>
-                )}
+              {errors["applicant_emergencyContactRelationship"] && (
+                <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <AlertCircle className="h-4 w-4 mr-1" />
+                  {errors["applicant_emergencyContactRelationship"]}
+                </p>
+              )}
             </div>
             <div>
               <label
@@ -509,29 +517,31 @@ export const Form: React.FC<ApplicationFormProps> = ({
                 Emergency Contact Phone Number
               </label>
               <input
-                type="text"
+                type="tel"
                 id="applicant_emergencyContactPhone"
                 name="applicant_emergencyContactPhone"
                 value={formData.applicant.emergencyContactPhone}
+                minLength={4}
                 onChange={handleChange}
                 className={`w-full px-3 py-2 border ${
-                  errors.applicant && errors.applicant.emergencyContactPhone
+                  errors["applicant_emergencyContactPhone"]
                     ? "border-red-500"
                     : "border-gray-300"
                 } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
               />
-              {errors.applicant && errors.applicant.emergencyContactPhone && (
+              {errors["applicant_emergencyContactPhone"] && (
                 <p className="mt-1 text-sm text-red-600 flex items-center">
                   <AlertCircle className="h-4 w-4 mr-1" />
-                  {errors.applicant.emergencyContactPhone}
+                  {errors["applicant_emergencyContactPhone"]}
                 </p>
               )}
             </div>
           </div>
         </div>
 
-        <hr className="my-16" />
-
+        <div>
+          <hr className="my-12" />
+        </div>
         {/*Rental History */}
         <div className="space-y-4">
           <h3 className="font-medium">Rental History</h3>
@@ -559,38 +569,25 @@ export const Form: React.FC<ApplicationFormProps> = ({
                     Street Address
                   </label>
                   <input
-                    type="text"
+                    type="address"
                     id={addressFieldName}
                     name={addressFieldName}
                     value={item.address}
-                    onChange={(e) => {
-                      setFormData((prev) => {
-                        const rentalHistory = prev.rentalHistory;
-                        const updatedRentalHistory = rentalHistory.map(
-                          (history) => {
-                            if (history.id === item.id)
-                              return { ...history, address: e.target.value };
-                            return { ...history };
-                          }
-                        );
-                        console.log({ updatedRentalHistory });
-                        return { ...prev, rentalHistory: updatedRentalHistory };
-                      });
-                    }}
+                    onChange={handleChange}
                     className={`
                       w-full px-3 py-2 border rounded-md 
                       focus:outline-none focus:ring-2 focus:ring-blue-500
                       ${
-                        errors.rentalHistory?.address
+                        errors[addressFieldName]
                           ? "border-red-500"
                           : "border-gray-300"
                       }
                     `}
                   />
-                  {errors.rentalHistory?.address && (
+                  {errors[addressFieldName] && (
                     <p className="mt-1 text-sm text-red-600 flex items-center">
                       <AlertCircle className="h-4 w-4 mr-1" />
-                      {errors.rentalHistory.address}
+                      {errors[addressFieldName]}
                     </p>
                   )}
                 </div>
@@ -610,13 +607,13 @@ export const Form: React.FC<ApplicationFormProps> = ({
                       value={item.city}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500
-${errors.rentalHistory?.city ? "border-red-500" : "border-gray-300"}
+${errors[cityFieldName] ? "border-red-500" : "border-gray-300"}
     `}
                     />
-                    {errors.rentalHistory?.city && (
+                    {errors[cityFieldName] && (
                       <p className="mt-1 text-sm text-red-600 flex items-center">
                         <AlertCircle className="h-4 w-4 mr-1" />
-                        {errors.rentalHistory.city}
+                        {errors[cityFieldName]}
                       </p>
                     )}
                   </div>
@@ -634,15 +631,15 @@ ${errors.rentalHistory?.city ? "border-red-500" : "border-gray-300"}
                       value={item.state}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border ${
-                        errors.applicant && errors.applicant.state
+                        errors[stateFieldName]
                           ? "border-red-500"
                           : "border-gray-300"
                       } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     />
-                    {errors.applicant && errors.applicant.state && (
+                    {errors[stateFieldName] && (
                       <p className="mt-1 text-sm text-red-600 flex items-center">
                         <AlertCircle className="h-4 w-4 mr-1" />
-                        {errors.applicant.state}
+                        {errors[stateFieldName]}
                       </p>
                     )}
                   </div>
@@ -662,15 +659,15 @@ ${errors.rentalHistory?.city ? "border-red-500" : "border-gray-300"}
                       value={item.country}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border ${
-                        errors.applicant && errors.applicant.city
+                        errors[countryFieldName]
                           ? "border-red-500"
                           : "border-gray-300"
                       } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     />
-                    {errors.applicant && errors.applicant.city && (
+                    {errors[countryFieldName] && (
                       <p className="mt-1 text-sm text-red-600 flex items-center">
                         <AlertCircle className="h-4 w-4 mr-1" />
-                        {errors.applicant.city}
+                        {errors[countryFieldName]}
                       </p>
                     )}
                   </div>
@@ -688,15 +685,15 @@ ${errors.rentalHistory?.city ? "border-red-500" : "border-gray-300"}
                       value={item.postalCode}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border ${
-                        errors.applicant && errors.applicant.city
+                        errors[postalCodeFieldName]
                           ? "border-red-500"
                           : "border-gray-300"
                       } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     />
-                    {errors.applicant && errors.applicant.city && (
+                    {errors[postalCodeFieldName] && (
                       <p className="mt-1 text-sm text-red-600 flex items-center">
                         <AlertCircle className="h-4 w-4 mr-1" />
-                        {errors.applicant.city}
+                        {errors[postalCodeFieldName]}
                       </p>
                     )}
                   </div>
@@ -716,26 +713,24 @@ ${errors.rentalHistory?.city ? "border-red-500" : "border-gray-300"}
                       value={item.fromDate}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border ${
-                        errors.rentalHistory &&
-                        errors.rentalHistory[index].fromDate
+                        errors[fromDateFieldName]
                           ? "border-red-500"
                           : "border-gray-300"
                       } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     />
-                    {errors.rentalHistory &&
-                      errors.rentalHistory[index].fromDate && (
-                        <p className="mt-1 text-sm text-red-600 flex items-center">
-                          <AlertCircle className="h-4 w-4 mr-1" />
-                          {errors.rentalHistory[index].fromDate}
-                        </p>
-                      )}
+                    {errors[fromDateFieldName] && (
+                      <p className="mt-1 text-sm text-red-600 flex items-center">
+                        <AlertCircle className="h-4 w-4 mr-1" />
+                        {errors[fromDateFieldName]}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label
                       htmlFor={toDateFieldName}
                       className="block text-sm font-medium text-gray-700 mb-1"
                     />
-                     
+
                     <input
                       type="date"
                       id={toDateFieldName}
@@ -743,19 +738,20 @@ ${errors.rentalHistory?.city ? "border-red-500" : "border-gray-300"}
                       value={item.toDate}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border mt-5 ${
-                        errors.rentalHistory &&
-                        errors.rentalHistory[index].toDateFieldName
+                        errors[toDateFieldName]
                           ? "border-red-500"
                           : "border-gray-300"
                       } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      aria-required
+                      //aria-valuemin={item.fromDate}
+                      min={item.fromDate}
                     />
-                    {errors.rentalHistory &&
-                      errors.rentalHistory[index].toDateFieldName && (
-                        <p className="mt-1 text-sm text-red-600 flex items-center">
-                          <AlertCircle className="h-4 w-4 mr-1" />
-                          {errors.rentalHistory[index].toDateFieldName}
-                        </p>
-                      )}
+                    {errors[toDateFieldName] && (
+                      <p className="mt-1 text-sm text-red-600 flex items-center">
+                        <AlertCircle className="h-4 w-4 mr-1" />
+                        {errors[toDateFieldName]}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -773,19 +769,17 @@ ${errors.rentalHistory?.city ? "border-red-500" : "border-gray-300"}
                       value={item.landlordFirstName}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border ${
-                        errors.rentalHistory &&
-                        errors.rentalHistory[index].landlordFirstName
+                        errors[landlordFirstNameFieldName]
                           ? "border-red-500"
                           : "border-gray-300"
                       } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     />
-                    {errors.rentalHistory &&
-                      errors.rentalHistory[index].landlordFirstName && (
-                        <p className="mt-1 text-sm text-red-600 flex items-center">
-                          <AlertCircle className="h-4 w-4 mr-1" />
-                          {errors.rentalHistory[index].landlordFirstName}
-                        </p>
-                      )}
+                    {errors[landlordFirstNameFieldName] && (
+                      <p className="mt-1 text-sm text-red-600 flex items-center">
+                        <AlertCircle className="h-4 w-4 mr-1" />
+                        {errors[landlordFirstNameFieldName]}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label
@@ -801,19 +795,17 @@ ${errors.rentalHistory?.city ? "border-red-500" : "border-gray-300"}
                       value={item.landlordLastName}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border ${
-                        errors.rentalHistory &&
-                        errors.rentalHistory[index].landlordLastName
+                        errors[landlordLastNameFieldName]
                           ? "border-red-500"
                           : "border-gray-300"
                       } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     />
-                    {errors.rentalHistory &&
-                      errors.rentalHistory[index].landlordLastName && (
-                        <p className="mt-1 text-sm text-red-600 flex items-center">
-                          <AlertCircle className="h-4 w-4 mr-1" />
-                          {errors.rentalHistory[index].landlordLastName}
-                        </p>
-                      )}
+                    {errors[landlordLastNameFieldName] && (
+                      <p className="mt-1 text-sm text-red-600 flex items-center">
+                        <AlertCircle className="h-4 w-4 mr-1" />
+                        {errors[landlordLastNameFieldName]}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -830,16 +822,17 @@ ${errors.rentalHistory?.city ? "border-red-500" : "border-gray-300"}
                     name={landlordPhoneFieldName}
                     value={item.landlordPhone}
                     onChange={handleChange}
+                    minLength={4}
                     className={`w-full px-3 py-2 border ${
-                      errors.applicant && errors.applicant.city
+                      errors[landlordPhoneFieldName]
                         ? "border-red-500"
                         : "border-gray-300"
                     } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   />
-                  {errors.applicant && errors.applicant.city && (
+                  {errors[landlordPhoneFieldName] && (
                     <p className="mt-1 text-sm text-red-600 flex items-center">
                       <AlertCircle className="h-4 w-4 mr-1" />
-                      {errors.applicant.city}
+                      {errors[landlordPhoneFieldName]}
                     </p>
                   )}
                 </div>
@@ -857,15 +850,15 @@ ${errors.rentalHistory?.city ? "border-red-500" : "border-gray-300"}
                     value={item.reasonForLeaving}
                     onChange={handleChange}
                     className={`w-full px-3 py-2 border ${
-                      errors.applicant && errors.applicant.city
+                      errors[reasonForLeavingFieldName]
                         ? "border-red-500"
                         : "border-gray-300"
                     } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   />
-                  {errors.applicant && errors.applicant.city && (
+                  {errors[reasonForLeavingFieldName] && (
                     <p className="mt-1 text-sm text-red-600 flex items-center">
                       <AlertCircle className="h-4 w-4 mr-1" />
-                      {errors.applicant.city}
+                      {errors[reasonForLeavingFieldName]}
                     </p>
                   )}
                 </div>
@@ -875,7 +868,7 @@ ${errors.rentalHistory?.city ? "border-red-500" : "border-gray-300"}
                       className="absoulte left-0 flex text-sm hover:underline hover:cursor-pointer"
                       onClick={addRentalHistory}
                     >
-                      <Plus size={20} /> Add additional rental history
+                      <Plus size={19} /> Add additional rental history
                     </span>
                   )}
                   {item.id !== 0 && (
@@ -883,16 +876,22 @@ ${errors.rentalHistory?.city ? "border-red-500" : "border-gray-300"}
                       className="absolute right-0 flex text-sm hover:underline hover:cursor-pointer"
                       onClick={() => removeRentalHistory(item.id)}
                     >
-                      <X size={20} /> Remove rental history
+                      <X size={19} /> Remove rental history
                     </span>
                   )}
                 </div>
+                {item.id !== arr.length - 1 && (
+                  <div>
+                    <hr className="my-4" />
+                  </div>
+                )}
               </div>
             );
           })}
         </div>
-
-        <hr className="my-8" />
+        <div>
+          <hr className="my-12" />
+        </div>
         {/**Agree */}
         <h3 className="font-medium mb-[-5px]">Truth Confirmation </h3>
         <span className="block text-sm font-medium">
@@ -902,56 +901,54 @@ ${errors.rentalHistory?.city ? "border-red-500" : "border-gray-300"}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label
-              htmlFor="truthConfirmation"
-              className="block text-sm  text-gray-700 mb-1"
+              htmlFor="truthConfirmation_name"
+              className="block text-sm font-medium text-gray-700 mb-1"
             >
               Full Name
             </label>
 
             <input
-              id="truthConfirmation"
-              name="truthConfirmation"
+              id="truthConfirmation_name"
+              name="truthConfirmation_name"
               type="text"
-              value={formData.applicant.firstName}
-              onChange={handleChange}
+              value={
+                formData.applicant.firstName + " " + formData.applicant.lastName
+              }
+              //readOnly
               className={`
       w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500
-      ${errors.applicant?.firstName ? "border-red-500" : "border-gray-300"}
+      ${errors["truthConfirmation_name"] ? "border-red-500" : "border-gray-300"}
     `}
             />
 
-            {errors.applicant?.firstName && (
+            {errors["truthConfirmation_name"] && (
               <p className="mt-1 text-sm text-red-600 flex items-center">
                 <AlertCircle className="h-4 w-4 mr-1" />
-                {errors.applicant.firstName}
+                {errors["truthConfirmation_name"]}
               </p>
             )}
           </div>{" "}
           <div>
             <label
-              htmlFor="applicant_firstName"
+              htmlFor="truthConfirmation_date"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
               Date Signed
             </label>
             <input
-              type="date"
-              id="applicant_city"
-              name="applicant_city"
-              value={""}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border ${
-                errors.applicant && errors.applicant.city
-                  ? "border-red-500"
-                  : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              type="text"
+              id="truthConfirmation_date"
+              name="truthConfirmation_date"
+              defaultValue={date}
+              className={`w-full px-3 py-2 border
+               rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
             />
           </div>
         </div>
         <div className="mt-6">
           <button
             type="submit"
-            disabled={isLoading || preventSubmit}
+            disabled={isLoading }
             className={`w-full py-3 px-4 bg-blue-700 text-white font-medium rounded-md shadow-sm hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors ${
               isLoading ? "opacity-70 cursor-not-allowed" : ""
             }`}

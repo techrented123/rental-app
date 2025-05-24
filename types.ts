@@ -34,25 +34,16 @@ export interface RentalHistoryEntry {
   postalCode: string;
   country: string;
   landlordPhone: string;
-  landlordEmail: string;
   landlordFirstName: string;
   landlordLastName: string;
   fromDate: string;
   toDate: string;
-  rent: string;
   reasonForLeaving: string;
-}
-
-interface Supervisor {
-  firstName: string;
-  lastName: string;
-  contact: string;
 }
 
 export interface ApplicationFormInfo {
   applicant: ApplicantInfo;
   rentalHistory: RentalHistoryEntry[];
-  truthConfirmation: any;
 }
 
 export interface BackgroundCheckResult {
