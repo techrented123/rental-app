@@ -1,40 +1,24 @@
 import React, { useState } from "react";
 import { Form } from "./Form";
-import { ApplicationFormInfo,  } from "@/types";
-
+import { ApplicationFormInfo } from "@/types";
+import { useRentalApplicationContext } from "@/contexts/rental-application-context";
+import VerificationResult, {
+  VerificationStatus,
+} from "../IDVerification/VerificationResult";
+import { generateApplicationFormPDF } from "@/lib/pdfService";
+import { Loader2 } from "lucide-react";
 type ErrorMap = Record<string, string>;
 
 export default function ApplicationForm() {
   const [isLoading, setIsLoading] = useState(false);
-
   const [errors, setErrors] = useState<ErrorMap>({});
+  const [verificationStatus, setVerificationStatus] =
+    useState<VerificationStatus>("idle");
+
+  const { updateStepOutput } = useRentalApplicationContext();
 
   const toggleErrors = (name: string) => {
     setErrors((prev) => ({ ...prev, [name]: "" }));
-    /* const path = name.split("_"); // same delimiter as handleChange
-    console.log({ path });
-    setErrors((prev) => {
-      // 1) shallow‐clone the root of your errors object
-      const updated = { ...prev } as any;
-      let cursor = updated;
-
-      // 2) walk & clone each level except the last
-      for (let i = 0; i < path.length - 1; i++) {
-        const key = path[i];
-        cursor[key] = Array.isArray(cursor[key])
-          ? [...cursor[key]]
-          : { ...cursor[key] };
-        cursor = cursor[key];
-      }
-
-      // 3) remove (or undefine) the final error key
-      const lastKey = path[path.length - 1];
-      delete cursor[lastKey];
-      // —or, if you really want it to exist but be undefined:
-      // cursor[lastKey] = undefined;
-
-      return updated;
-    }); */
   };
 
   const validateForm = (formData: ApplicationFormInfo): boolean => {
@@ -72,51 +56,43 @@ export default function ApplicationForm() {
     Object.entries(formData).forEach(([key, val]) => {
       check(val, key);
     });
-    console.log({ newErrors });
     // Update state and return validity
     setErrors(newErrors);
     return isValid;
   };
 
-  const [results, setResults] = useState(null);
-  //const { updateRentApplicationStatus } = useContext(RentalApplicationContext);
-
   const handleSubmit = async (prospectInfo: ApplicationFormInfo) => {
-    setIsLoading(true);
-      console.log(prospectInfo);
-
-    try {
-      // Mock API delay
-      //await new Promise(resolve => setTimeout(resolve, 2000));
-      const response = await fetch("/api/backrrground-check", {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ...prospectInfo }),
-      });
-      const data = await response.json();
-      setResults(data);
-      //updateRentApplicationStatus(4);
-    } catch (error) {
-      console.error("Error performing background check:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    setVerificationStatus("verifying");
+    const generatedPDFblob = generateApplicationFormPDF(prospectInfo);
+    updateStepOutput(generatedPDFblob);
+    setTimeout(() => {
+      setVerificationStatus("success");
+    }, 1500);
   };
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen">
       <main className="container mx-auto px-4 py-8 w-full">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <Form
-            onSubmit={handleSubmit}
-            isLoading={isLoading}
-            onValidateForm={validateForm}
-            errors={errors}
-            toggleErrors={toggleErrors}
+        {verificationStatus === "idle" ? (
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <Form
+              onSubmit={handleSubmit}
+              isLoading={isLoading}
+              onValidateForm={validateForm}
+              errors={errors}
+              toggleErrors={toggleErrors}
+            />
+          </div>
+        ) : verificationStatus === "verifying" ? (
+          <div className="mb-4">
+            <Loader2 className="h-12 w-12 text-blue-500 animate-spin" />
+          </div>
+        ) : (
+          <VerificationResult
+            title={"Form Successfully Submitted"}
+            subtitle={"Proceed to the next step"}
           />
-        </div>
+        )}
       </main>
     </div>
   );
