@@ -73,13 +73,11 @@ export const Form: React.FC<ApplicationFormProps> = ({
             state: "",
             postalCode: "",
             landlordPhone: "",
-            landlordEmail: "",
             landlordFirstName: "",
             landlordLastName: "",
             fromDate: "",
             toDate: "",
             country: "",
-            rent: "",
             reasonForLeaving: "",
           },
         ];
@@ -154,9 +152,9 @@ export const Form: React.FC<ApplicationFormProps> = ({
       onSubmit(formData);
     }
   };
-  console.log(formData.applicant.firstName + " " + formData.applicant.lastName);
+
   return (
-    <div className="w-full">
+    <div className="w-full overflow-scroll poppy">
       <div className=" mb-6 flex flex-col items-center">
         <div className="flex">
           <UserCheck className="h-6 w-6 text-blue-700 mr-2" />
@@ -948,8 +946,8 @@ ${errors[cityFieldName] ? "border-red-500" : "border-gray-300"}
         <div className="mt-6">
           <button
             type="submit"
-            disabled={isLoading }
-            className={`w-full py-3 px-4 bg-blue-700 text-white font-medium rounded-md shadow-sm hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors ${
+            disabled={isLoading}
+            className={`w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-md shadow-sm hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors ${
               isLoading ? "opacity-70 cursor-not-allowed" : ""
             }`}
           >
