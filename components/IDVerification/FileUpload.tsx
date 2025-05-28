@@ -100,7 +100,7 @@ const IDVerification: React.FC<FileUploadProps> = ({
               Drag and drop your PDF file here, or click to select a file
             </p>
             <button
-              className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-lg font-medium transition-colors duration-200"
+              className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-lg font-medium transition-colors duration-200"
               onClick={(e) => {
                 e.stopPropagation();
                 handleClick();

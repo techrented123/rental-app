@@ -1,9 +1,9 @@
 "use client";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import FileUpload from "./FileUpload";
 import VerificationResult, { VerificationStatus } from "./VerificationResult";
 import { PDFDocument } from "pdf-lib";
-import { RentalApplicationContext } from "@/contexts/rental-application-context";
+import { useRentalApplicationContext } from "@/contexts/rental-application-context";
 
 const PDFVerifier = ({
   reportType,
@@ -17,8 +17,8 @@ const PDFVerifier = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
-  const [matchedKeywords, setMatchedKeywords] = useState<string[]>([]);
-  const { updateRentApplicationStatus } = useContext(RentalApplicationContext);
+  const { updateRentApplicationStatus, updateStepOutput } =
+    useRentalApplicationContext();
 
   const verifyPDF = async (file: File) => {
     const arrayBuffer = await file.arrayBuffer();
@@ -48,9 +48,10 @@ const PDFVerifier = ({
 
     try {
       const { isValid, message } = await verifyPDF(file);
-
-      if (isValid) updateRentApplicationStatus(reportType !== "credit" ? 1 : 2);
-
+      if (isValid) {
+        updateRentApplicationStatus(reportType !== "credit" ? 1 : 2);
+        updateStepOutput(file);
+      }
       // Simulate a delay to show the loading state
       setTimeout(() => {
         setVerificationStatus(isValid ? "success" : "error");
@@ -71,7 +72,6 @@ const PDFVerifier = ({
     setVerificationStatus("idle");
     setErrorMessage(null);
     setFileName(null);
-    setMatchedKeywords([]);
   };
 
   return (
@@ -99,10 +99,13 @@ const PDFVerifier = ({
           />
         ) : (
           <VerificationResult
-            status={verificationStatus}
-            message={errorMessage}
+            title={
+              verificationStatus === "success"
+                ? "Verification Successful"
+                : "Verification Failed"
+            }
+            subtitle={errorMessage}
             fileName={fileName}
-            matchedKeywords={matchedKeywords}
             onReset={handleReset}
           />
         )}

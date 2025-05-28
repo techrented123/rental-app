@@ -1,48 +1,45 @@
 import React from "react";
-import { CheckCircle, XCircle, FileText, ChevronRight } from "lucide-react";
+import { CheckCircle, XCircle, FileText,  } from "lucide-react";
 export type VerificationStatus = "idle" | "verifying" | "success" | "error";
 
 interface VerificationResultProps {
-  status: VerificationStatus;
-  message: string | null;
-  fileName: string | null;
-  matchedKeywords: string[];
-  onReset: () => void;
+  title: string;
+  subtitle: string | null;
+  fileName?: string | null;
+  onReset?: () => void;
 }
 
 const VerificationResult: React.FC<VerificationResultProps> = ({
-  status,
-  message,
   fileName,
-  matchedKeywords,
+  title,
+  subtitle,
   onReset,
 }) => {
-  const isSuccess = status === "success";
+  const isSuccessTitle = title.toLowerCase().includes("success");
+  console.log({ isSuccessTitle, subtitle });
   return (
     <div className="flex flex-col items-center text-center">
       <div
         className={`p-4 rounded-full mb-6 ${
-          isSuccess ? "bg-green-100" : "bg-red-100"
+          isSuccessTitle ? "bg-green-100" : "bg-red-100"
         }`}
       >
-        {isSuccess ? (
+        {isSuccessTitle ? (
           <CheckCircle className="h-12 w-12 text-green-500" />
         ) : (
           <XCircle className="h-12 w-12 text-red-500" />
         )}
       </div>
 
-      <h2 className="text-2xl font-semibold mb-3">
-        {isSuccess ? "Verification Successful" : "Verification Failed"}
-      </h2>
+      <h2 className="text-2xl font-semibold mb-3">{title}</h2>
 
       <p
         className={`text-lg mb-6 ${
-          isSuccess ? "text-green-700" : "text-red-700"
+          isSuccessTitle ? "text-green-700" : "text-red-700"
         }`}
       >
-        {message ||
-          (isSuccess
+        {subtitle ||
+          (isSuccessTitle
             ? "All document properties have been verified."
             : "The document does not meet the verification requirements.")}
       </p>
@@ -54,26 +51,7 @@ const VerificationResult: React.FC<VerificationResultProps> = ({
         </div>
       )}
 
-      {isSuccess && matchedKeywords.length > 0 && (
-        <div className="bg-gray-50 rounded-lg p-4 mb-6 w-full max-w-md">
-          <h3 className="text-sm font-medium text-gray-700 mb-2">
-            Matched Information
-          </h3>
-          <ul className="space-y-2">
-            {matchedKeywords.map((keyword, index) => (
-              <li
-                key={index}
-                className="text-sm text-gray-600 flex items-center"
-              >
-                <ChevronRight className="h-4 w-4 text-gray-400 mr-1" />
-                {keyword}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {!isSuccess && (
+      {!isSuccessTitle && (
         <button
           onClick={onReset}
           className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${"bg-blue-500 hover:bg-blue-600 text-white"}`}
