@@ -1,7 +1,7 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { ProspectInfo, BackgroundCheckResult } from "@/types";
 import ResultsPanel from "./ResultsPanel";
-import { RentalApplicationContext } from "@/contexts/rental-application-context";
+import { useRentalApplicationContext } from "@/contexts/rental-application-context";
 import { Form } from "./Form";
 
 export default function BackgroundCheck() {
@@ -56,7 +56,8 @@ export default function BackgroundCheck() {
   };
 
   const [results, setResults] = useState<BackgroundCheckResult | null>(null);
-  const { updateRentApplicationStatus } = useContext(RentalApplicationContext);
+  const { updateRentApplicationStatus, updateStepOutput } =
+    useRentalApplicationContext();
 
   const handleSubmit = async (prospectInfo: ProspectInfo) => {
     setIsLoading(true);
@@ -71,8 +72,8 @@ export default function BackgroundCheck() {
       });
       const data = await response.json();
       setResults(data);
-      console.log(data);
-      updateRentApplicationStatus(4);
+      updateRentApplicationStatus(3);
+      updateStepOutput(data);
     } catch (error) {
       console.error("Error performing background check:", error);
     } finally {

@@ -1,7 +1,7 @@
 import React from "react";
 import { BackgroundCheckResult } from "@/types";
 import { FileText, Download } from "lucide-react";
-import { generatePDF } from "@/lib/pdfService";
+import { generateBackgroundCheckPDF } from "@/lib/pdfService";
 
 interface ResultsPanelProps {
   results: BackgroundCheckResult | null;
@@ -9,10 +9,9 @@ interface ResultsPanelProps {
 }
 
 const ResultsPanel: React.FC<ResultsPanelProps> = ({ results, isLoading }) => {
-  console.log({ results });
   const handleDownloadPDF = () => {
     if (results) {
-      generatePDF(results);
+      generateBackgroundCheckPDF(results);
     }
   };
   const getRiskColor = (riskLevel: string) => {

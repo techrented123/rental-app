@@ -272,7 +272,7 @@ export const Form: React.FC<BackgroundCheckFormProps> = ({
           <button
             type="submit"
             disabled={isLoading }
-            className={`w-full py-3 px-4 bg-blue-700 text-white font-medium rounded-md shadow-sm hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors ${
+            className={`w-full py-3 px-4 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors ${
               isLoading ? "opacity-70 cursor-not-allowed" : ""
             }`}
           >
