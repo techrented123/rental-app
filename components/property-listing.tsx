@@ -52,6 +52,7 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Link from "next/link";
+import { useRentalApplicationContext } from "@/contexts/rental-application-context";
 
 export default function PropertyListing() {
   const params = useSearchParams();
@@ -63,6 +64,7 @@ export default function PropertyListing() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [mobileImageIndex, setMobileImageIndex] = useState(0);
+  const { updateRentalState } = useRentalApplicationContext();
 
   useEffect(() => {
     if (!slug) {
@@ -79,6 +81,12 @@ export default function PropertyListing() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [slug]);
+
+  useEffect(() => {
+    if (prop) {
+      updateRentalState(prop.PropertyID.Address.State);
+    }
+  }, [prop, updateRentalState]);
 
   if (loading) return <p className="p-8 text-center">Loading…</p>;
   if (error) return <p className="p-8 text-center text-red-600">{error}</p>;
@@ -103,6 +111,7 @@ export default function PropertyListing() {
     },
     Information: { StructureType: type, LongDescription: description },
   } = prop;
+
   // normalize rooms
   const rooms = Array.isArray(prop.Floorplan.Room)
     ? prop.Floorplan.Room
@@ -144,6 +153,7 @@ export default function PropertyListing() {
   const previousMobileImage = () => {
     setMobileImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
+
   return (
     <div className="min-h-screen bg-gray-50 rounded-xl ">
       {/* Image Gallery Section */}
