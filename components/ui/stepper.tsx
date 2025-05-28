@@ -1,9 +1,4 @@
-"use client";
-
-import { useContext, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import React, { useState } from "react";
 import { LucideProps } from "lucide-react";
 
 export interface Steps {
@@ -14,7 +9,12 @@ export interface Steps {
     Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
   >;
 }
-export default function Stepper({ steps }: { steps: Steps[] }) {
+
+interface StepperProps {
+  steps: Steps[];
+}
+
+export default function Stepper({ steps }: StepperProps) {
   const [activeStep, setActiveStep] = useState(0);
 
   const handleNext = () => {
@@ -30,134 +30,146 @@ export default function Stepper({ steps }: { steps: Steps[] }) {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <Card className="max-w-8xl mx-auto">
-        <CardContent className="pt-6">
-          {/* Stepper */}
-          <div className="mb-8">
-            <div className="hidden md:flex justify-between">
-              {steps.map((step, index) => {
-                const Icon = step.icon;
-                return (
-                  <div
-                    key={index}
-                    className={cn(
-                      "flex flex-col items-center relative w-36",
-                      index < steps.length - 1 &&
-                        "after:content-[''] after:absolute after:top-5 after:left-1/2 after:w-full after:h-0.5 after:bg-gray-200",
-                      index < activeStep && "after:!bg-primary"
-                    )}
-                  >
+    <div className="container mx-auto py-0 px-4 h-full overflow-auto">
+      <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-sm border">
+        <div className="flex flex-col md:flex-row h-[600px] md:h-[650px]">
+          {/* Vertical Stepper (Desktop) */}
+          <div className="hidden md:flex flex-col w-64 border-r bg-gray-50 rounded-l-lg">
+            {steps.map((step, index) => {
+              const Icon = step.icon;
+              return (
+                <div
+                  key={index}
+                  className={`
+                    relative p-4 transition-all duration-200
+                    ${index === activeStep ? "bg-gray-100" : ""}
+                    ${index < steps.length - 1 ? "border-b" : ""}
+                  `}
+                >
+                  <div className="flex items-start">
                     <div
-                      className={cn(
-                        "w-10 h-10 rounded-full border-2 flex items-center justify-center relative z-10 bg-white transition-colors",
-                        index === activeStep
-                          ? "border-primary text-primary"
-                          : index < activeStep
-                          ? "border-primary bg-primary text-white"
-                          : "border-gray-200 text-gray-400"
-                      )}
+                      className={`
+                        w-10 h-10 rounded-full border-2 flex items-center justify-center
+                        shrink-0 transition-colors duration-300
+                        ${
+                          index === activeStep
+                            ? "border-primary text-primary"
+                            : index < activeStep
+                            ? "border-primary bg-primary text-white"
+                            : "border-gray-200 text-gray-400"
+                        }
+                      `}
                     >
                       <Icon className="w-5 h-5" />
                     </div>
-                    <div className="text-center mt-2">
+
+                    <div className="ml-3">
                       <p
-                        className={cn(
-                          "text-sm font-medium",
-                          index === activeStep
-                            ? "text-primary"
-                            : index < activeStep
-                            ? "text-primary"
-                            : "text-gray-400"
-                        )}
+                        className={`
+                          text-sm font-medium
+                          ${
+                            index === activeStep
+                              ? "text-primary"
+                              : index < activeStep
+                              ? "text-primary"
+                              : "text-gray-500"
+                          }
+                        `}
                       >
                         {step.title}
                       </p>
-                      <p className="text-xs text-gray-400 hidden lg:block">
+                      <p className="text-xs text-gray-500 mt-1">
                         {step.description}
                       </p>
                     </div>
                   </div>
-                );
-              })}
-            </div>
 
-            {/* Mobile Stepper */}
-            <div className="md:hidden flex items-center justify-between mb-4">
-              {steps.map((step, index) => {
-                const Icon = step.icon;
-                return (
-                  <div
-                    key={index}
-                    className={cn(
-                      "flex flex-col items-center relative",
-                      index < steps.length - 1 &&
-                        "after:content-[''] after:absolute after:top-4 after:left-1/2 after:w-full after:h-0.5 after:bg-gray-200",
-                      index < activeStep && "after:!bg-primary"
-                    )}
-                  >
+                  {/* Vertical connector line */}
+                  {index < steps.length - 1 && (
                     <div
-                      className={cn(
-                        "w-8 h-8 rounded-full border-2 flex items-center justify-center relative z-10 bg-white transition-colors",
-                        index === activeStep
-                          ? "border-primary text-primary"
-                          : index < activeStep
-                          ? "border-primary bg-primary text-white"
-                          : "border-gray-200 text-gray-400"
-                      )}
+                      className={`
+                        absolute left-9 top-14 w-0.5 h-[calc(100%-40px)] 
+                        ${index < activeStep ? "bg-primary" : "bg-gray-200"}
+                      `}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex flex-col flex-grow">
+            {/* Horizontal Stepper (Mobile) */}
+            <div className="md:hidden pt-4 px-4">
+              <div className="flex items-center justify-between mb-2">
+                {steps.map((step, index) => {
+                  const Icon = step.icon;
+                  return (
+                    <div
+                      key={index}
+                      className={`
+                        flex flex-col items-center relative
+                        ${
+                          index < steps.length - 1 &&
+                          "after:content-[''] after:absolute after:top-4 after:left-1/2 after:w-full after:h-0.5 after:bg-gray-200 " +
+                            (index < activeStep ? "after:!bg-primary" : "")
+                        }
+                      `}
                     >
-                      <Icon className="w-4 h-4" />
+                      <div
+                        className={`
+                          w-8 h-8 rounded-full border-2 flex items-center justify-center relative z-10 bg-white
+                          transition-colors duration-300
+                          ${
+                            index === activeStep
+                              ? "border-primary text-primary"
+                              : index < activeStep
+                              ? "border-primary bg-primary text-white"
+                              : "border-gray-200 text-gray-400"
+                          }
+                        `}
+                      >
+                        <Icon className="w-4 h-4" />
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
+              <div className="text-center mb-4">
+                <p className="font-medium text-primary">
+                  {steps[activeStep].title}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {steps[activeStep].description}
+                </p>
+              </div>
             </div>
-            <div className="md:hidden text-center mb-6">
-              <p className="font-medium text-primary">
-                {steps[activeStep].title}
-              </p>
-              <p className="text-sm text-gray-400">
-                {steps[activeStep].description}
-              </p>
+
+            {/* Step Content */}
+            <div className="flex-grow p-6 overflow-auto">
+              {steps[activeStep].content}
+            </div>
+
+            {/* Navigation */}
+            <div className="flex justify-between p-4 mt-auto border-t bg-gray-50">
+              <button
+                className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100 transition-colors"
+                onClick={handlePrev}
+                disabled={activeStep === 0}
+              >
+                Previous
+              </button>
+              <button
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                onClick={handleNext}
+                disabled={activeStep === steps.length - 1}
+              >
+                Next
+              </button>
             </div>
           </div>
-
-          {/* Step Content */}
-          <div className="min-h-[400px] flex items-center justify-center border rounded-lg p-6">
-            {activeStep === 0 && (
-              <div className="w-full">{steps[0].content} </div>
-            )}
-            {activeStep === 1 && <div>{steps[1].content} </div>}
-            {activeStep === 2 && <div>{steps[2].content} </div>}
-
-            {activeStep === 3 && <div>{steps[3].content} </div>}
-            {activeStep === 4 && <div className="w-full">{steps[4].content} </div>}
-          </div>
-
-          {/* Navigation */}
-          <div className="flex justify-between mt-6">
-            <Button
-              variant="outline"
-              onClick={handlePrev}
-              disabled={
-                activeStep ===
-                0 /* || rentApplicationStatus[activeStep-1].done */
-              }
-            >
-              Previous
-            </Button>
-            <Button
-              onClick={handleNext}
-              disabled={
-                activeStep === steps.length - 1 /* ||
-                !rentApplicationStatus[activeStep].done */
-              }
-            >
-              Next
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
