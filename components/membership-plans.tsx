@@ -1,10 +1,8 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { Check } from "lucide-react";
-import { RentalApplicationContext } from "@/contexts/rental-application-context";
 import Link from "next/link";
 
 const membershipPlans = [
@@ -54,10 +52,10 @@ const Plans = () => {
 
   return (
     <div>
-      <div className="container mx-auto py-8 px-4">
-        <Card className="max-w-6xl mx-auto">
-          <CardHeader>
-            <CardTitle className="text-3xl font-bold text-center">
+      <div className="container mx-auto px-4">
+        <Card className="max-w-6xl mx-auto border-none">
+          <CardHeader className="pt-0">
+            <CardTitle className="text-2xl font-bold text-center">
               Renting is better as a Member
             </CardTitle>
             <p className="text-center text-muted-foreground mt-2">
@@ -80,10 +78,7 @@ const Plans = () => {
                     }`}
                   >
                     <div className="">
-                      <div className="font-semibold">{plan.name}</div>
-                      <div className="text-sm text-muted-foreground">
-                        ${plan.price}/mo
-                      </div>
+                      <div className="font-semibold ">{plan.name}</div>
                     </div>
                   </TabsTrigger>
                 ))}
@@ -94,15 +89,15 @@ const Plans = () => {
                   <div className="grid gap-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-2xl font-bold">{plan.name} Plan</h3>
-                        <p className="text-muted-foreground">
+                        <h3 className="text-xl font-bold">
+                    
                           ${plan.price}/month
-                        </p>
+                        </h3>
                       </div>
                     </div>
 
                     <div className="grid gap-4">
-                      <h4 className="text-xl font-semibold">Plan Benefits</h4>
+                      <h4 className="text-md font-bold"> Benefits</h4>
                       <ul className="grid gap-3">
                         {plan.benefits.map((benefit, index) => (
                           <li key={index} className="flex items-center gap-3">
@@ -120,10 +115,9 @@ const Plans = () => {
                       {" "}
                       <Button
                         size="lg"
-                        className="w-full mt-6"
-                        //onClick={handleContinue}
+                        className="w-full mt-6 bg-blue-600 hover:bg-blue-500"
                       >
-                        Continue with {plan.name} Plan
+                        Continue with {plan.name} Plan 
                       </Button>
                     </Link>
                   </div>
