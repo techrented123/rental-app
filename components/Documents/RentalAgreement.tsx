@@ -1,4 +1,3 @@
-// components/SignwellLeaseSigner.tsx
 "use client";
 
 import { useRentalApplicationContext } from "@/contexts/rental-application-context";
@@ -8,12 +7,8 @@ export function RentalAgreement() {
   const [signingUrl, setSigningUrl] = useState<string>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
-  const {
-    updateRentApplicationStatus,
-    updateStepOutput,
-    rentalInfo,
-    stepOutputs,
-  } = useRentalApplicationContext();
+  const { updateStepOutput, rentalInfo, stepOutputs } =
+    useRentalApplicationContext();
   // 1) Load SignWell’s embed script
   useEffect(() => {
     const s = document.createElement("script");
@@ -26,14 +21,14 @@ export function RentalAgreement() {
     };
   }, []);
 
-  const { firstName, lastName, email } = stepOutputs[2].prospect;
+  const { firstName, lastName, email } = stepOutputs[3].prospect;
 
   // 2) Kick off creation & get the embed URL
   const startSigning = async () => {
     setLoading(true);
     setError(undefined);
     try {
-      const res = await fetch("/api/signwell/create2", {
+      const res = await fetch("/api/signwell/create-document", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -63,7 +58,7 @@ export function RentalAgreement() {
         events: {
           completed: () => {
             console.log("Tenant has completed signing.");
-            updateStepOutput({ 5: true });
+            updateStepOutput(true);
           },
           closed: () => {
             console.log("Signing modal closed.");

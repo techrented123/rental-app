@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ProspectInfo } from "@/types";
 
-import { UserCheck, AlertCircle, Info } from "lucide-react";
+import { UserCheck, AlertCircle, } from "lucide-react";
 
 interface BackgroundCheckFormProps {
   onSubmit: (info: ProspectInfo) => void;
@@ -129,30 +129,6 @@ export const Form: React.FC<BackgroundCheckFormProps> = ({
               <p className="mt-1 text-sm text-red-600 flex items-center">
                 <AlertCircle className="h-4 w-4 mr-1" />
                 {errors.email}
-              </p>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Date of Birth
-            </label>
-            <input
-              type="date"
-              id="dob"
-              name="dob"
-              value={formData.dob}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border ${
-                errors.dob ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
-            />
-            {errors.dob && (
-              <p className="mt-1 text-sm text-red-600 flex items-center">
-                <AlertCircle className="h-4 w-4 mr-1" />
-                {errors.dob}
               </p>
             )}
           </div>

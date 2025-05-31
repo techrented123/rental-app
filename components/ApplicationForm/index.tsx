@@ -65,7 +65,7 @@ export default function ApplicationForm() {
   const handleSubmit = async (prospectInfo: ApplicationFormInfo) => {
     setVerificationStatus("verifying");
     //const generatedPDFblob = generateApplicationFormPDF(prospectInfo);
-    updateStepOutput({4:prospectInfo});
+    updateStepOutput(prospectInfo);
     updateRentApplicationStatus(5);
 
     setTimeout(() => {
