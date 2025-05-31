@@ -52,8 +52,8 @@ const PDFVerifier = ({
       const { isValid, message } = await verifyPDF(file);
       if (isValid) {
         const b64 = await fileToBase64(file);
-        updateStepOutput(b64);
-        updateRentApplicationStatus(reportType !== "credit" ? 1 : 2);
+        updateStepOutput(reportType !== "credit" ? { 1: b64 } : { 2: b64 });
+        updateRentApplicationStatus(reportType !== "credit" ? 2 : 3);
       }
       // Simulate a delay to show the loading state
       setTimeout(() => {

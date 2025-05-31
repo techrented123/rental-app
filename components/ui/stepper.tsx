@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { LucideProps } from "lucide-react";
+import { useRentalApplicationContext } from "@/contexts/rental-application-context";
 
 export interface Steps {
   content?: React.ReactElement;
@@ -34,6 +35,8 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
     setActiveStep(lastSavedStep);
   }, [lastSavedStep]);
 
+  const { stepOutputs } = useRentalApplicationContext();
+  console.log({ stepOutputs,activeStep });
   return (
     <div className="container mx-auto py-0 px-4 h-full overflow-auto">
       <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-sm border">
@@ -157,18 +160,20 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
 
             {/* Navigation */}
             {activeStep !== steps.length - 1 && (
-              <div className="flex justify-between p-4 mt-auto border-t bg-gray-50">
-                <button
+              <div className="flex justify-end py-2 px-4 mt-auto border-t bg-gray-50">
+                {/* <button
                   className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100 transition-colors"
                   onClick={handlePrev}
                   disabled={activeStep === 0}
                 >
                   Previous
-                </button>
+                </button> */}
                 <button
                   className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                   onClick={handleNext}
-                  disabled={activeStep === steps.length - 1}
+                  disabled={
+                    !stepOutputs[activeStep] || activeStep === steps.length - 1
+                  }
                 >
                   Next
                 </button>

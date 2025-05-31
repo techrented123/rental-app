@@ -72,8 +72,8 @@ export default function BackgroundCheck() {
       });
       const data = await response.json();
       setResults(data);
-      updateRentApplicationStatus(3);
-      updateStepOutput(data);
+      updateRentApplicationStatus(4);
+      updateStepOutput({3:data});
     } catch (error) {
       console.error("Error performing background check:", error);
     } finally {

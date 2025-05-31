@@ -2,10 +2,8 @@
 
 import React, { createContext, useState, useContext } from "react";
 
-type RentalApplicationStatus = Array<number>;
-
 interface RentalApplicationContextType {
-  rentApplicationStatus: RentalApplicationStatus;
+  currentRentApplicationStep: number;
   updateRentApplicationStatus: (index: number) => void;
   rentalInfo: any;
   updateRentalInfo: (updatedrentalInfo: any) => void;
@@ -14,7 +12,7 @@ interface RentalApplicationContextType {
 }
 
 const defaultContext: RentalApplicationContextType = {
-  rentApplicationStatus: [],
+  currentRentApplicationStep: 1,
   rentalInfo: {},
   stepOutputs: [],
   updateRentalInfo: (updatedRentalState: string) => {},
@@ -33,12 +31,11 @@ export function RentalApplicationProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [rentApplicationStatus, setRentApplicationStatus] =
-    useState<RentalApplicationStatus>([0]);
+  const [currentRentApplicationStep, setRentApplicationStatus] = useState<number>(1);
 
   const [rentalInfo, setRentalInfo] = useState({});
 
-  const [stepOutputs, setStepOutputs] = useState<any>([]);
+  const [stepOutputs, setStepOutputs] = useState<any>([{0:true}]);
 
   const updateStepOutput = (updatedStepOutput: any) => {
     setStepOutputs((prev: any) => [...prev, updatedStepOutput]);
@@ -57,7 +54,7 @@ export function RentalApplicationProvider({
   }, []);
 
   const updateRentApplicationStatus = React.useCallback((index: number) => {
-    setRentApplicationStatus((prev) => [...prev, index]);
+    setRentApplicationStatus(index);
     window.localStorage.setItem("last_saved_step", JSON.stringify(index));
   }, []);
 
@@ -66,6 +63,8 @@ export function RentalApplicationProvider({
     const restoredRentalInfo = window.localStorage.getItem(
       "rental_and_applicant_info"
     );
+    const restoredRentApplicationStatus =
+      window.localStorage.getItem("last_saved_step");
 
     if (restoredStepOutputs) {
       setStepOutputs(JSON.parse(restoredStepOutputs));
@@ -74,12 +73,16 @@ export function RentalApplicationProvider({
     if (restoredRentalInfo) {
       setRentalInfo(JSON.parse(restoredRentalInfo));
     }
+
+    if (restoredRentApplicationStatus) {
+      setRentApplicationStatus(JSON.parse(restoredRentApplicationStatus));
+    }
   }, []);
 
   return (
     <RentalApplicationContext.Provider
       value={{
-        rentApplicationStatus,
+        currentRentApplicationStep,
         updateRentApplicationStatus,
         updateRentalInfo,
         rentalInfo,

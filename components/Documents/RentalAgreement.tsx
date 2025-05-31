@@ -4,8 +4,6 @@
 import { useRentalApplicationContext } from "@/contexts/rental-application-context";
 import { useState, useEffect } from "react";
 
-
-
 export function RentalAgreement() {
   const [signingUrl, setSigningUrl] = useState<string>();
   const [loading, setLoading] = useState(false);
@@ -65,7 +63,7 @@ export function RentalAgreement() {
         events: {
           completed: () => {
             console.log("Tenant has completed signing.");
-            updateRentApplicationStatus(4)
+            updateStepOutput({ 5: true });
           },
           closed: () => {
             console.log("Signing modal closed.");
