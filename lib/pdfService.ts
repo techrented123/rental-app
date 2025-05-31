@@ -264,7 +264,7 @@ export function generateApplicationFormPDF(data: ApplicationFormInfo): Blob {
     .setFontSize(12)
     .text("Applicant Information", marginX, cursorY);
   cursorY += lineHeight;
-
+  console.log({ data });
   // Applicant Info Body
   doc.setFont("helvetica", "normal").setFontSize(11);
   const applicant = data.applicant;
@@ -333,7 +333,7 @@ export function generateApplicationFormPDF(data: ApplicationFormInfo): Blob {
  * @param pdfs Tuple of [File, File, Blob, Blob]
  * @returns Buffer of the merged PDF
  */
-export async function mergePdfs(
+export async function mergePdfs2(
   pdfs: [File, File, Blob, Blob]
 ): Promise<Buffer> {
   const mergedPdf = await PDFDocument.create();
@@ -357,3 +357,87 @@ export async function mergePdfs(
   const mergedBytes = await mergedPdf.save();
   return Buffer.from(mergedBytes);
 }
+
+// utils/mergePdfs.ts
+
+export async function mergePdfs(
+  pdfs: [File, File, Blob, Blob],
+  rentalInfo: any
+): Promise<Blob> {
+  const coverArrayBuffer = createCoverPage(rentalInfo);
+
+  const mergedPdf = await PDFDocument.create();
+
+  const coverDoc = await PDFDocument.load(coverArrayBuffer);
+  const coverPages = await mergedPdf.copyPages(
+    coverDoc,
+    coverDoc.getPageIndices()
+  );
+  coverPages.forEach((page) => mergedPdf.addPage(page));
+
+  for (const input of pdfs) {
+    // 1) Turn File or Blob into ArrayBuffer
+    const arrayBuffer = await input.arrayBuffer();
+
+    // 2) Load and drop first page if >1
+    const pdfDoc = await PDFDocument.load(arrayBuffer);
+    const totalPages = pdfDoc.getPageCount();
+    const pageIndices =
+      totalPages > 1
+        ? Array.from({ length: totalPages - 1 }, (_, i) => i + 1)
+        : pdfDoc.getPageIndices();
+
+    // 3) Copy pages into merged PDF
+    const pages = await mergedPdf.copyPages(pdfDoc, pageIndices);
+    pages.forEach((page) => mergedPdf.addPage(page));
+  }
+
+  // 4) Serialize to Uint8Array and wrap in a Blob
+  const mergedBytes = await mergedPdf.save(); // Uint8Array
+  return new Blob([mergedBytes], { type: "application/pdf" });
+}
+
+const createCoverPage = (rentalInfo: any) => {
+  // Logo
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const primaryColor = [50, 66, 155]; // #32429B in RGB
+
+  //doc.addImage(logoImage, "PNG", (pageWidth - 40) / 2, 30, 40, 56);
+
+  // Title
+  doc.setFontSize(24);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  const title = `Rental Application For`;
+  const titleWidth = doc.getTextWidth(title);
+  const subTitle = `${rentalInfo.address.Address}`;
+  const subTitleWidth = doc.getTextWidth(title);
+  doc.text(title, (pageWidth - titleWidth) / 2, 100);
+  doc.text(subTitle, (pageWidth - titleWidth) / 2, 112);
+
+  // Person information
+  doc.setFontSize(12);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+
+  const name = `Contents`;
+  const nameWidth = doc.getTextWidth(name);
+  doc.text("Contents", (pageWidth - nameWidth) / 2, 125);
+  doc.text("ID Verification", (pageWidth - nameWidth - 5) / 2, 135);
+  doc.text("Credit Report", (pageWidth - nameWidth) / 2, 145);
+  doc.text("AI Background Check", (pageWidth - nameWidth) / 2, 155);
+  doc.text("Tenant Application Form", (pageWidth - nameWidth - 10) / 2, 165);
+
+  // Date of report
+  const today = new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+  doc.setFontSize(10);
+  const dateText = `Application Date: ${today}`;
+  const dateWidth = doc.getTextWidth(dateText);
+  doc.text(dateText, (pageWidth - dateWidth) / 2, 130);
+  return doc.output("arraybuffer");
+};
