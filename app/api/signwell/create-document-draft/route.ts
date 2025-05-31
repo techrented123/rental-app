@@ -4,30 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 const API_BASE = "https://www.signwell.com/api/v1";
 const API_KEY = process.env.SIGNWELL_API_KEY!;
 const TEST_MODE = process.env.NODE_ENV !== "production";
-const templateIds = [
-  "68b8e681-118d-4e92-8b8b-12ae4f338df2",
-  "8e6ae6a6-05a1-47ae-8dee-96631f1c7041",
-  "3a3605a0-5baa-4405-9fc5-5234ba799f66",
-  "08f16f1b-baa1-4a62-b10e-22adeb874e9e",
-  "b74fedb6-ea69-4e6a-aae8-69bd2d772086",
-];
 
 export async function POST(req: NextRequest) {
-  const { rentalInfo, tenant } = await req.json();
-  /* if (
-    !landlordLastName ||
-    !landlordFirstName ||
-    !landlordEmail ||
-    !tenantFirstName ||
-    !tenantLastName ||
-    !tenantEmail
-  ) {
-    return NextResponse.json(
-      { error: "Missing required fields" },
-      { status: 400 }
-    );
-  } */
-
+  const { rentalInfo, tenant, templateIds, fileName, placeHolders } =
+    await req.json();
   const {
     firstName: tenantFirstName,
     lastName: tenantLastName,
@@ -41,16 +21,21 @@ export async function POST(req: NextRequest) {
     landlordEmail,
   } = rentalInfo;
   const [landlordFirstName, landlordLastName] = landlordName.split(" ");
-  const fileName = "Documents for Rental Application Signing";
-  console.log(
-    tenantEmail,
-    landlordEmail,
-    landlordFirstName,
-    landlordLastName,
-    street,
-    city
-  );
-
+  /* if (
+    !landlordLastName ||
+    !landlordFirstName ||
+    !landlordEmail ||
+    !tenantFirstName ||
+    !tenantLastName ||
+    !tenantEmail
+  ) {
+    return NextResponse.json(
+      { error: "Missing required fields" },
+      { status: 400 }
+    );
+  } */
+  console.log(tenantEmail, landlordFirstName, landlordLastName, street, city);
+  console.log(landlordName.split(" "));
   const payload = {
     test_mode: true,
     template_ids: templateIds,
@@ -59,7 +44,7 @@ export async function POST(req: NextRequest) {
     embedded_signing_notifications: false,
     name: fileName,
     subject: `Your Signatures are Needed for ${fileName}`,
-    message: `Dear ${tenantFirstName} please sign the ${fileName} for your rental application`,
+    message: `Dear ${tenantFirstName} please sign the ${fileName} document for your rental application`,
     template_fields: [
       { api_id: "landlord_lastname", value: landlordLastName },
       { api_id: "landlord_other_names", value: landlordFirstName },
@@ -75,24 +60,17 @@ export async function POST(req: NextRequest) {
     recipients: [
       {
         id: "1",
-        placeholder_name: "Landlord", // must match your template’s placeholder
+        placeholder_name: placeHolders[0], // must match your template’s placeholder
         name: landlordFirstName + " " + landlordLastName,
         email: "tambi.asawo@yahoo.com", // landlordEmail,
         send_email: true,
       },
       {
         id: "2",
-        placeholder_name: "Applicant", // must match your template’s placeholder
+        placeholder_name: placeHolders[1], // must match your template’s placeholder
         name: tenantFirstName + " " + tenantLastName,
-        email: "dui336@yahoo.com", //tenantEmail,
-        send_email: true,
-      },
-      {
-        id: "3",
-        placeholder_name: "Real Estate Agent", // must match your template’s placeholder
-        name: "Rob",
-        email: "tambi@rented123.com", //tenantEmail,
-        send_email: true,
+        email: "bob@yah.co", //tenantEmail,
+        //send_email: true,
       },
     ],
   };
@@ -129,5 +107,6 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({
     signingUrl: tenantRecipient.embedded_signing_url,
+    fields: result.fields,
   });
 }
