@@ -423,11 +423,15 @@ const createCoverPage = (rentalInfo: any) => {
 
   const name = `Contents`;
   const nameWidth = doc.getTextWidth(name);
-  doc.text("Contents", (pageWidth - nameWidth) / 2, 125);
-  doc.text("ID Verification", (pageWidth - nameWidth - 5) / 2, 135);
-  doc.text("Credit Report", (pageWidth - nameWidth) / 2, 145);
-  doc.text("AI Background Check", (pageWidth - nameWidth) / 2, 155);
-  doc.text("Tenant Application Form", (pageWidth - nameWidth - 10) / 2, 165);
+  doc.setFont("helvetica", "bold");
+
+  doc.text("Contents", (pageWidth - nameWidth) / 2, 150);
+  doc.setFont("helvetica", "normal");
+
+  doc.text("ID Verification", (pageWidth - nameWidth - 5) / 2, 165);
+  doc.text("Credit Report", (pageWidth - nameWidth - 3) / 2, 175);
+  doc.text("AI Background Check", (pageWidth - nameWidth - 12) / 2, 185);
+  doc.text("Tenant Application Form", (pageWidth - nameWidth - 15) / 2, 195);
 
   // Date of report
   const today = new Date().toLocaleDateString("en-US", {
@@ -438,6 +442,6 @@ const createCoverPage = (rentalInfo: any) => {
   doc.setFontSize(10);
   const dateText = `Application Date: ${today}`;
   const dateWidth = doc.getTextWidth(dateText);
-  doc.text(dateText, (pageWidth - dateWidth) / 2, 130);
+  doc.text(dateText, (pageWidth - dateWidth) / 2, 120);
   return doc.output("arraybuffer");
 };
