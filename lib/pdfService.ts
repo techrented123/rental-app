@@ -1,4 +1,5 @@
 import { jsPDF } from "jspdf";
+import { PDFDocument } from "pdf-lib";
 import { BackgroundCheckResult } from "../types";
 import type { ApplicationFormInfo } from "../types";
 
@@ -10,8 +11,9 @@ interface SectionEntry {
 }
 
 export const generateBackgroundCheckPDF = (
-  results: BackgroundCheckResult
-): void => {
+  results: BackgroundCheckResult,
+  userRequested?: boolean
+): Blob | void => {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -227,10 +229,13 @@ export const generateBackgroundCheckPDF = (
     { header: "", title: "", summary: results.overallRecommendation },
   ]);
 
-  // Save file
-  doc.save(
-    `background_check_${results.prospect.lastName}_${results.prospect.firstName}.pdf`
-  );
+  if (userRequested) {
+    doc.save(
+      `background_check_${results.prospect.lastName}_${results.prospect.firstName}.pdf`
+    );
+  } else {
+    return doc.output("blob");
+  }
 };
 
 /**
@@ -320,4 +325,35 @@ export function generateApplicationFormPDF(data: ApplicationFormInfo): Blob {
 
   // Return the PDF as a Blob
   return doc.output("blob");
+}
+
+/**
+ * Merge exactly two File objects and two Blob objects into a single PDF buffer,
+ * dropping the first page of any PDF with more than one page.
+ * @param pdfs Tuple of [File, File, Blob, Blob]
+ * @returns Buffer of the merged PDF
+ */
+export async function mergePdfs(
+  pdfs: [File, File, Blob, Blob]
+): Promise<Buffer> {
+  const mergedPdf = await PDFDocument.create();
+
+  for (const input of pdfs) {
+    // Normalize File or Blob to ArrayBuffer
+    const arrayBuffer = await input.arrayBuffer();
+
+    // Load and copy pages (dropping first if >1 page)
+    const pdfDoc = await PDFDocument.load(arrayBuffer);
+    const totalPages = pdfDoc.getPageCount();
+    const pageIndices =
+      totalPages > 1
+        ? Array.from({ length: totalPages - 1 }, (_, i) => i + 1)
+        : pdfDoc.getPageIndices();
+
+    const pages = await mergedPdf.copyPages(pdfDoc, pageIndices);
+    pages.forEach((page) => mergedPdf.addPage(page));
+  }
+
+  const mergedBytes = await mergedPdf.save();
+  return Buffer.from(mergedBytes);
 }
