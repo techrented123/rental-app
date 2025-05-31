@@ -15,7 +15,8 @@ export default function ApplicationForm() {
   const [verificationStatus, setVerificationStatus] =
     useState<VerificationStatus>("idle");
 
-  const { updateStepOutput } = useRentalApplicationContext();
+  const { updateStepOutput, updateRentApplicationStatus } =
+    useRentalApplicationContext();
 
   const toggleErrors = (name: string) => {
     setErrors((prev) => ({ ...prev, [name]: "" }));
@@ -63,37 +64,39 @@ export default function ApplicationForm() {
 
   const handleSubmit = async (prospectInfo: ApplicationFormInfo) => {
     setVerificationStatus("verifying");
-    const generatedPDFblob = generateApplicationFormPDF(prospectInfo);
-    updateStepOutput(generatedPDFblob);
+    //const generatedPDFblob = generateApplicationFormPDF(prospectInfo);
+    updateStepOutput(prospectInfo);
+    updateRentApplicationStatus(4);
+
     setTimeout(() => {
       setVerificationStatus("success");
     }, 1500);
   };
 
   return (
-    <div className="min-h-screen">
-      <main className="container mx-auto px-4 py-8 w-full">
-        {verificationStatus === "idle" ? (
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <Form
-              onSubmit={handleSubmit}
-              isLoading={isLoading}
-              onValidateForm={validateForm}
-              errors={errors}
-              toggleErrors={toggleErrors}
-            />
-          </div>
-        ) : verificationStatus === "verifying" ? (
-          <div className="mb-4">
-            <Loader2 className="h-12 w-12 text-blue-500 animate-spin" />
-          </div>
-        ) : (
+    <main className="container mx-auto px-4 py-8 w-full">
+      {verificationStatus === "idle" ? (
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <Form
+            onSubmit={handleSubmit}
+            isLoading={isLoading}
+            onValidateForm={validateForm}
+            errors={errors}
+            toggleErrors={toggleErrors}
+          />
+        </div>
+      ) : verificationStatus === "verifying" ? (
+        <div className="md:mt-[150px] flex justify-center">
+          <Loader2 className="h-16 w-16 text-blue-500 animate-spin" />
+        </div>
+      ) : (
+        <div className="md:mt-10">
           <VerificationResult
             title={"Form Successfully Submitted"}
             subtitle={"Proceed to the next step"}
           />
-        )}
-      </main>
-    </div>
+        </div>
+      )}
+    </main>
   );
 }

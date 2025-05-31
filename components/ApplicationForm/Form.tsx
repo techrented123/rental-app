@@ -147,7 +147,7 @@ export const Form: React.FC<ApplicationFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (onValidateForm(formData)) {
+    if (true /* onValidateForm(formData) */) {
       setPreventSubmit(true);
       onSubmit(formData);
     }

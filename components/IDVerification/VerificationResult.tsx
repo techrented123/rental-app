@@ -1,5 +1,5 @@
 import React from "react";
-import { CheckCircle, XCircle, FileText,  } from "lucide-react";
+import { CheckCircle, XCircle, FileText } from "lucide-react";
 export type VerificationStatus = "idle" | "verifying" | "success" | "error";
 
 interface VerificationResultProps {
@@ -16,7 +16,6 @@ const VerificationResult: React.FC<VerificationResultProps> = ({
   onReset,
 }) => {
   const isSuccessTitle = title.toLowerCase().includes("success");
-  console.log({ isSuccessTitle, subtitle });
   return (
     <div className="flex flex-col items-center text-center">
       <div

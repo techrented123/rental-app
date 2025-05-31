@@ -12,10 +12,11 @@ export interface Steps {
 
 interface StepperProps {
   steps: Steps[];
+  lastSavedStep: number;
 }
 
-export default function Stepper({ steps }: StepperProps) {
-  const [activeStep, setActiveStep] = useState(0);
+export default function Stepper({ steps, lastSavedStep }: StepperProps) {
+  const [activeStep, setActiveStep] = useState(lastSavedStep);
 
   const handleNext = () => {
     if (activeStep < steps.length - 1) {
@@ -28,6 +29,10 @@ export default function Stepper({ steps }: StepperProps) {
       setActiveStep((prev) => prev - 1);
     }
   };
+
+  React.useEffect(() => {
+    setActiveStep(lastSavedStep);
+  }, [lastSavedStep]);
 
   return (
     <div className="container mx-auto py-0 px-4 h-full overflow-auto">
@@ -100,7 +105,7 @@ export default function Stepper({ steps }: StepperProps) {
 
           <div className="flex flex-col flex-grow">
             {/* Horizontal Stepper (Mobile) */}
-            <div className="md:hidden pt-4 px-4">
+            <div className="md:hidden pt-4 px-4 ">
               <div className="flex items-center justify-between mb-2">
                 {steps.map((step, index) => {
                   const Icon = step.icon;
@@ -124,8 +129,8 @@ export default function Stepper({ steps }: StepperProps) {
                             index === activeStep
                               ? "border-primary text-primary"
                               : index < activeStep
-                              ? "border-primary bg-primary text-white"
-                              : "border-gray-200 text-gray-400"
+                              ? "border-primary border-blue-500 bg-primary text-white !bg-blue-500"
+                              : "border-gray-500 text-gray-400"
                           }
                         `}
                       >
@@ -151,22 +156,24 @@ export default function Stepper({ steps }: StepperProps) {
             </div>
 
             {/* Navigation */}
-            <div className="flex justify-between p-4 mt-auto border-t bg-gray-50">
-              <button
-                className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100 transition-colors"
-                onClick={handlePrev}
-                disabled={activeStep === 0}
-              >
-                Previous
-              </button>
-              <button
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                onClick={handleNext}
-                disabled={activeStep === steps.length - 1}
-              >
-                Next
-              </button>
-            </div>
+            {activeStep !== steps.length - 1 && (
+              <div className="flex justify-between p-4 mt-auto border-t bg-gray-50">
+                <button
+                  className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100 transition-colors"
+                  onClick={handlePrev}
+                  disabled={activeStep === 0}
+                >
+                  Previous
+                </button>
+                <button
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                  onClick={handleNext}
+                  disabled={activeStep === steps.length - 1}
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

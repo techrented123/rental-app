@@ -1,10 +1,4 @@
 "use client";
-type Address = {
-  street: string;
-  city: string;
-  state: string;
-  postal: string;
-};
 
 type RawRoom = { $: { RoomType: string }; Count: string };
 type RawFile = { Src: string };
@@ -17,6 +11,7 @@ type RawProperty = {
       City: string;
       State: string;
       PostalCode: string;
+      Email: string;
     };
   };
   Floorplan: {
@@ -38,7 +33,6 @@ import {
   Home,
   MapPin,
   Maximize2,
-  Phone,
   Share2,
   ChevronLeft,
   ChevronRight,
@@ -64,7 +58,7 @@ export default function PropertyListing() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [mobileImageIndex, setMobileImageIndex] = useState(0);
-  const { updateRentalState } = useRentalApplicationContext();
+  const { updateRentalInfo } = useRentalApplicationContext();
 
   useEffect(() => {
     if (!slug) {
@@ -84,14 +78,19 @@ export default function PropertyListing() {
 
   useEffect(() => {
     if (prop) {
-      updateRentalState(prop.PropertyID.Address.State);
+      updateRentalInfo({
+        landlordEmail: prop.PropertyID.Address.Email,
+        landlordName: "Rob Boies",
+        address: prop.PropertyID.Address,
+        rent: prop.Floorplan.EffectiveRent.$.Min,
+      });
     }
-  }, [prop, updateRentalState]);
+  }, [prop, updateRentalInfo]);
 
   if (loading) return <p className="p-8 text-center">Loading…</p>;
   if (error) return <p className="p-8 text-center text-red-600">{error}</p>;
   if (!prop) return null;
-
+  console.log({ prop });
   const {
     PropertyID: {
       MarketingName: title,

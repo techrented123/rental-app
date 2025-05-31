@@ -2,30 +2,22 @@
 
 import React, { createContext, useState, useContext } from "react";
 
-type RentalApplicationStatus = Array<any>;
+type RentalApplicationStatus = Array<number>;
 
 interface RentalApplicationContextType {
   rentApplicationStatus: RentalApplicationStatus;
   updateRentApplicationStatus: (index: number) => void;
-  rentalState: string;
-  updateRentalState: (updatedRentalState: string) => void;
+  rentalInfo: any;
+  updateRentalInfo: (updatedrentalInfo: any) => void;
   stepOutputs: Array<File | any>;
   updateStepOutput: (updatedStepOutput: File | any) => void;
 }
 
 const defaultContext: RentalApplicationContextType = {
-  rentApplicationStatus: [
-    { done: true },
-    { done: false },
-    { done: false },
-    { done: false },
-    { done: false },
-    { done: false },
-    { done: false },
-  ],
-  rentalState: "",
+  rentApplicationStatus: [],
+  rentalInfo: {},
   stepOutputs: [],
-  updateRentalState: (updatedRentalState: string) => {},
+  updateRentalInfo: (updatedRentalState: string) => {},
   updateRentApplicationStatus: (index: number) => {},
   updateStepOutput: (updatedStepOutput: File | any) => {},
 };
@@ -42,35 +34,55 @@ export function RentalApplicationProvider({
   children: React.ReactNode;
 }) {
   const [rentApplicationStatus, setRentApplicationStatus] =
-    useState<RentalApplicationStatus>(defaultContext.rentApplicationStatus);
-  const [rentalState, setRentalState] = useState("");
-  const [stepOutputs, setStepOutputs] = useState<any>([null]);
+    useState<RentalApplicationStatus>([0]);
+
+  const [rentalInfo, setRentalInfo] = useState({});
+
+  const [stepOutputs, setStepOutputs] = useState<any>([]);
 
   const updateStepOutput = (updatedStepOutput: any) => {
     setStepOutputs((prev: any) => [...prev, updatedStepOutput]);
+    window.localStorage.setItem(
+      "step_outputs",
+      JSON.stringify([...stepOutputs, updatedStepOutput])
+    );
   };
 
-  const updateRentalState = React.useCallback((updatedRentalState: string) => {
-    setRentalState(updatedRentalState);
+  const updateRentalInfo = React.useCallback((newRentalInfo: any) => {
+    setRentalInfo((prev: any) => ({ ...prev, ...newRentalInfo }));
+    window.localStorage.setItem(
+      "rental_and_applicant_info",
+      JSON.stringify({ ...rentalInfo, ...newRentalInfo })
+    );
   }, []);
 
   const updateRentApplicationStatus = React.useCallback((index: number) => {
-    setRentApplicationStatus((prev) => {
-      const copy = [...prev];
-      return copy.map((item, itemIndex) => {
-        if (index === itemIndex) return { done: !item.done };
-        return item;
-      });
-    });
+    setRentApplicationStatus((prev) => [...prev, index]);
+    window.localStorage.setItem("last_saved_step", JSON.stringify(index));
   }, []);
-  console.log(stepOutputs);
+
+  React.useEffect(() => {
+    const restoredStepOutputs = window.localStorage.getItem("step_outputs");
+    const restoredRentalInfo = window.localStorage.getItem(
+      "rental_and_applicant_info"
+    );
+
+    if (restoredStepOutputs) {
+      setStepOutputs(JSON.parse(restoredStepOutputs));
+    }
+
+    if (restoredRentalInfo) {
+      setRentalInfo(JSON.parse(restoredRentalInfo));
+    }
+  }, []);
+
   return (
     <RentalApplicationContext.Provider
       value={{
         rentApplicationStatus,
         updateRentApplicationStatus,
-        updateRentalState,
-        rentalState,
+        updateRentalInfo,
+        rentalInfo,
         stepOutputs,
         updateStepOutput,
       }}

@@ -4,6 +4,8 @@ import FileUpload from "./FileUpload";
 import VerificationResult, { VerificationStatus } from "./VerificationResult";
 import { PDFDocument } from "pdf-lib";
 import { useRentalApplicationContext } from "@/contexts/rental-application-context";
+import { ExternalLink } from "lucide-react";
+import { fileToBase64 } from "@/lib/utils";
 
 const PDFVerifier = ({
   reportType,
@@ -14,6 +16,7 @@ const PDFVerifier = ({
 }) => {
   const [verificationStatus, setVerificationStatus] =
     useState<VerificationStatus>("idle");
+
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -45,12 +48,12 @@ const PDFVerifier = ({
     setFileName(file.name);
     setIsVerifying(true);
     setVerificationStatus("verifying");
-
     try {
       const { isValid, message } = await verifyPDF(file);
       if (isValid) {
+        const b64 = await fileToBase64(file);
+        updateStepOutput(b64);
         updateRentApplicationStatus(reportType !== "credit" ? 1 : 2);
-        updateStepOutput(file);
       }
       // Simulate a delay to show the loading state
       setTimeout(() => {
@@ -68,27 +71,18 @@ const PDFVerifier = ({
     }
   };
 
-  const handleReset = () => {
+  const handleReset = React.useCallback(() => {
     setVerificationStatus("idle");
     setErrorMessage(null);
     setFileName(null);
-  };
+  }, []);
+
+  React.useEffect(() => {
+    handleReset();
+  }, [reportType]);
 
   return (
-    <div className="bg-white rounded-xl overflow-hidden transition-all duration-300">
-      <div className="px-6 sm:px-8">
-        <p className="text-gray-500 mt-2 text-center text-md gap-1">
-          If you do not have a Rented123 {reportType} report, you can get one{" "}
-          <a
-            href="https://rented123.com/sign-up/silver"
-            target="_blank"
-            className="underline"
-          >
-            here
-          </a>
-        </p>
-      </div>
-
+    <div className="bg-white rounded-xl overflow-hidden transition-all duration-300 mt-4">
       <div className="px-6 py-6 sm:px-8 sm:py-8">
         {verificationStatus === "idle" || verificationStatus === "verifying" ? (
           <FileUpload
@@ -109,6 +103,18 @@ const PDFVerifier = ({
             onReset={handleReset}
           />
         )}
+      </div>
+      <div className="px-6 sm:px-8">
+        <p className="text-gray-700 mt-2 text-center text-sm font-medium gap-1 flex items-center justify-center">
+          <a
+            href="https://rented123.com/sign-up/silver"
+            target="_blank"
+            className="underline text-gray-550"
+          >
+            I do not have a Rented123 {reportType} report{" "}
+          </a>{" "}
+          <ExternalLink size={16} />
+        </p>
       </div>
     </div>
   );

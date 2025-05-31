@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ProspectInfo } from "@/types";
 
-import { UserCheck, AlertCircle } from "lucide-react";
+import { UserCheck, AlertCircle, Info } from "lucide-react";
 
 interface BackgroundCheckFormProps {
   onSubmit: (info: ProspectInfo) => void;
@@ -50,9 +50,9 @@ export const Form: React.FC<BackgroundCheckFormProps> = ({
   return (
     <div>
       <div className="flex items-center mb-6">
-        <UserCheck className="h-6 w-6 text-blue-700 mr-2" />
+        <UserCheck className="h-6 w-6 text-blue-600 mr-2" />
         <h2 className="text-xl font-semibold text-gray-800">
-          Applicant Background Check
+          AI Background Check
         </h2>
       </div>
 
@@ -107,32 +107,56 @@ export const Form: React.FC<BackgroundCheckFormProps> = ({
             )}
           </div>
         </div>
-
-        <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Email Address
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className={`w-full px-3 py-2 border ${
-              errors.email ? "border-red-500" : "border-gray-300"
-            } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
-          />
-          {errors.email && (
-            <p className="mt-1 text-sm text-red-600 flex items-center">
-              <AlertCircle className="h-4 w-4 mr-1" />
-              {errors.email}
-            </p>
-          )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Email Address
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className={`w-full px-3 py-2 border ${
+                errors.email ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            />
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-600 flex items-center">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {errors.email}
+              </p>
+            )}
+          </div>
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Date of Birth
+            </label>
+            <input
+              type="date"
+              id="dob"
+              name="dob"
+              value={formData.dob}
+              onChange={handleChange}
+              className={`w-full px-3 py-2 border ${
+                errors.dob ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            />
+            {errors.dob && (
+              <p className="mt-1 text-sm text-red-600 flex items-center">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {errors.dob}
+              </p>
+            )}
+          </div>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
@@ -271,7 +295,7 @@ export const Form: React.FC<BackgroundCheckFormProps> = ({
         <div className="mt-6">
           <button
             type="submit"
-            disabled={isLoading }
+            disabled={isLoading}
             className={`w-full py-3 px-4 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors ${
               isLoading ? "opacity-70 cursor-not-allowed" : ""
             }`}
@@ -304,6 +328,13 @@ export const Form: React.FC<BackgroundCheckFormProps> = ({
               "Run Background Check"
             )}
           </button>
+          <div className="flex items-start justify-center !gap-0 text-center text-sm text-gray-500 mt-4 ">
+            <span>
+              By proceeding you agree to Rented123 using AI to run a background
+              check on you. Your personal information will not be stored
+              anywhere
+            </span>
+          </div>
         </div>
       </form>
     </div>

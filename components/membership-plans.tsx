@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check } from "lucide-react";
+import { Check, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
 const membershipPlans = [
@@ -90,7 +90,6 @@ const Plans = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className="text-xl font-bold">
-                    
                           ${plan.price}/month
                         </h3>
                       </div>
@@ -115,9 +114,9 @@ const Plans = () => {
                       {" "}
                       <Button
                         size="lg"
-                        className="w-full mt-6 bg-blue-600 hover:bg-blue-500"
+                        className="w-full mt-6 bg-blue-600 hover:bg-blue-500 flex items-center gap-2"
                       >
-                        Continue with {plan.name} Plan 
+                        Continue with {plan.name} Plan {" "}<ExternalLink size={18}/>
                       </Button>
                     </Link>
                   </div>

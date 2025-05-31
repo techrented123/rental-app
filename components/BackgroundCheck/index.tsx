@@ -82,22 +82,25 @@ export default function BackgroundCheck() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen ">
       <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <Form
-              onSubmit={handleSubmit}
-              isLoading={isLoading}
-              onValidateForm={validateForm}
-              inputFields={inputFields}
-              errors={errors}
-              toggleErrors={toggleErrors}
-            />
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <ResultsPanel results={results} isLoading={isLoading} />
-          </div>
+        <div className="grid grid-cols-1 gap-8">
+          {!results ? (
+            <div className="bg-white rounded-lg p-6">
+              <Form
+                onSubmit={handleSubmit}
+                isLoading={isLoading}
+                onValidateForm={validateForm}
+                inputFields={inputFields}
+                errors={errors}
+                toggleErrors={toggleErrors}
+              />
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <ResultsPanel results={results} isLoading={isLoading} />
+            </div>
+          )}
         </div>
       </main>
     </div>
