@@ -9,6 +9,7 @@ interface RentalApplicationContextType {
   updateRentalInfo: (updatedrentalInfo: any) => void;
   stepOutputs: Array<File | any>;
   updateStepOutput: (updatedStepOutput: File | any) => void;
+  clearStepOutputs: () => void;
 }
 
 const defaultContext: RentalApplicationContextType = {
@@ -18,6 +19,7 @@ const defaultContext: RentalApplicationContextType = {
   updateRentalInfo: (updatedRentalState: string) => {},
   updateRentApplicationStatus: (index: number) => {},
   updateStepOutput: (updatedStepOutput: File | any) => {},
+  clearStepOutputs: () => {},
 };
 
 export const RentalApplicationContext =
@@ -31,11 +33,12 @@ export function RentalApplicationProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [currentRentApplicationStep, setRentApplicationStatus] = useState<number>(1);
+  const [currentRentApplicationStep, setRentApplicationStatus] =
+    useState<number>(1);
 
   const [rentalInfo, setRentalInfo] = useState({});
 
-  const [stepOutputs, setStepOutputs] = useState<any>([{0:true}]);
+  const [stepOutputs, setStepOutputs] = useState<any>([true]);
 
   const updateStepOutput = (updatedStepOutput: any) => {
     setStepOutputs((prev: any) => [...prev, updatedStepOutput]);
@@ -43,6 +46,11 @@ export function RentalApplicationProvider({
       "step_outputs",
       JSON.stringify([...stepOutputs, updatedStepOutput])
     );
+  };
+
+  const clearStepOutputs = () => {
+    setStepOutputs([]);
+    window.localStorage.setItem("step_outputs", JSON.stringify([]));
   };
 
   const updateRentalInfo = React.useCallback((newRentalInfo: any) => {
@@ -88,6 +96,7 @@ export function RentalApplicationProvider({
         rentalInfo,
         stepOutputs,
         updateStepOutput,
+        clearStepOutputs,
       }}
     >
       {children}
