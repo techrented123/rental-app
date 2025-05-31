@@ -1,4 +1,3 @@
-// app/api/signwell/createFromTemplate/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
 const API_BASE = "https://www.signwell.com/api/v1";

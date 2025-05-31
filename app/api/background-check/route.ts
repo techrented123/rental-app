@@ -14,7 +14,6 @@ The input will be provided in the following format:
 Name: <Full Name>
 Location 1: <City, Province — e.g., Vancouver, BC>
 [Optional] Location 2: <City 2, Province 2 — if applicable>
-Date of Birth: <Date of birth>
 Optional Details: <Email address, company, etc. — if known>
 
 Please perform a deep web search and summarize any public information you find about the person. Focus on:
@@ -54,12 +53,11 @@ export async function POST(request: Request) {
     console.log({ formData });
     // Construct user input for the model
     const userInput = `
-Name: ${formData.firstName} ${formData.lastName}
-Location 1: ${formData.city}, ${formData.state}
-${formData.city2 ? `Location 2: ${formData.city2}, ${formData.state2}` : ""}
-Date of Birth: ${formData.dob}
-Optional Details: Prospect Type: ${formData.email}
-`;
+        Name: ${formData.firstName} ${formData.lastName}
+        Location 1: ${formData.city}, ${formData.state}
+        ${formData.city2 ? `Location 2: ${formData.city2}, ${formData.state2}` : ""}
+        Optional Details: Prospect Type: ${formData.email}
+        `;
 
     // Call OpenAI chat completion
     /*   const response = await client.chat.completions.create({
@@ -86,10 +84,6 @@ Optional Details: Prospect Type: ${formData.email}
 
     const content = response.choices?.[0]?.message?.content;
     console.log({ content });
-    //formatResult(content)
-    //return NextResponse.json(content);
-
-    // Parse the OpenAI response and transform it into our BackgroundCheckResult format
     let openAIResult;
     try {
       openAIResult = JSON.parse(
