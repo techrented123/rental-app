@@ -2,7 +2,7 @@
 import * as React from "react";
 import { useSearchParams } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
-import FormStepper from "@/components/ui/stepper2";
+import FormStepper from "@/components/ui/stepper";
 import Link from "next/link";
 import {
   UserCircle,
@@ -17,8 +17,8 @@ import Plans from "@/components/membership-plans";
 import PDFVerifier from "@/components/IDVerification/PDFVerifier";
 import BackgroundCheck from "@/components/BackgroundCheck";
 import ApplicationForm from "@/components/ApplicationForm";
-import RentalAgreement from "@/components/Documents/RentalAgreement";
-import { RentalAgreement2 } from "@/components/Documents/RentalAgreement2";
+import { RentalAgreement } from "@/components/Documents/RentalAgreement";
+import SubmitApplication from "@/components/SubmitApplication";
 
 const steps = [
   {
@@ -64,26 +64,29 @@ const steps = [
     content: <ApplicationForm />,
   },
   {
-    title: "Documents",
+    title: "Signatures",
     icon: CheckCircle,
-    content: (
-      <RentalAgreement2
-        signerEmail="tambi@rented123.com"
-        signerName="Tambi"
-        fileUrl="https://rented123-brand-files.s3.us-west-2.amazonaws.com/rental-lease-documents/Alberta+Residential+tenancy+form.pdf"
-      />
-    ),
+    content: <RentalAgreement />,
   },
   {
-    title: "Payment",
-    description: "Application fee",
+    title: "Confirmation",
+    description: "Deposit Reminder",
     icon: CreditCard,
+    content: <SubmitApplication />,
   },
 ];
 
 export default function Home() {
   const params = useSearchParams();
   const slug = params.get("slug") || "";
+  const [lastSavedStep, setLastSavedStep] = React.useState(0);
+
+  React.useEffect(() => {
+    const last_step = localStorage.getItem("last_saved_step");
+    if (last_step) {
+      setLastSavedStep(JSON.parse(last_step) + 1);
+    }
+  }, []);
 
   return (
     <div className=" mt-4 ml-4 h-screen">
@@ -92,7 +95,7 @@ export default function Home() {
           <ChevronLeft />
         </Link>
       </div>
-      <FormStepper steps={steps} />
+      <FormStepper steps={steps} lastSavedStep={lastSavedStep} />
     </div>
   );
 }
