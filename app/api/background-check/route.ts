@@ -14,6 +14,7 @@ The input will be provided in the following format:
 Name: <Full Name>
 Location 1: <City, Province — e.g., Vancouver, BC>
 [Optional] Location 2: <City 2, Province 2 — if applicable>
+Date of Birth: <Date of birth>
 Optional Details: <Email address, company, etc. — if known>
 
 Please perform a deep web search and summarize any public information you find about the person. Focus on:
@@ -50,13 +51,13 @@ Only output valid JSON. If no records are found for a property, set its value to
 export async function POST(request: Request) {
   try {
     const formData: ProspectInfo = await request.json();
-
+    console.log({ formData });
     // Construct user input for the model
     const userInput = `
 Name: ${formData.firstName} ${formData.lastName}
 Location 1: ${formData.city}, ${formData.state}
 ${formData.city2 ? `Location 2: ${formData.city2}, ${formData.state2}` : ""}
-
+Date of Birth: ${formData.dob}
 Optional Details: Prospect Type: ${formData.email}
 `;
 
@@ -91,7 +92,9 @@ Optional Details: Prospect Type: ${formData.email}
     // Parse the OpenAI response and transform it into our BackgroundCheckResult format
     let openAIResult;
     try {
-      openAIResult = JSON.parse(content || "{}");
+      openAIResult = JSON.parse(
+        content?.replace(/```json\s*|\s*```/g, "") || "{}"
+      );
     } catch (parseError) {
       console.error("JSON parse error:", parseError);
       throw new Error("Failed to parse model response");
@@ -110,7 +113,7 @@ Optional Details: Prospect Type: ${formData.email}
           source: "Web Search",
           summary: mention.description,
         })),
-       // recommendation: openAIResult.short_summary,
+        // recommendation: openAIResult.short_summary,
       },
       legalAppearances: {
         found: openAIResult.legal_appearances.length > 0,
