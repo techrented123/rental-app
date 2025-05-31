@@ -61,9 +61,9 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
                         shrink-0 transition-colors duration-300
                         ${
                           index === activeStep
-                            ? "border-primary text-primary"
+                            ? "border-blue-500 text-primary"
                             : index < activeStep
-                            ? "border-primary bg-primary text-white"
+                            ? "border-blue-500 bg-blue-500 text-white"
                             : "border-gray-200 text-gray-400"
                         }
                       `}
@@ -130,9 +130,9 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
                           transition-colors duration-300
                           ${
                             index === activeStep
-                              ? "border-primary text-primary"
+                              ? "border-blue-500 text-primary"
                               : index < activeStep
-                              ? "border-primary border-blue-500 bg-primary text-white !bg-blue-500"
+                              ? "border-blue-500 bg-primary text-white !bg-blue-500"
                               : "border-gray-500 text-gray-400"
                           }
                         `}

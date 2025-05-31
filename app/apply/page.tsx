@@ -90,7 +90,7 @@ export default function Home() {
 
   return (
     <div className=" mt-4 ml-4 h-screen">
-      <div className="p-2 hover:bg-slate-300 w-[40px] h-[40px] rounded-full border-b">
+      <div className="p-2 hover:bg-blue-300 w-[40px] h-[40px] rounded-full ">
         <Link href={`/?slug=${slug}`} className="">
           <ChevronLeft />
         </Link>

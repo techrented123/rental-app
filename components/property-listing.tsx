@@ -295,16 +295,16 @@ export default function PropertyListing() {
               </div>
 
               <Button
-                className="w-full mb-4 border-primary hover:bg-primary/90 hover:text-white"
+                className="w-full mb-4 border-primary bg-white hover:bg-gray-100"
                 variant="outline"
               >
                 Request Viewing
               </Button>
               <Link
                 href={`/apply/?slug=${slug}`}
-                className="flex items-center text-white"
+                className="flex items-center text-white "
               >
-                <Button className="w-full" variant="default">
+                <Button className="w-full bg-blue-600 hover:bg-blue-500" variant="default">
                   <Newspaper className="h-4 w-4 mr-2" />
                   Apply now
                 </Button>
