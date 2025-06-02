@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ProspectInfo } from "@/types";
 
-import { UserCheck, AlertCircle, } from "lucide-react";
+import { UserCheck, AlertCircle } from "lucide-react";
 
 interface BackgroundCheckFormProps {
   onSubmit: (info: ProspectInfo) => void;
@@ -107,7 +107,7 @@ export const Form: React.FC<BackgroundCheckFormProps> = ({
             )}
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1  gap-4">
           <div>
             <label
               htmlFor="email"
@@ -118,6 +118,7 @@ export const Form: React.FC<BackgroundCheckFormProps> = ({
             <input
               type="email"
               id="email"
+              placeholder="Enter your most widely used email address"
               name="email"
               value={formData.email}
               onChange={handleChange}
