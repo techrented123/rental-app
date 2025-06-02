@@ -145,9 +145,9 @@ const SubmitApplication = () => {
             </div>
           </div>
         ) : (
-          <div className="mt-40 flex flex-col items-center justify-center ">
+          <div className="mt-40 flex flex-col items-center justify-center text-gray-500 ">
             <p>Application successfully submitted. We will be in touch. </p>
-            <p>Kindly send deposit to {rentalInfo.landlordEmail}</p>
+            <p>Kindly send the rent deposit to {rentalInfo.landlordEmail}</p>
           </div>
         )}
       </div>
