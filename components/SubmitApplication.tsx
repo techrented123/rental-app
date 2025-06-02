@@ -6,16 +6,20 @@ import {
 } from "@/lib/pdfService";
 import { base64ToFile } from "@/lib/utils";
 import React from "react";
-import { CircleCheck, RotateCcw, SendHorizontal } from "lucide-react";
+import { CircleCheck, SendHorizontal } from "lucide-react";
 import { useRentalApplicationContext } from "@/contexts/rental-application-context";
+import RestartApplication from "./RestartApplication";
+import { ApplicationFormInfo, BackgroundCheckResult } from "@/types";
+
+type FinalOutput = Array<ApplicationFormInfo | BackgroundCheckResult | string>;
 
 const SubmitApplication = () => {
   const [mergedPDF, setMergedPDF] = React.useState("");
   const [isEmailSent, setIsEmailSent] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
-  const { clearStepOutputs, rentalInfo, stepOutputs } =
-    useRentalApplicationContext();
+  const { rentalInfo, stepOutputs } = useRentalApplicationContext();
+
   async function sendApplication() {
     setLoading(true);
     const body = {
@@ -38,29 +42,35 @@ const SubmitApplication = () => {
     }
   }
 
-  const recoverBlobs = React.useCallback(async (stepOutputs: any[]) => {
+  const recoverBlobs = React.useCallback(async (stepOutputs: FinalOutput) => {
     const filteredOutput = stepOutputs
       .filter((step) => typeof step !== "boolean")
-      .map((step: any, index: number) => {
-        if (typeof step === "string") {
-          return base64ToFile(
-            step,
-            index === 0 ? "ID Verification" : "Credit Report",
-            "application/pdf"
-          );
+      .map(
+        (
+          step: string | BackgroundCheckResult | ApplicationFormInfo,
+          index: number
+        ) => {
+          if (typeof step === "string") {
+            return base64ToFile(
+              step,
+              index === 0 ? "ID Verification" : "Credit Report",
+              "application/pdf"
+            );
+          }
+          return index === 2
+            ? generateBackgroundCheckPDF(step as BackgroundCheckResult)
+            : generateApplicationFormPDF(step as ApplicationFormInfo);
         }
-        return index === 2
-          ? generateBackgroundCheckPDF(step)
-          : generateApplicationFormPDF(step);
-      });
+      );
     console.log({ filteredOutput });
-    const mergedBlob = await mergePdfs(filteredOutput, rentalInfo);
+    const mergedBlob = await mergePdfs(
+      filteredOutput as [File, File, Blob, Blob],
+      rentalInfo
+    );
     const arrayBuffer = await mergedBlob.arrayBuffer();
     const base64PDF = Buffer.from(arrayBuffer).toString("base64");
     setMergedPDF(base64PDF);
   }, []);
-
-  console.log({ mergedPDF });
 
   React.useEffect(() => {
     recoverBlobs(stepOutputs);
@@ -95,20 +105,42 @@ const SubmitApplication = () => {
               </li>
             </ul>
             <div className="flex flex-col-reverse md:flex-row mt-9 justify-center items-center md:justify-between gap-2">
-              <button
-                onClick={() => {
-                  clearStepOutputs();
-                }}
-                className="flex gap-2 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition-colors"
-              >
-                <RotateCcw /> Restart Application
-              </button>
+              <RestartApplication />
               <button
                 onClick={() => sendApplication()}
                 className="flex gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                disabled={loading}
               >
-                Submit Entire Application
-                <SendHorizontal />
+                {loading ? (
+                  <span className="flex items-center justify-center">
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Submitting...
+                  </span>
+                ) : (
+                  <>
+                    Submit Entire Application
+                    <SendHorizontal />
+                  </>
+                )}
               </button>
             </div>
           </div>
