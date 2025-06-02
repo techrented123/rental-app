@@ -165,7 +165,7 @@ export default function AlertDialogBox({
             <AlertDialogTitle> {title}</AlertDialogTitle>
 
             {typeof description === "string" ? (
-              <AlertDialogDescription> description</AlertDialogDescription>
+              <AlertDialogDescription> {description}</AlertDialogDescription>
             ) : (
               <section className={cn("text-sm text-muted-foreground")}>
                 {description}
