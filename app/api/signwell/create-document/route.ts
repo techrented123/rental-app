@@ -42,14 +42,17 @@ export async function POST(req: NextRequest) {
     expires_in: 10,
     embedded_signing_notifications: false,
     name: fileName,
-    subject: `Your Signatures are Needed for ${fileName}`,
+    subject: `Your Signatures are needed for ${fileName}`,
     message: `Dear ${tenantFirstName} please sign the ${fileName} for your rental application`,
     template_fields: [
       { api_id: "landlord_lastname", value: landlordLastName },
       { api_id: "landlord_other_names", value: landlordFirstName },
       { api_id: "tenant_lastname", value: tenantLastName },
       { api_id: "tenant_other_names", value: tenantFirstName },
-      { api_id: "rental_address", value: street + " " + city },
+      {
+        api_id: "rental_address",
+        value: `${street} ${city}, ${state} ${postal}`,
+      },
       { api_id: "rent", value: rent },
       { api_id: "landlord_lastname_signature", value: landlordLastName },
       { api_id: "landlord_other_names_signature", value: landlordFirstName },
@@ -75,7 +78,7 @@ export async function POST(req: NextRequest) {
         id: "3",
         placeholder_name: "Real Estate Agent", // must match your template’s placeholder
         name: "Rob",
-        email: "tambi@rented123.com", //tenantEmail,
+        email: "rob@rented123.com", //Real Estate agent Email,
         send_email: true,
       },
     ],
