@@ -2,13 +2,15 @@
 
 import { useRentalApplicationContext } from "@/contexts/rental-application-context";
 import { useState, useEffect } from "react";
+import AlertDialogBox from "../ui/alert-dialog";
 
 export function RentalAgreement() {
   const [signingUrl, setSigningUrl] = useState<string>();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<string | null>(null);
   const { updateStepOutput, rentalInfo, stepOutputs } =
     useRentalApplicationContext();
+
   // 1) Load SignWell’s embed script
   useEffect(() => {
     const s = document.createElement("script");
@@ -26,7 +28,7 @@ export function RentalAgreement() {
   // 2) Kick off creation & get the embed URL
   const startSigning = async () => {
     setLoading(true);
-    setError(undefined);
+    setError(null);
     try {
       const res = await fetch("/api/signwell/create-document", {
         method: "POST",
@@ -68,21 +70,34 @@ export function RentalAgreement() {
       embed.open();
     }
   }, [signingUrl]);
-
-  useEffect(() => {
-    //startSigning();
-  }, []);
-
+  console.log({ signingUrl });
   return (
-    <div className="flex justify-center mt-40">
+    <div className="text-center mt-40 space-y-3">
       {error && <p className="text-red-600 mb-2">{error}</p>}
-      <button
-        onClick={startSigning}
-        disabled={loading || !!signingUrl}
-        className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
+      <AlertDialogBox
+        title="Confirmation"
+        description={
+          <ul className="my-3 space-y-2 ml-5">
+            <li className="list-disc">
+              Once you start signing, you must complete it in one sitting. You
+              will not be able to sign again once the document window is closed.{" "}
+            </li>
+            <li className="list-disc">
+              All parties will receive a copy of this form via email to fill and
+              sign their respective fields once you complete signing it
+            </li>
+          </ul>
+        }
+        proceedBtnText="Continue"
+        onProceed={startSigning}
       >
-        {loading ? "Preparing document…" : "Sign Lease Agreement"}
-      </button>
+        <button
+          disabled={loading || !!signingUrl}
+          className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
+        >
+          {loading ? "Preparing document…" : "Sign Lease Agreement"}
+        </button>
+      </AlertDialogBox>
     </div>
   );
 }
