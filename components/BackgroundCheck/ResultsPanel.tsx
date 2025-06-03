@@ -11,9 +11,10 @@ interface ResultsPanelProps {
 const ResultsPanel: React.FC<ResultsPanelProps> = ({ results, isLoading }) => {
   const handleDownloadPDF = () => {
     if (results) {
-      generateBackgroundCheckPDF(results);
+      generateBackgroundCheckPDF(results, true);
     }
   };
+
   const getRiskColor = (riskLevel: string) => {
     switch (riskLevel) {
       case "low":
@@ -42,7 +43,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({ results, isLoading }) => {
           <div className="h-10 bg-gray-200 rounded-lg w-full"></div>
         </div>
         <p className="mt-4 text-gray-600">
-          Generating background check results...
+          Generating AI background check results...
         </p>
       </div>
     );
@@ -62,6 +63,12 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({ results, isLoading }) => {
       </div>
     );
   }
+  const showDownloadButton =
+    results.businessAssociations.found ||
+    results.legalAppearances.found ||
+    results.newsArticles.found ||
+    results.onlineActivity.found ||
+    results.socialMedia.found;
 
   return (
     <div>
@@ -72,13 +79,15 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({ results, isLoading }) => {
             Background Check Results
           </h2>
         </div>
-        <button
-          onClick={handleDownloadPDF}
-          className="flex items-center px-3 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition-colors"
-        >
-          <Download className="h-4 w-4 mr-2" />
-          Download PDF
-        </button>
+        {showDownloadButton && (
+          <button
+            onClick={handleDownloadPDF}
+            className="flex items-center px-3 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition-colors"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Download PDF
+          </button>
+        )}
       </div>
 
       <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-6">
