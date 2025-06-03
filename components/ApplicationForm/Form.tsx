@@ -20,7 +20,6 @@ export const Form: React.FC<ApplicationFormProps> = ({
   errors,
   toggleErrors,
 }) => {
-  const [preventSubmit, setPreventSubmit] = useState<boolean>(false);
   const [formData, setFormData] = useState<ApplicationFormInfo>({
     applicant: {
       firstName: "",
@@ -147,16 +146,15 @@ export const Form: React.FC<ApplicationFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (true /* onValidateForm(formData) */) {
-      setPreventSubmit(true);
+    if (onValidateForm(formData)) {
       onSubmit(formData);
     }
   };
 
   return (
-    <div className="w-full overflow-scroll poppy">
-      <div className=" mb-6 flex flex-col items-center">
-        <div className="flex">
+    <div className="w-full overflow-auto max-h-[390px] md:max-h-full">
+      <div className=" md:mb-6 flex flex-col items-center">
+        <div className="md:flex hidden">
           <UserCheck className="h-6 w-6 text-blue-700 mr-2" />
           <h2 className="text-xl font-semibold text-gray-800 text-center">
             Tenant Application Form
@@ -165,8 +163,11 @@ export const Form: React.FC<ApplicationFormProps> = ({
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-4">
-          <h3 className="font-medium">Applicant Information</h3>
+        <div className="space-y-4 px-3">
+          <h5 className="font-medium text-sm hidden md:block">
+            {" "}
+            Personal Information
+          </h5>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label
@@ -462,7 +463,6 @@ export const Form: React.FC<ApplicationFormProps> = ({
                 minLength={2}
                 id="applicant_emergencyContactLastName"
                 name="applicant_emergencyContactLastName"
-                placeholder="Last name"
                 value={formData.applicant.emergencyContactLastName}
                 onChange={handleChange}
                 className={`w-full px-3 py-2 border ${
@@ -541,8 +541,10 @@ export const Form: React.FC<ApplicationFormProps> = ({
           <hr className="my-12" />
         </div>
         {/*Rental History */}
-        <div className="space-y-4">
-          <h3 className="font-medium">Rental History</h3>
+        <div className="space-y-4 px-2.5">
+          <h5 className="font-medium text-sm hidden md:block">
+            Rental History
+          </h5>
           {formData.rentalHistory.map((item, index, arr) => {
             const addressFieldName = `rentalHistory_${index}_address`;
             const cityFieldName = `rentalHistory_${index}_city`;
@@ -554,7 +556,6 @@ export const Form: React.FC<ApplicationFormProps> = ({
             const landlordPhoneFieldName = `rentalHistory_${index}_landlordPhone`;
             const fromDateFieldName = `rentalHistory_${index}_fromDate`;
             const toDateFieldName = `rentalHistory_${index}_toDate`;
-            const rentFieldName = `rentalHistory_${index}_rent`;
             const reasonForLeavingFieldName = `rentalHistory_${index}_reasonForLeaving`;
 
             return (
@@ -603,6 +604,8 @@ export const Form: React.FC<ApplicationFormProps> = ({
                       id={cityFieldName}
                       name={cityFieldName}
                       value={item.city}
+                      required
+                      aria-required
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500
 ${errors[cityFieldName] ? "border-red-500" : "border-gray-300"}
@@ -626,6 +629,8 @@ ${errors[cityFieldName] ? "border-red-500" : "border-gray-300"}
                       type="text"
                       id={stateFieldName}
                       name={stateFieldName}
+                      required
+                      aria-required
                       value={item.state}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border ${
@@ -653,6 +658,8 @@ ${errors[cityFieldName] ? "border-red-500" : "border-gray-300"}
                     <input
                       type="text"
                       id={countryFieldName}
+                      required
+                      aria-required
                       name={countryFieldName}
                       value={item.country}
                       onChange={handleChange}
@@ -678,6 +685,8 @@ ${errors[cityFieldName] ? "border-red-500" : "border-gray-300"}
                     </label>
                     <input
                       type="text"
+                      required
+                      aria-required
                       id={postalCodeFieldName}
                       name={postalCodeFieldName}
                       value={item.postalCode}
@@ -709,6 +718,8 @@ ${errors[cityFieldName] ? "border-red-500" : "border-gray-300"}
                       id={fromDateFieldName}
                       name={fromDateFieldName}
                       value={item.fromDate}
+                      required
+                      aria-required
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border ${
                         errors[fromDateFieldName]
@@ -733,6 +744,8 @@ ${errors[cityFieldName] ? "border-red-500" : "border-gray-300"}
                       type="date"
                       id={toDateFieldName}
                       name={toDateFieldName}
+                      required
+                      aria-required
                       value={item.toDate}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border mt-5 ${
@@ -740,8 +753,6 @@ ${errors[cityFieldName] ? "border-red-500" : "border-gray-300"}
                           ? "border-red-500"
                           : "border-gray-300"
                       } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                      aria-required
-                      //aria-valuemin={item.fromDate}
                       min={item.fromDate}
                     />
                     {errors[toDateFieldName] && (
@@ -764,6 +775,8 @@ ${errors[cityFieldName] ? "border-red-500" : "border-gray-300"}
                       type="text"
                       id={landlordFirstNameFieldName}
                       name={landlordFirstNameFieldName}
+                      required
+                      aria-required
                       value={item.landlordFirstName}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border ${
@@ -788,6 +801,8 @@ ${errors[cityFieldName] ? "border-red-500" : "border-gray-300"}
                     </label>
                     <input
                       type="text"
+                      required
+                      aria-required
                       id={landlordLastNameFieldName}
                       name={landlordLastNameFieldName}
                       value={item.landlordLastName}
@@ -816,6 +831,8 @@ ${errors[cityFieldName] ? "border-red-500" : "border-gray-300"}
                   </label>
                   <input
                     type="phone"
+                    required
+                    aria-required
                     id={landlordPhoneFieldName}
                     name={landlordPhoneFieldName}
                     value={item.landlordPhone}
@@ -843,6 +860,8 @@ ${errors[cityFieldName] ? "border-red-500" : "border-gray-300"}
                   </label>
                   <input
                     type="text"
+                    required
+                    aria-required
                     id={reasonForLeavingFieldName}
                     name={reasonForLeavingFieldName}
                     value={item.reasonForLeaving}
@@ -896,7 +915,7 @@ ${errors[cityFieldName] ? "border-red-500" : "border-gray-300"}
           I confirm that all the information entered above is true to the best
           of my knowledge
         </span>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 px-2.5">
           <div>
             <label
               htmlFor="truthConfirmation_name"
@@ -912,7 +931,7 @@ ${errors[cityFieldName] ? "border-red-500" : "border-gray-300"}
               value={
                 formData.applicant.firstName + " " + formData.applicant.lastName
               }
-              //readOnly
+              readOnly
               className={`
       w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500
       ${errors["truthConfirmation_name"] ? "border-red-500" : "border-gray-300"}

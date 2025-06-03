@@ -5,7 +5,6 @@ import { useRentalApplicationContext } from "@/contexts/rental-application-conte
 import VerificationResult, {
   VerificationStatus,
 } from "../IDVerification/VerificationResult";
-import { generateApplicationFormPDF } from "@/lib/pdfService";
 import { Loader2 } from "lucide-react";
 type ErrorMap = Record<string, string>;
 
@@ -26,7 +25,7 @@ export default function ApplicationForm() {
     const newErrors: ErrorMap = {};
     let isValid = true;
     // Recursive helper
-    function check(value: any, path: string) {
+    function check(value: object | string | boolean, path: string) {
       if (typeof value === "string") {
         // string field must be non-empty
         if (!value.trim()) {
@@ -64,7 +63,6 @@ export default function ApplicationForm() {
 
   const handleSubmit = async (prospectInfo: ApplicationFormInfo) => {
     setVerificationStatus("verifying");
-    //const generatedPDFblob = generateApplicationFormPDF(prospectInfo);
     updateStepOutput(prospectInfo);
     updateRentApplicationStatus(5);
 
@@ -74,9 +72,9 @@ export default function ApplicationForm() {
   };
 
   return (
-    <main className="container mx-auto px-4 py-8 w-full">
+    <main className="container mx-auto px-4 py-3 md:py-8 w-full">
       {verificationStatus === "idle" ? (
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg shadow-none p-2 md:p-6">
           <Form
             onSubmit={handleSubmit}
             isLoading={isLoading}

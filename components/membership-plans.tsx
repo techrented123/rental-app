@@ -52,7 +52,7 @@ const Plans = () => {
 
   return (
     <div>
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 max-h-[400px]">
         <Card className="max-w-6xl mx-auto border-none">
           <CardHeader className="pt-0">
             <CardTitle className="text-2xl font-bold text-center">

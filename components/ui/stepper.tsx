@@ -3,7 +3,7 @@ import { LucideProps } from "lucide-react";
 import { useRentalApplicationContext } from "@/contexts/rental-application-context";
 
 export interface Steps {
-  content?: React.ReactElement;
+  content: React.ReactElement;
   title: string;
   description?: string;
   icon: React.ForwardRefExoticComponent<
@@ -36,7 +36,7 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
   }, [lastSavedStep]);
 
   const { stepOutputs } = useRentalApplicationContext();
-  console.log({ stepOutputs,activeStep });
+
   return (
     <div className="container mx-auto py-0 px-4 h-full overflow-auto">
       <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-sm border">
@@ -154,7 +154,7 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
             </div>
 
             {/* Step Content */}
-            <div className="flex-grow p-6 overflow-auto">
+            <div className="flex-grow md:p-6 overflow-auto">
               {steps[activeStep].content}
             </div>
 
@@ -171,9 +171,9 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
                 <button
                   className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                   onClick={handleNext}
-                  disabled={
+                /*   disabled={
                     !stepOutputs[activeStep] || activeStep === steps.length - 1
-                  }
+                  } */
                 >
                   Next
                 </button>

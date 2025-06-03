@@ -20,7 +20,6 @@ export const Form: React.FC<BackgroundCheckFormProps> = ({
   errors,
   toggleErrors,
 }) => {
-  const [preventSubmit, setPreventSubmit] = useState<boolean>(false);
   const [formData, setFormData] = useState<ProspectInfo>({ ...inputFields });
 
   const handleChange = (
@@ -42,21 +41,20 @@ export const Form: React.FC<BackgroundCheckFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (onValidateForm(formData)) {
-      setPreventSubmit(true);
       onSubmit(formData);
     }
   };
 
   return (
-    <div>
-      <div className="flex items-center mb-6">
+    <div className="w-full overflow-scroll max-h-[350px] md:max-h-full">
+      <div className="md:flex hidden items-center mb-6">
         <UserCheck className="h-6 w-6 text-blue-600 mr-2" />
         <h2 className="text-xl font-semibold text-gray-800">
           AI Background Check
         </h2>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 px-2.5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
@@ -299,17 +297,24 @@ export const Form: React.FC<BackgroundCheckFormProps> = ({
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                Processing Background Check...
+                Running AI Background Check...
               </span>
             ) : (
               "Run Background Check"
             )}
           </button>
-          <div className="flex items-start justify-center !gap-0 text-center text-sm text-gray-500 mt-4 ">
+          <div className="flex items-start justify-center !gap-0 text-center text-sm text-gray-500 mt-3 ">
             <span>
               By proceeding you agree to Rented123 using AI to run a background
               check on you. Your personal information will not be stored
-              anywhere
+              anywhere. For more information, see our{" "}
+              <a
+                href="https://rented123.com/"
+                className="underline"
+                target="_blank"
+              >
+                privacy policy
+              </a>
             </span>
           </div>
         </div>

@@ -82,43 +82,25 @@ export default function BackgroundCheck() {
   };
 
   return (
-    <div className="min-h-screen ">
-      <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 gap-8">
-          {!results ? (
-            <div className="bg-white rounded-lg p-6">
-              <Form
-                onSubmit={handleSubmit}
-                isLoading={isLoading}
-                onValidateForm={validateForm}
-                inputFields={inputFields}
-                errors={errors}
-                toggleErrors={toggleErrors}
-              />
-            </div>
-          ) : (
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <ResultsPanel results={results} isLoading={isLoading} />
-            </div>
-          )}
-        </div>
-      </main>
-    </div>
+    <main className="container mx-auto px-4 py-8">
+      <div className="grid grid-cols-1 gap-8">
+        {!results ? (
+          <div className="bg-white rounded-lg p-2 md:p-6">
+            <Form
+              onSubmit={handleSubmit}
+              isLoading={isLoading}
+              onValidateForm={validateForm}
+              inputFields={inputFields}
+              errors={errors}
+              toggleErrors={toggleErrors}
+            />
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <ResultsPanel results={results} isLoading={isLoading} />
+          </div>
+        )}
+      </div>
+    </main>
   );
-}
-
-function generateOverallRecommendation(
-  risk: string,
-  prospectType: string
-): string {
-  switch (risk) {
-    case "low":
-      return `Based on comprehensive analysis, this ${prospectType} presents low risk. Public records and online presence indicate stability and reliability.`;
-    case "medium":
-      return `This ${prospectType} presents moderate risk factors that warrant additional verification. Consider requesting clarification on specific findings.`;
-    case "high":
-      return `This ${prospectType} presents significant risk factors based on public records. Strongly recommend thorough review of findings before proceeding.`;
-    default:
-      return "";
-  }
 }
