@@ -184,6 +184,8 @@ export const Form: React.FC<ApplicationFormProps> = ({
                 value={formData.applicant.firstName}
                 onChange={handleChange}
                 minLength={2}
+                required
+                aria-required
                 className={`
       w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500
       ${errors["applicant_firstName"] ? "border-red-500" : "border-gray-300"}
@@ -208,6 +210,7 @@ export const Form: React.FC<ApplicationFormProps> = ({
               <input
                 type="text"
                 minLength={2}
+                required
                 aria-required
                 id="applicant_lastName"
                 name="applicant_lastName"
@@ -239,6 +242,8 @@ export const Form: React.FC<ApplicationFormProps> = ({
                 type="email"
                 id="applicant_email"
                 name="applicant_email"
+                required
+                aria-required
                 value={formData.applicant.email}
                 onChange={handleChange}
                 className={`w-full px-3 py-2 border ${
@@ -265,6 +270,8 @@ export const Form: React.FC<ApplicationFormProps> = ({
                 type="phone"
                 id="applicant_phone"
                 name="applicant_phone"
+                required
+                aria-required
                 value={formData.applicant.phone}
                 minLength={4}
                 onChange={handleChange}
@@ -295,6 +302,8 @@ export const Form: React.FC<ApplicationFormProps> = ({
               id="applicant_address"
               name="applicant_address"
               minLength={5}
+              required
+              aria-required
               value={formData.applicant.address}
               onChange={handleChange}
               className={`w-full px-3 py-2 border ${
@@ -323,6 +332,8 @@ export const Form: React.FC<ApplicationFormProps> = ({
                 type="text"
                 id="applicant_city"
                 minLength={2}
+                required
+                aria-required
                 name="applicant_city"
                 value={formData.applicant.city}
                 onChange={handleChange}
@@ -351,6 +362,8 @@ export const Form: React.FC<ApplicationFormProps> = ({
                 id="applicant_state"
                 name="applicant_state"
                 minLength={2}
+                required
+                aria-required
                 value={formData.applicant.state}
                 onChange={handleChange}
                 className={`w-full px-3 py-2 border ${
@@ -378,6 +391,8 @@ export const Form: React.FC<ApplicationFormProps> = ({
               <input
                 type="text"
                 id={"applicant_country"}
+                required
+                aria-required
                 name={"applicant_country"}
                 value={formData.applicant.country}
                 onChange={handleChange}
@@ -404,6 +419,8 @@ export const Form: React.FC<ApplicationFormProps> = ({
               <input
                 type="text"
                 id={"applicant_postalCode"}
+                required
+                aria-required
                 name={"applicant_postalCode"}
                 value={formData.applicant.postalCode}
                 onChange={handleChange}
@@ -435,6 +452,8 @@ export const Form: React.FC<ApplicationFormProps> = ({
                 type="text"
                 id="applicant_emergencyContactFirstName"
                 minLength={2}
+                required
+                aria-required
                 name="applicant_emergencyContactFirstName"
                 value={formData.applicant.emergencyContactFirstName}
                 onChange={handleChange}
@@ -462,6 +481,8 @@ export const Form: React.FC<ApplicationFormProps> = ({
                 type="text"
                 minLength={2}
                 id="applicant_emergencyContactLastName"
+                required
+                aria-required
                 name="applicant_emergencyContactLastName"
                 value={formData.applicant.emergencyContactLastName}
                 onChange={handleChange}
@@ -494,6 +515,8 @@ export const Form: React.FC<ApplicationFormProps> = ({
                 name="applicant_emergencyContactRelationship"
                 value={formData.applicant.emergencyContactRelationship}
                 onChange={handleChange}
+                required
+                aria-required
                 className={`w-full px-3 py-2 border ${
                   errors["applicant_emergencyContactRelationship"]
                     ? "border-red-500"
@@ -520,6 +543,8 @@ export const Form: React.FC<ApplicationFormProps> = ({
                 name="applicant_emergencyContactPhone"
                 value={formData.applicant.emergencyContactPhone}
                 minLength={4}
+                required
+                aria-required
                 onChange={handleChange}
                 className={`w-full px-3 py-2 border ${
                   errors["applicant_emergencyContactPhone"]
@@ -572,6 +597,8 @@ export const Form: React.FC<ApplicationFormProps> = ({
                     id={addressFieldName}
                     name={addressFieldName}
                     value={item.address}
+                    required
+                    aria-required
                     onChange={handleChange}
                     className={`
                       w-full px-3 py-2 border rounded-md 
@@ -915,7 +942,7 @@ ${errors[cityFieldName] ? "border-red-500" : "border-gray-300"}
           I confirm that all the information entered above is true to the best
           of my knowledge
         </span>
-        <div className="grid grid-cols-2 gap-4 px-2.5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-2.5">
           <div>
             <label
               htmlFor="truthConfirmation_name"
@@ -992,7 +1019,7 @@ ${errors[cityFieldName] ? "border-red-500" : "border-gray-300"}
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                Processing Background Check...
+                Running Check...
               </span>
             ) : (
               "Submit"
