@@ -47,6 +47,7 @@ import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Link from "next/link";
 import { useRentalApplicationContext } from "@/contexts/rental-application-context";
+import ContactForm from "./ContactForm";
 
 export default function PropertyListing() {
   const params = useSearchParams();
@@ -58,8 +59,10 @@ export default function PropertyListing() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [mobileImageIndex, setMobileImageIndex] = useState(0);
-  const { updateRentalInfo } = useRentalApplicationContext();
+  const [open, setOpen] = useState(false);
+  const [showResponse, setShowResponse] = useState(false);
 
+  const { updateRentalInfo } = useRentalApplicationContext();
   useEffect(() => {
     if (!slug) {
       setError("No property specified.");
@@ -90,7 +93,7 @@ export default function PropertyListing() {
   if (loading) return <p className="p-8 text-center">Loading…</p>;
   if (error) return <p className="p-8 text-center text-red-600">{error}</p>;
   if (!prop) return null;
-  console.log({ prop });
+
   const {
     PropertyID: {
       MarketingName: title,
@@ -153,6 +156,16 @@ export default function PropertyListing() {
     setMobileImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
+  const submitHandler = async (formData: any) => {
+    setShowResponse(true);
+    try {
+      const response = await fetch("/api/sendViewingEmail");
+      if (!response.ok) throw new Error(``);
+      const data = await response.json();
+    } catch (e) {
+    } finally {
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-50 rounded-xl ">
       {/* Image Gallery Section */}
@@ -240,7 +253,7 @@ export default function PropertyListing() {
               </div>
             </div>
             <p className="text-lg text-gray-900 flex items-center gap-2 mb-6">
-              <MapPin className="h-5 w-5" />
+              <MapPin className="h-5 w-5 hidden md:flex" />
               {street}, {city}, {state} {postal}
             </p>
 
@@ -285,7 +298,7 @@ export default function PropertyListing() {
 
           {/* Sidebar */}
           <div className="md:col-span-1">
-            <Card className="p-6">
+            <Card className="p-6 shadow-md">
               <div className="text-center mb-6">
                 <h3 className="text-xl font-semibold mb-2">Next Steps</h3>
                 <p className="text-gray-500">
@@ -297,6 +310,7 @@ export default function PropertyListing() {
               <Button
                 className="w-full mb-4 border-primary bg-white hover:bg-gray-100"
                 variant="outline"
+                onClick={() => setOpen(true)}
               >
                 Request Viewing
               </Button>
@@ -304,7 +318,10 @@ export default function PropertyListing() {
                 href={`/apply/?slug=${slug}`}
                 className="flex items-center text-white "
               >
-                <Button className="w-full bg-blue-600 hover:bg-blue-500" variant="default">
+                <Button
+                  className="w-full bg-blue-600 hover:bg-blue-500"
+                  variant="default"
+                >
                   <Newspaper className="h-4 w-4 mr-2" />
                   Apply now
                 </Button>
@@ -326,7 +343,7 @@ export default function PropertyListing() {
               className="absolute top-2 right-2 text-white hover:bg-white/20"
               onClick={() => setLightboxOpen(false)}
             >
-              <X className="h-6 w-6" />
+              <X className="h-6 w-6 text-white " />
             </Button>
 
             <Button
@@ -335,13 +352,13 @@ export default function PropertyListing() {
               className="absolute left-2 text-white hover:bg-white/20"
               onClick={previousImage}
             >
-              <ChevronLeft className="h-8 w-8" />
+              <ChevronLeft className="h-8 w-8 text-white " />
             </Button>
 
             <img
               src={images[currentImageIndex]}
               alt={`Property image ${currentImageIndex + 1}`}
-              className="max-h-full max-w-full object-contain"
+              className="max-h-full max-w-full object-contain rounded-lg"
             />
 
             <Button
@@ -350,15 +367,21 @@ export default function PropertyListing() {
               className="absolute right-2 text-white hover:bg-white/20"
               onClick={nextImage}
             >
-              <ChevronRight className="h-8 w-8" />
+              <ChevronRight className="h-8 w-8 text-white " />
             </Button>
 
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-sm">
               {currentImageIndex + 1} / {images.length}
             </div>
           </div>
         </DialogContent>
       </Dialog>
+      <ContactForm
+        onSubmit={submitHandler}
+        open={open}
+        onOpen={setOpen}
+        showResponse={showResponse}
+      />
     </div>
   );
 }
