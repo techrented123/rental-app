@@ -2,6 +2,7 @@ import { jsPDF } from "jspdf";
 import { PDFDocument } from "pdf-lib";
 import { BackgroundCheckResult } from "../types";
 import type { ApplicationFormInfo } from "../types";
+import logo from "@/assets/logo_white.png";
 
 interface SectionEntry {
   header: string;
@@ -21,9 +22,77 @@ export const generateBackgroundCheckPDF = (
   const marginY = 10;
   let cursorY = marginY;
 
-  // Title
+  const primaryColor = [50, 66, 155]; // #32429B in RGB
+  const textColor = [31, 41, 55]; // Tailwind gray-800
+  const lightGrayColor = [156, 163, 175]; // Tailwind gray-400
+
+  // Footer draws at bottom of whichever page is currently active
+  const addPageFooter = (pageNum: number, totalPages: number) => {
+    const footerY = pageHeight - 15;
+
+    doc.setFillColor(248, 249, 250); // #F8F9FA
+    doc.rect(0, footerY, pageWidth, 15, "F");
+    doc.setDrawColor(233, 236, 239); // #E9ECEF
+    doc.setLineWidth(0.1);
+    doc.line(0, footerY, pageWidth, footerY);
+
+    doc
+      .setFontSize(8)
+      .setTextColor(lightGrayColor[0], lightGrayColor[1], lightGrayColor[2]);
+    const year = new Date().getFullYear();
+    doc.text(`© ${year} Rented123. All rights reserved.`, marginX, footerY + 5);
+
+    const pageText = `Page ${pageNum} of ${totalPages}`;
+    const pageTextWidth = doc.getTextWidth(pageText);
+    doc.text(pageText, pageWidth - marginX - pageTextWidth, footerY + 5);
+  };
+
+  // Create cover page
+  const createCoverPage = () => {
+    // Logo (assumes logo.src is a preloaded PNG data URL or URL to image)
+    doc.addImage(logo.src, "PNG", (pageWidth - 40) / 2, 30, 40, 56);
+
+    // Title
+    doc
+      .setFont("helvetica", "bold")
+      .setFontSize(24)
+      .setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    const title = "AI Background Check Report";
+    const titleWidth = doc.getTextWidth(title);
+    doc.text(title, (pageWidth - titleWidth) / 2, 110);
+
+    // Person information
+    doc
+      .setFont("helvetica", "normal")
+      .setFontSize(14)
+      .setTextColor(textColor[0], textColor[1], textColor[2]);
+    const name = `${results.prospect.firstName} ${results.prospect.lastName}`;
+    const nameWidth = doc.getTextWidth(name);
+    doc.text(name, (pageWidth - nameWidth) / 2, 120);
+
+    // Date of report
+    const today = new Date().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    doc.setFontSize(10);
+    const dateText = `Generated on ${today}`;
+    const dateWidth = doc.getTextWidth(dateText);
+    doc.text(dateText, (pageWidth - dateWidth) / 2, 130);
+  };
+
+  // Draw cover
+  createCoverPage();
+  cursorY = marginY; // reset cursorY for next page
+  doc.addPage();
+
+  // Title on second page
   doc.setFont("helvetica", "bold").setFontSize(18).setTextColor(33, 37, 41);
-  doc.text("Background Check Results", marginX, cursorY);
+  if (!userRequested) {
+    doc.text("Background Check Results", marginX, cursorY);
+  }
+  cursorY += 10;
 
   // Prospect Card
   const cardY = cursorY + 6;
@@ -33,14 +102,17 @@ export const generateBackgroundCheckPDF = (
     .setFillColor(235, 248, 255)
     .roundedRect(marginX, cardY, cardW, cardH, 2, 2, "F");
 
-  doc.setFontSize(14).setFont("helvetica", "bold").setTextColor(33, 37, 41);
+  doc.setFont("helvetica", "bold").setFontSize(14).setTextColor(33, 37, 41);
   doc.text(
     `${results.prospect.firstName} ${results.prospect.lastName}`,
     marginX + 4,
     cardY + 9
   );
 
-  doc.setFont("helvetica", "normal").setFontSize(11);
+  doc
+    .setFont("helvetica", "normal")
+    .setFontSize(11)
+    .setTextColor(textColor[0], textColor[1], textColor[2]);
   doc.text(
     `${results.prospect.city}, ${results.prospect.state}`,
     marginX + 4,
@@ -55,9 +127,9 @@ export const generateBackgroundCheckPDF = (
   );
 
   // Risk Badge
-  const badgeText = `${results.riskLevel[0].toUpperCase()}${results.riskLevel.slice(
-    1
-  )} Risk`;
+  const badgeText = `${results.riskLevel
+    .charAt(0)
+    .toUpperCase()}${results.riskLevel.slice(1)} Risk`;
   const badgeW = doc.getTextWidth(badgeText) + 6;
   const badgeH = 7;
   const badgeX = marginX + cardW - badgeW - 4;
@@ -66,7 +138,7 @@ export const generateBackgroundCheckPDF = (
   else if (results.riskLevel === "medium") doc.setFillColor(255, 242, 204);
   else doc.setFillColor(255, 199, 206);
   doc.roundedRect(badgeX, badgeY, badgeW, badgeH, 3, 3, "F");
-  doc.setFontSize(10).setFont("helvetica", "bold").setTextColor(33, 37, 41);
+  doc.setFont("helvetica", "bold").setFontSize(10).setTextColor(33, 37, 41);
   doc.text(badgeText, badgeX + badgeW / 2, badgeY + badgeH - 2, {
     align: "center",
   });
@@ -74,19 +146,21 @@ export const generateBackgroundCheckPDF = (
   cursorY = cardY + cardH + 8;
 
   // Section drawer
-  const drawSection = (title: string, entries: SectionEntry[]): void => {
+  const drawSection = (title: string, entries: SectionEntry[]) => {
     const secX = marginX;
     const secW = pageWidth - marginX * 2;
     const padding = 4;
     const lineHeight = 6;
     const headerH = 8;
 
-    // Estimate height for page-break
+    // Estimate height for possible page break
     let estLines = 0;
     entries.forEach((e) => {
       estLines +=
-        1 + 1 + doc.splitTextToSize(e.summary, secW - padding * 2).length;
-      if (e.url) estLines += 1;
+        1 +
+        1 +
+        doc.splitTextToSize(e.summary, secW - padding * 2).length +
+        (e.url ? 1 : 0);
     });
     const estH =
       headerH + padding * 2 + estLines * lineHeight + (entries.length - 1) * 1;
@@ -96,12 +170,12 @@ export const generateBackgroundCheckPDF = (
       cursorY = marginY;
     }
 
-    // Box
+    // Box around section
     doc
       .setDrawColor(226, 232, 240)
       .roundedRect(secX, cursorY, secW, estH, 2, 2);
 
-    // Section Title
+    // Section title
     doc.setFont("helvetica", "bold").setFontSize(12).setTextColor(33, 37, 41);
     doc.text(title, secX + padding, cursorY + headerH - 2);
 
@@ -116,20 +190,20 @@ export const generateBackgroundCheckPDF = (
       doc.text(e.header, secX + padding, y);
       y += lineHeight;
 
-      // Title bold
+      // Title line (bold)
       doc.setFont("helvetica", "bold").setFontSize(11);
       doc.text(e.title, secX + padding, y);
       y += lineHeight;
 
-      // Summary wrap
+      // Summary (wrapped)
       doc.setFont("helvetica", "normal").setFontSize(11);
       const sumLines = doc.splitTextToSize(e.summary, secW - padding * 2);
-      sumLines.forEach((line: string | string[]) => {
+      sumLines.forEach((line: any) => {
         doc.text(line, secX + padding, y);
         y += lineHeight;
       });
 
-      // Read More link
+      // “Read More” link if exists
       if (e.url) {
         doc.setTextColor(0, 0, 255);
         doc.textWithLink("Read More", secX + padding, y, { url: e.url });
@@ -137,7 +211,7 @@ export const generateBackgroundCheckPDF = (
         y += lineHeight;
       }
 
-      // Divider
+      // Divider (except last entry)
       if (idx < entries.length - 1) {
         const dy = y - lineHeight / 2;
         doc
@@ -151,8 +225,7 @@ export const generateBackgroundCheckPDF = (
     cursorY += estH + 6;
   };
 
-  // Build and draw each section:
-  // Legal Appearances
+  // Build sections
   const legalEntries: SectionEntry[] = results.legalAppearances.found
     ? results.legalAppearances.cases.map((c) => ({
         header: `${c.date} • ${c.type}`,
@@ -168,7 +241,6 @@ export const generateBackgroundCheckPDF = (
       ];
   drawSection("Legal Appearances", legalEntries);
 
-  // News Articles
   const newsEntries: SectionEntry[] = results.newsArticles.found
     ? results.newsArticles.articles.map((a) => ({
         header: `${a.date} • ${a.source}`,
@@ -185,7 +257,6 @@ export const generateBackgroundCheckPDF = (
       ];
   drawSection("News Articles", newsEntries);
 
-  // Social Media
   const socialEntries: SectionEntry[] = results.socialMedia.found
     ? results.socialMedia.profiles.map((p) => ({
         header: `${p.platform}`,
@@ -202,7 +273,6 @@ export const generateBackgroundCheckPDF = (
       ];
   drawSection("Online/Social Media Presence", socialEntries);
 
-  // Business Associations
   const bizEntries: SectionEntry[] = results.businessAssociations.found
     ? results.businessAssociations.companies.map((b) => ({
         header: "",
@@ -212,7 +282,6 @@ export const generateBackgroundCheckPDF = (
     : [{ header: "", title: "No business associations found.", summary: "" }];
   drawSection("Business Associations", bizEntries);
 
-  // Online Activity
   const onlineEntries: SectionEntry[] = results.onlineActivity.found
     ? [
         {
@@ -224,18 +293,25 @@ export const generateBackgroundCheckPDF = (
     : [{ header: "", title: "No online activity found.", summary: "" }];
   drawSection("Online Activity", onlineEntries);
 
-  // Overall Recommendation
   drawSection("Overall Recommendation", [
     { header: "", title: "", summary: results.overallRecommendation },
   ]);
 
-  if (userRequested) {
-    doc.save(
-      `background_check_${results.prospect.lastName}_${results.prospect.firstName}.pdf`
-    );
-  } else {
+  // Add footer on every page
+  const totalPages = doc.getNumberOfPages();
+  for (let i = 1; i <= totalPages; i++) {
+    doc.setPage(i);
+    addPageFooter(i, totalPages);
+  }
+
+  // Output
+  if (!userRequested) {
     return doc.output("blob");
   }
+
+  doc.save(
+    `Rented123_AI_Background_Check_${results.prospect.lastName}_${results.prospect.firstName}.pdf`
+  );
 };
 
 /**
@@ -333,35 +409,9 @@ export function generateApplicationFormPDF(data: ApplicationFormInfo): Blob {
  * @param pdfs Tuple of [File, File, Blob, Blob]
  * @returns Buffer of the merged PDF
  */
-export async function mergePdfs2(
-  pdfs: [File, File, Blob, Blob]
-): Promise<Buffer> {
-  const mergedPdf = await PDFDocument.create();
-
-  for (const input of pdfs) {
-    // Normalize File or Blob to ArrayBuffer
-    const arrayBuffer = await input.arrayBuffer();
-
-    // Load and copy pages (dropping first if >1 page)
-    const pdfDoc = await PDFDocument.load(arrayBuffer);
-    const totalPages = pdfDoc.getPageCount();
-    const pageIndices =
-      totalPages > 1
-        ? Array.from({ length: totalPages - 1 }, (_, i) => i + 1)
-        : pdfDoc.getPageIndices();
-
-    const pages = await mergedPdf.copyPages(pdfDoc, pageIndices);
-    pages.forEach((page) => mergedPdf.addPage(page));
-  }
-
-  const mergedBytes = await mergedPdf.save();
-  return Buffer.from(mergedBytes);
-}
-
-// utils/mergePdfs.ts
 
 export async function mergePdfs(
-  pdfs: [File, File, Blob, Blob],
+  pdfs: Array<File | Blob>,
   rentalInfo: any
 ): Promise<Blob> {
   const coverArrayBuffer = createCoverPage(rentalInfo);
