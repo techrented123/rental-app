@@ -10,6 +10,7 @@ import { CircleCheck, SendHorizontal } from "lucide-react";
 import { useRentalApplicationContext } from "@/contexts/rental-application-context";
 import RestartApplication from "./RestartApplication";
 import { ApplicationFormInfo, BackgroundCheckResult } from "@/types";
+import { useRouter } from "next/navigation";
 
 type FinalOutput = Array<ApplicationFormInfo | BackgroundCheckResult | string>;
 
@@ -17,8 +18,9 @@ const SubmitApplication = () => {
   const [mergedPDF, setMergedPDF] = React.useState("");
   const [isEmailSent, setIsEmailSent] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
-
-  const { rentalInfo, stepOutputs } = useRentalApplicationContext();
+  const router = useRouter();
+  const { rentalInfo, stepOutputs, restartApplication } =
+    useRentalApplicationContext();
 
   async function sendApplication() {
     setLoading(true);
@@ -34,6 +36,10 @@ const SubmitApplication = () => {
         body: JSON.stringify({ ...body }),
       });
       const data = await response.json();
+      if (data) {
+        router.push(`/?slug=`);
+        restartApplication();
+      }
       setIsEmailSent(true);
     } catch (e) {
       console.error(e);
