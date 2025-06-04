@@ -34,7 +34,7 @@ export function RentalApplicationProvider({
   children: React.ReactNode;
 }) {
   const [currentRentApplicationStep, setRentApplicationStatus] =
-    useState<number>(1);
+    useState<number>(0);
 
   const [rentalInfo, setRentalInfo] = useState({});
 
@@ -65,7 +65,7 @@ export function RentalApplicationProvider({
 
   const updateRentApplicationStatus = React.useCallback((index: number) => {
     setRentApplicationStatus(index);
-    //window.localStorage.setItem("last_saved_step", JSON.stringify(index));
+    window.localStorage.setItem("last_saved_step", JSON.stringify(index));
   }, []);
 
   React.useEffect(() => {

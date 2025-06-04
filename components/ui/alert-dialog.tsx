@@ -160,7 +160,7 @@ export default function AlertDialogBox({
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogPortal>
         <AlertDialogOverlay className="bg-black/50" />
-        <AlertDialogContent>
+        <AlertDialogContent className="w-[80%]">
           <AlertDialogHeader>
             <AlertDialogTitle> {title}</AlertDialogTitle>
 

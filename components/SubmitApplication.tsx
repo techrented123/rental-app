@@ -37,8 +37,7 @@ const SubmitApplication = () => {
       });
       const data = await response.json();
       if (data) {
-        router.push(`/?slug=`);
-        restartApplication();
+        router.push(`https://rented123.com/?slug=`);
       }
       setIsEmailSent(true);
     } catch (e) {
@@ -68,7 +67,6 @@ const SubmitApplication = () => {
             : generateApplicationFormPDF(step as ApplicationFormInfo);
         }
       );
-    console.log({ filteredOutput });
     const mergedBlob = await mergePdfs(
       filteredOutput as [File, File, Blob, Blob],
       rentalInfo

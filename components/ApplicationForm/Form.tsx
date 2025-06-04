@@ -1,14 +1,13 @@
 import React, { useState } from "react";
-import { ApplicationFormInfo } from "@/types";
+import { ApplicationFormInfo, ProspectInfo } from "@/types";
 
 import { UserCheck, AlertCircle, Plus, X } from "lucide-react";
 interface ApplicationFormProps {
   onSubmit: (info: ApplicationFormInfo) => void;
   isLoading: boolean;
   onValidateForm: (formData: ApplicationFormInfo) => boolean;
-  //onAddField: () => void;
-  //onRemoveRentalHistory: (id: number) => void;
-  //inputFields: ApplicationFormInfo;
+  preFilledFields: Partial<ProspectInfo>;
+ 
   errors: Record<string, string>;
   toggleErrors: (name: string) => void;
 }
@@ -17,17 +16,18 @@ export const Form: React.FC<ApplicationFormProps> = ({
   onSubmit,
   isLoading,
   onValidateForm,
+  preFilledFields,
   errors,
   toggleErrors,
 }) => {
   const [formData, setFormData] = useState<ApplicationFormInfo>({
     applicant: {
-      firstName: "",
-      lastName: "",
-      email: "",
+      firstName: preFilledFields.firstName ?? "",
+      lastName: preFilledFields.lastName ?? "",
+      email: preFilledFields.email ?? "",
       address: "",
-      city: "",
-      state: "",
+      city: preFilledFields.city ?? "",
+      state: preFilledFields.state ?? "",
       postalCode: "",
       country: "",
       phone: "",

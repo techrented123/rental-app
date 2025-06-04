@@ -14,13 +14,13 @@ export default function ApplicationForm() {
   const [verificationStatus, setVerificationStatus] =
     useState<VerificationStatus>("idle");
 
-  const { updateStepOutput, updateRentApplicationStatus } =
+  const { updateStepOutput, updateRentApplicationStatus, stepOutputs } =
     useRentalApplicationContext();
 
+  const { state, lengthOfStay, ...userInfo } = stepOutputs[3].prospect;
   const toggleErrors = (name: string) => {
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
-
   const validateForm = (formData: ApplicationFormInfo): boolean => {
     const newErrors: ErrorMap = {};
     let isValid = true;
@@ -81,6 +81,7 @@ export default function ApplicationForm() {
             onValidateForm={validateForm}
             errors={errors}
             toggleErrors={toggleErrors}
+            preFilledFields={userInfo}
           />
         </div>
       ) : verificationStatus === "verifying" ? (

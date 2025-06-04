@@ -87,7 +87,6 @@ export async function POST(request: Request) {
     });
 
     const content = response.choices?.[0]?.message?.content;
-    console.log({ content });
     let openAIResult;
     try {
       openAIResult = JSON.parse(

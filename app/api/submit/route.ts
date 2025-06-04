@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
       RawMessage: { Data: rawBuffer },
     });
     const result = await ses.send(sendCmd);
-    console.log({ result });
+
     return NextResponse.json({ message: "Email sent", status: 200 });
   } catch (error: any) {
     console.error("Send-application error:", error);

@@ -154,7 +154,7 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
             </div>
 
             {/* Step Content */}
-            <div className="flex-grow md:p-6 overflow-auto">
+            <div className="flex-grow p-6 overflow-auto">
               {steps[activeStep].content}
             </div>
 
@@ -171,9 +171,7 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
                 <button
                   className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                   onClick={handleNext}
-                /*   disabled={
-                    !stepOutputs[activeStep] || activeStep === steps.length - 1
-                  } */
+                  disabled={stepOutputs[activeStep] === undefined}
                 >
                   Next
                 </button>

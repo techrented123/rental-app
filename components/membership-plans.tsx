@@ -55,10 +55,10 @@ const Plans = () => {
       <div className="container mx-auto px-4 max-h-[400px]">
         <Card className="max-w-6xl mx-auto border-none">
           <CardHeader className="pt-0">
-            <CardTitle className="text-2xl font-bold text-center">
+            <CardTitle className="text-2xl font-bold text-center hidden md:flex">
               Renting is better as a Member
             </CardTitle>
-            <p className="text-center text-muted-foreground mt-2">
+            <p className="text-center text-muted-foreground mt-4 md:mt-2">
               Select the plan that best fits your needs
             </p>
           </CardHeader>
@@ -116,7 +116,8 @@ const Plans = () => {
                         size="lg"
                         className="w-full mt-6 bg-blue-600 hover:bg-blue-500 flex items-center gap-2"
                       >
-                        Continue with {plan.name} Plan {" "}<ExternalLink size={18}/>
+                        Continue with {plan.name} Plan{" "}
+                        <ExternalLink size={18} />
                       </Button>
                     </Link>
                   </div>

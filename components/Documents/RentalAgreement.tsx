@@ -70,7 +70,7 @@ export function RentalAgreement() {
       embed.open();
     }
   }, [signingUrl]);
-  console.log({ signingUrl });
+
   return (
     <div className="text-center mt-40 space-y-3">
       {error && <p className="text-red-600 mb-2">{error}</p>}

@@ -92,7 +92,7 @@ const IDVerification: React.FC<FileUploadProps> = ({
             <div className="mb-4 bg-blue-100 p-4 rounded-full">
               <Upload className="h-8 w-8 text-blue-500" />
             </div>
-            <h3 className="text-lg font-medium text-gray-700 mb-2">
+            <h3 className="md:text-lg font-medium text-gray-700 mb-2">
               Upload your {reportType} report
             </h3>
 

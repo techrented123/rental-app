@@ -10,6 +10,74 @@ interface SectionEntry {
   summary: string;
   url?: string;
 }
+const addPageFooter = (
+  doc: jsPDF,
+  pageNum: number,
+  totalPages: number,
+  pageHeight: number,
+  pageWidth: number,
+  marginX: number
+) => {
+  const footerY = pageHeight - 15;
+  const lightGrayColor = [156, 163, 175]; // Tailwind gray-400
+
+  doc.setFillColor(248, 249, 250); // #F8F9FA
+  doc.rect(0, footerY, pageWidth, 15, "F");
+  doc.setDrawColor(233, 236, 239); // #E9ECEF
+  doc.setLineWidth(0.1);
+  doc.line(0, footerY, pageWidth, footerY);
+
+  doc
+    .setFontSize(8)
+    .setTextColor(lightGrayColor[0], lightGrayColor[1], lightGrayColor[2]);
+  const year = new Date().getFullYear();
+  doc.text(`© ${year} Rented123. All rights reserved.`, marginX, footerY + 5);
+
+  const pageText = `Page ${pageNum} of ${totalPages}`;
+  const pageTextWidth = doc.getTextWidth(pageText);
+  doc.text(pageText, pageWidth - marginX - pageTextWidth, footerY + 5);
+};
+
+const createCoverPage = (
+  doc: jsPDF,
+  pageWidth: number,
+  textColor: Array<number>,
+  heading: any
+) => {
+  const primaryColor = [50, 66, 155]; // #32429B in RGB
+
+  // Logo (assumes logo.src is a preloaded PNG data URL or URL to image)
+  doc.addImage(logo.src, "PNG", (pageWidth - 40) / 2, 30, 40, 56);
+
+  // Title
+  doc
+    .setFont("helvetica", "bold")
+    .setFontSize(24)
+    .setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  const title = "AI Background Check Report";
+  const titleWidth = doc.getTextWidth(title);
+  doc.text(title, (pageWidth - titleWidth) / 2, 110);
+
+  // Person information
+  doc
+    .setFont("helvetica", "normal")
+    .setFontSize(14)
+    .setTextColor(textColor[0], textColor[1], textColor[2]);
+
+  const nameWidth = doc.getTextWidth(heading);
+  doc.text(heading, (pageWidth - nameWidth) / 2, 120);
+
+  // Date of report
+  const today = new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+  doc.setFontSize(10);
+  const dateText = `Generated on ${today}`;
+  const dateWidth = doc.getTextWidth(dateText);
+  doc.text(dateText, (pageWidth - dateWidth) / 2, 130);
+};
 
 export const generateBackgroundCheckPDF = (
   results: BackgroundCheckResult,
@@ -22,68 +90,15 @@ export const generateBackgroundCheckPDF = (
   const marginY = 10;
   let cursorY = marginY;
 
-  const primaryColor = [50, 66, 155]; // #32429B in RGB
   const textColor = [31, 41, 55]; // Tailwind gray-800
-  const lightGrayColor = [156, 163, 175]; // Tailwind gray-400
+  const name = `${results.prospect.firstName} ${results.prospect.lastName}`;
 
   // Footer draws at bottom of whichever page is currently active
-  const addPageFooter = (pageNum: number, totalPages: number) => {
-    const footerY = pageHeight - 15;
-
-    doc.setFillColor(248, 249, 250); // #F8F9FA
-    doc.rect(0, footerY, pageWidth, 15, "F");
-    doc.setDrawColor(233, 236, 239); // #E9ECEF
-    doc.setLineWidth(0.1);
-    doc.line(0, footerY, pageWidth, footerY);
-
-    doc
-      .setFontSize(8)
-      .setTextColor(lightGrayColor[0], lightGrayColor[1], lightGrayColor[2]);
-    const year = new Date().getFullYear();
-    doc.text(`© ${year} Rented123. All rights reserved.`, marginX, footerY + 5);
-
-    const pageText = `Page ${pageNum} of ${totalPages}`;
-    const pageTextWidth = doc.getTextWidth(pageText);
-    doc.text(pageText, pageWidth - marginX - pageTextWidth, footerY + 5);
-  };
 
   // Create cover page
-  const createCoverPage = () => {
-    // Logo (assumes logo.src is a preloaded PNG data URL or URL to image)
-    doc.addImage(logo.src, "PNG", (pageWidth - 40) / 2, 30, 40, 56);
-
-    // Title
-    doc
-      .setFont("helvetica", "bold")
-      .setFontSize(24)
-      .setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    const title = "AI Background Check Report";
-    const titleWidth = doc.getTextWidth(title);
-    doc.text(title, (pageWidth - titleWidth) / 2, 110);
-
-    // Person information
-    doc
-      .setFont("helvetica", "normal")
-      .setFontSize(14)
-      .setTextColor(textColor[0], textColor[1], textColor[2]);
-    const name = `${results.prospect.firstName} ${results.prospect.lastName}`;
-    const nameWidth = doc.getTextWidth(name);
-    doc.text(name, (pageWidth - nameWidth) / 2, 120);
-
-    // Date of report
-    const today = new Date().toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-    doc.setFontSize(10);
-    const dateText = `Generated on ${today}`;
-    const dateWidth = doc.getTextWidth(dateText);
-    doc.text(dateText, (pageWidth - dateWidth) / 2, 130);
-  };
 
   // Draw cover
-  createCoverPage();
+  createCoverPage(doc, pageHeight, textColor, name);
   cursorY = marginY; // reset cursorY for next page
   doc.addPage();
 
@@ -301,7 +316,7 @@ export const generateBackgroundCheckPDF = (
   const totalPages = doc.getNumberOfPages();
   for (let i = 1; i <= totalPages; i++) {
     doc.setPage(i);
-    addPageFooter(i, totalPages);
+    addPageFooter(doc, i, totalPages, pageHeight, pageWidth, marginX);
   }
 
   // Output
@@ -340,7 +355,7 @@ export function generateApplicationFormPDF(data: ApplicationFormInfo): Blob {
     .setFontSize(12)
     .text("Applicant Information", marginX, cursorY);
   cursorY += lineHeight;
-  console.log({ data });
+
   // Applicant Info Body
   doc.setFont("helvetica", "normal").setFontSize(11);
   const applicant = data.applicant;
@@ -414,7 +429,7 @@ export async function mergePdfs(
   pdfs: Array<File | Blob>,
   rentalInfo: any
 ): Promise<Blob> {
-  const coverArrayBuffer = createCoverPage(rentalInfo);
+  const coverArrayBuffer = creatCoverPageForMergedPDF(rentalInfo);
 
   const mergedPdf = await PDFDocument.create();
 
@@ -447,51 +462,57 @@ export async function mergePdfs(
   return new Blob([mergedBytes], { type: "application/pdf" });
 }
 
-const createCoverPage = (rentalInfo: any) => {
-  // Logo
+function creatCoverPageForMergedPDF(rentalInfo: any): ArrayBuffer {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
-  const primaryColor = [50, 66, 155]; // #32429B in RGB
 
-  //doc.addImage(logoImage, "PNG", (pageWidth - 40) / 2, 30, 40, 56);
+  // 1) Logo
+  // (Assume `logo.src` is a PNG data-URL or a URL you’ve preloaded elsewhere)
+  doc.addImage(logo.src, "PNG", (pageWidth - 40) / 2, 20, 40, 56);
 
-  // Title
-  doc.setFontSize(24);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-  const title = `Rental Application For`;
-  const titleWidth = doc.getTextWidth(title);
-  const subTitle = `${rentalInfo.address.Address}`;
-  const subTitleWidth = doc.getTextWidth(title);
-  doc.text(title, (pageWidth - titleWidth) / 2, 100);
-  doc.text(subTitle, (pageWidth - titleWidth) / 2, 112);
+  // 2) Title
+  doc.setFont("helvetica", "bold").setFontSize(24).setTextColor(50, 66, 155);
+  const titleText = `Rental Application for 102 ${rentalInfo.street}`;
+  const titleW = doc.getTextWidth(titleText);
+  doc.text(titleText, (pageWidth - titleW) / 2, 95);
 
-  // Person information
-  doc.setFontSize(12);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  // 3) Prospect Name
+  doc.setFont("helvetica", "normal").setFontSize(14).setTextColor(31, 41, 55);
+  const nameText = `Name: ${rentalInfo.prospectName}`;
+  const nameW = doc.getTextWidth(nameText);
+  doc.text(nameText, (pageWidth - nameW) / 2, 105);
 
-  const name = `Contents`;
-  const nameWidth = doc.getTextWidth(name);
-  doc.setFont("helvetica", "bold");
-
-  doc.text("Contents", (pageWidth - nameWidth) / 2, 150);
-  doc.setFont("helvetica", "normal");
-
-  doc.text("ID Verification", (pageWidth - nameWidth - 5) / 2, 165);
-  doc.text("Credit Report", (pageWidth - nameWidth - 3) / 2, 175);
-  doc.text("AI Background Check", (pageWidth - nameWidth - 12) / 2, 185);
-  doc.text("Tenant Application Form", (pageWidth - nameWidth - 15) / 2, 195);
-
-  // Date of report
+  // 4) Date Generated
   const today = new Date().toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
   doc.setFontSize(10);
-  const dateText = `Application Date: ${today}`;
-  const dateWidth = doc.getTextWidth(dateText);
-  doc.text(dateText, (pageWidth - dateWidth) / 2, 120);
+  const dateText = `Generated on ${today}`;
+  const dateW = doc.getTextWidth(dateText);
+  doc.text(dateText, (pageWidth - dateW) / 2, 112);
+
+  // 5) Table of Contents
+  doc.setFont("helvetica", "bold").setFontSize(12).setTextColor(33, 37, 41);
+  doc.text("Table of Contents", marginX, 130);
+
+  doc.setFont("helvetica", "normal").setFontSize(11).setTextColor(31, 41, 55);
+  const tocX = marginX + 4;
+  let tocY = 158;
+  doc.text(
+    "1. ID Verification .................................. 2",
+    tocX,
+    tocY
+  );
+  tocY += 8;
+  doc.text("2. Credit Report .................................. 3", tocX, tocY);
+  tocY += 8;
+  doc.text("3. AI Background Check ...................... 4", tocX, tocY);
+  tocY += 8;
+  doc.text("3. Tenant Information ...................... 5", tocX, tocY);
+
   return doc.output("arraybuffer");
-};
+}
+
+const marginX = 10;

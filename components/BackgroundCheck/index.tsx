@@ -96,7 +96,7 @@ export default function BackgroundCheck() {
             />
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg p-1 md:p-6">
             <ResultsPanel results={results} isLoading={isLoading} />
           </div>
         )}

@@ -83,7 +83,10 @@ const PDFVerifier = ({
 
   return (
     <div className="bg-white rounded-xl overflow-hidden transition-all duration-300 mt-4">
-      <div className="px-6 py-6 sm:px-8 sm:py-8">
+      <div
+        className={`px-6 md:py-6 sm:px-8 py-3
+        `}
+      >
         {verificationStatus === "idle" || verificationStatus === "verifying" ? (
           <FileUpload
             onFileUpload={handleFileUpload}

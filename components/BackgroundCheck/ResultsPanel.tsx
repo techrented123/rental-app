@@ -71,18 +71,18 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({ results, isLoading }) => {
     results.socialMedia.found;
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center">
+    <div className="!max-h-[370px]">
+      <div className="flex flex-col md:flex-row gap-4 md:justify-between items-center mb-6 ">
+        <div className="hidden md:flex">
           <FileText className="h-6 w-6 text-blue-700 mr-2" />
-          <h2 className="text-xl font-semibold text-gray-800">
+          <h2 className="md:text-xl font-semibold text-gray-800 ">
             Background Check Results
           </h2>
         </div>
         {showDownloadButton && (
           <button
             onClick={handleDownloadPDF}
-            className="flex items-center px-3 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition-colors"
+            className="text-md md:text-lg w-fit flex items-center text-center px-3 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition-colors"
           >
             <Download className="h-4 w-4 mr-2" />
             Download PDF
