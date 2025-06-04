@@ -19,7 +19,7 @@ Optional Details: <Email address, company, etc. — if known>
 Please perform a deep web search and summarize any public information you find about the person. Focus on:
 - News articles or press mentions
 - Court or legal appearances in British Columbia
-- Public social media profiles (LinkedIn, Facebook, etc.)
+- Public social media profiles (LinkedIn, Facebook, etc.). *Make sure to check Linkedin and Facebook*
 - Company registrations or associations
 - Public comments or online activity
 - Anything that may reflect positively or negatively on character
@@ -50,12 +50,16 @@ Only output valid JSON. If no records are found for a property, set its value to
 export async function POST(request: Request) {
   try {
     const formData: ProspectInfo = await request.json();
-    console.log({ formData });
+
     // Construct user input for the model
     const userInput = `
         Name: ${formData.firstName} ${formData.lastName}
         Location 1: ${formData.city}, ${formData.state}
-        ${formData.city2 ? `Location 2: ${formData.city2}, ${formData.state2}` : ""}
+        ${
+          formData.city2
+            ? `Location 2: ${formData.city2}, ${formData.state2}`
+            : ""
+        }
         Optional Details: Prospect Type: ${formData.email}
         `;
 
@@ -181,7 +185,6 @@ export async function POST(request: Request) {
 */
 function determineRiskLevel(data: any): "low" | "medium" | "high" {
   let riskScore = 0;
-
   // Increase risk score based on various factors
   if (data.legal_appearances.length > 0) riskScore += 3;
   if (
