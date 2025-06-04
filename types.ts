@@ -1,3 +1,9 @@
+export type Appointment = {
+  name: string;
+  email: string;
+  message: string;
+};
+
 export interface ProspectInfo {
   firstName: string;
   lastName: string;
