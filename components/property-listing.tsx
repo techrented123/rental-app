@@ -1,5 +1,18 @@
 "use client";
-
+import {
+  Bath,
+  Bed,
+  Calendar,
+  Home,
+  MapPin,
+  Maximize2,
+  Share2,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Image,
+  Newspaper,
+} from "lucide-react";
 type RawRoom = { $: { RoomType: string }; Count: string };
 type RawFile = { Src: string };
 
@@ -26,25 +39,17 @@ type RawProperty = {
   };
 };
 
-import {
-  Bath,
-  Bed,
-  Calendar,
-  Home,
-  MapPin,
-  Maximize2,
-  Share2,
-  ChevronLeft,
-  ChevronRight,
-  X,
-  Newspaper,
-} from "lucide-react";
+type Appointment = {
+  name: string;
+  email: string;
+  message: string;
+};
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import Link from "next/link";
 import { useRentalApplicationContext } from "@/contexts/rental-application-context";
 import ContactForm from "./ContactForm";
@@ -102,6 +107,7 @@ export default function PropertyListing() {
         City: city,
         State: state,
         PostalCode: postal,
+        Email: landlordEmail,
       },
     },
     Floorplan: {
@@ -156,12 +162,26 @@ export default function PropertyListing() {
     setMobileImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
-  const submitHandler = async (formData: any) => {
-    setShowResponse(true);
+  const submitHandler = async (formData: Appointment) => {
     try {
-      const response = await fetch("/api/sendViewingEmail");
+      const response = await fetch("/api/sendAppointment", {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          landlordEmail,
+          street,
+          landlordName: "Rob Boies",
+        }),
+      });
       if (!response.ok) throw new Error(``);
       const data = await response.json();
+      console.log(data.$metadata);
+      if (data.$metadata.httpStatusCode === 200) {
+        setShowResponse(true);
+      }
     } catch (e) {
     } finally {
     }
@@ -212,28 +232,28 @@ export default function PropertyListing() {
         </div>
 
         {/* Side Images Grid */}
-        <div className="hidden md:grid grid-cols-2 gap-2 md:relative">
+        <div className="hidden md:grid grid-cols-2 gap-2 md:relative rounded-lg">
           {images.slice(1, 5).map((image, index) => (
             <div
               key={index}
-              className="relative bg-cover bg-center cursor-pointer"
+              className="relative bg-cover bg-center cursor-pointer rounded-lg"
               style={{ backgroundImage: `url('${image}')` }}
               onClick={() => {
                 setCurrentImageIndex(index + 1);
                 setLightboxOpen(true);
               }}
             >
-              <div className="absolute inset-0 bg-black/20 hover:bg-black/30 transition-colors" />
+              <div className="absolute inset-0 bg-black/20 hover:bg-black/30 transition-colors rounded-md" />
             </div>
           ))}
           <div
-            className="absolute bottom-3 right-5 bg-white rounded-md p-2 text-xs  cursor-pointer"
+            className="flex gap-2 items-center absolute bottom-3 right-5 bg-white rounded-md p-2 text-xs  cursor-pointer"
             onClick={() => {
               setCurrentImageIndex(1);
               setLightboxOpen(true);
             }}
           >
-            {images.length} Photos
+            <Image size={14} /> {images.length} Photos
           </div>
         </div>
       </div>
@@ -246,11 +266,11 @@ export default function PropertyListing() {
               <h2 className="text-2xl md:text-3xl font-bold">
                 ${parseInt(rent, 10).toLocaleString("en-US")}
               </h2>
-              <div className="flex gap-2">
+              {/*   <div className="flex gap-2">
                 <Button variant="outline" size="icon">
                   <Share2 className="h-4 w-4" />
                 </Button>
-              </div>
+              </div> */}
             </div>
             <p className="text-lg text-gray-900 flex items-center gap-2 mb-6">
               <MapPin className="h-5 w-5 hidden md:flex" />
@@ -297,23 +317,23 @@ export default function PropertyListing() {
           </div>
 
           {/* Sidebar */}
-          <div className="md:col-span-1">
+          <div className="md:col-span-1 mb-6">
             <Card className="p-6 shadow-md">
               <div className="text-center mb-6">
                 <h3 className="text-xl font-semibold mb-2">Next Steps</h3>
                 <p className="text-gray-500">
                   <Calendar className="h-5 w-5 inline mr-2" />
-                  Available for showings
+                  Available for viewings
                 </p>
               </div>
-
               <Button
-                className="w-full mb-4 border-primary bg-white hover:bg-gray-100"
+                className="w-full border-primary bg-white hover:bg-gray-100"
                 variant="outline"
                 onClick={() => setOpen(true)}
               >
                 Request Viewing
-              </Button>
+              </Button>{" "}
+              <Separator className="my-5" />
               <Link
                 href={`/apply/?slug=${slug}`}
                 className="flex items-center text-white "
@@ -326,8 +346,6 @@ export default function PropertyListing() {
                   Apply now
                 </Button>
               </Link>
-
-              <Separator className="my-6" />
             </Card>
           </div>
         </div>
@@ -335,7 +353,8 @@ export default function PropertyListing() {
 
       {/* Lightbox */}
       <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
-        <DialogContent className="max-w-7xl bg-black/95 border-none">
+        <DialogContent className="max-w-7xl bg-black/50 border-none">
+          <DialogTitle> </DialogTitle>
           <div className="relative h-[80vh] flex items-center justify-center">
             <Button
               variant="ghost"
@@ -370,7 +389,7 @@ export default function PropertyListing() {
               <ChevronRight className="h-8 w-8 text-white " />
             </Button>
 
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-sm">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-xs">
               {currentImageIndex + 1} / {images.length}
             </div>
           </div>
