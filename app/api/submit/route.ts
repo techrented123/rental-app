@@ -1,5 +1,4 @@
 import { SESClient, SendRawEmailCommand } from "@aws-sdk/client-ses";
-import { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";
 
 const AWS_ACCESS_KEY_ID = process.env.ACCESS_KEY_ID!;
@@ -97,11 +96,11 @@ export async function POST(req: NextRequest) {
     rawLines.push("");
 
     const rawMessage = rawLines.join(newline);
-    const rawBuffer = Buffer.from(rawMessage, "utf-8");
+    const rawBuffer:any = Buffer.from(rawMessage, "utf-8");
 
     // 3) Send via SES
     const sendCmd = new SendRawEmailCommand({
-      RawMessage: { Data: rawBuffer },
+      RawMessage: { Data: rawBuffer},
     });
     const result = await ses.send(sendCmd);
 
