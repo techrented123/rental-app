@@ -54,7 +54,7 @@ const steps = [
     ),
   },
   {
-    title: "Background Check",
+    title: "AI Background Check",
     icon: Users,
     content: <BackgroundCheck />,
   },
@@ -77,16 +77,15 @@ const steps = [
 ];
 
 export default function Home() {
-  const params = useSearchParams();
-  const slug = params.get("slug") || "";
+  const [slug, setSlug] = React.useState(""); //
   const [lastSavedStep, setLastSavedStep] = React.useState(0);
 
   React.useEffect(() => {
     const last_step = localStorage.getItem("last_saved_step");
     if (last_step) {
-      setLastSavedStep(JSON.parse(last_step) + 1);
+      setLastSavedStep(JSON.parse(last_step));
     }
-  }, []);
+  }, [slug]);
 
   return (
     <div className=" mt-4 ml-4 h-screen">
