@@ -171,7 +171,7 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
                 <button
                   className="px-3 py-2 text-sm md:text-base bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
                   onClick={handleNext}
-                  // disabled={stepOutputs[activeStep] === undefined}
+                  disabled={stepOutputs[activeStep] === undefined}
                 >
                   Next
                 </button>

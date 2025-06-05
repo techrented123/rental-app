@@ -37,7 +37,7 @@ const SubmitApplication = () => {
       });
       const data = await response.json();
       if (data) {
-        router.push(`https://rented123.com/?slug=`);
+        router.push(`https://rented123.com/`);
       }
       setIsEmailSent(true);
     } catch (e) {
