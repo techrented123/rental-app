@@ -82,10 +82,10 @@ export default function BackgroundCheck() {
   };
 
   return (
-    <main className="container mx-auto px-4 py-8">
+    <main className="md:container mx-auto md:px-4 px-1 py-3 md:py-8">
       <div className="grid grid-cols-1 gap-8">
         {!results ? (
-          <div className="bg-white rounded-lg p-2 md:p-6">
+          <div className="bg-white rounded-lg p-2 ">
             <Form
               onSubmit={handleSubmit}
               isLoading={isLoading}

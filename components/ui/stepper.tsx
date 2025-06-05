@@ -36,11 +36,11 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
   }, [lastSavedStep]);
 
   const { stepOutputs } = useRentalApplicationContext();
-
+  //container mx-auto py-0 px-4 h-full overflow-auto
   return (
-    <div className="container mx-auto py-0 px-4 h-full overflow-auto">
+    <div className="h-[100%] w-[90%] md:w-[80%] mx-auto overflow-auto">
       <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-sm border">
-        <div className="flex flex-col md:flex-row h-[600px] md:h-[650px]">
+        <div className="flex flex-col md:flex-row md:h-[650px]">
           {/* Vertical Stepper (Desktop) */}
           <div className="hidden md:flex flex-col w-64 border-r bg-gray-50 rounded-l-lg">
             {steps.map((step, index) => {
@@ -154,7 +154,7 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
             </div>
 
             {/* Step Content */}
-            <div className="flex-grow p-6 overflow-auto">
+            <div className="flex-grow p-3 overflow-auto">
               {steps[activeStep].content}
             </div>
 
@@ -169,9 +169,9 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
                   Previous
                 </button> */}
                 <button
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                  className="px-3 py-2 text-sm md:text-base bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
                   onClick={handleNext}
-                  disabled={stepOutputs[activeStep] === undefined}
+                  // disabled={stepOutputs[activeStep] === undefined}
                 >
                   Next
                 </button>

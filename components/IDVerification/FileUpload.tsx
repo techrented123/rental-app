@@ -90,17 +90,20 @@ const IDVerification: React.FC<FileUploadProps> = ({
           />
           <div className="flex flex-col items-center justify-center py-6">
             <div className="mb-4 bg-blue-100 p-4 rounded-full">
-              <Upload className="h-8 w-8 text-blue-500" />
+              <Upload className="h-4 w-4 md:h-8 md:w-8 text-blue-500" />
             </div>
             <h3 className="md:text-lg font-medium text-gray-700 mb-2">
               Upload your {reportType} report
             </h3>
 
-            <p className="text-gray-500 text-sm mb-4 max-w-md">
-              Drag and drop your PDF file here, or click to select a file
+            <p className="text-gray-500 text-sm mb-4 max-w-md hidden md:block">
+              Drag and drop your PDF file here or select a file
+            </p>
+            <p className="text-gray-500 text-sm mb-4 max-w-md md:hidden">
+              Drag and drop or 
             </p>
             <button
-              className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-lg font-medium transition-colors duration-200"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-3 md:px-5 py-2 rounded-lg text-xs md:text-base md:font-medium transition-colors duration-200"
               onClick={(e) => {
                 e.stopPropagation();
                 handleClick();

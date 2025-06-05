@@ -17,7 +17,7 @@ export default function ApplicationForm() {
   const { updateStepOutput, updateRentApplicationStatus, stepOutputs } =
     useRentalApplicationContext();
 
-  const { state, lengthOfStay, ...userInfo } = stepOutputs[3].prospect;
+  //const { state, lengthOfStay, ...userInfo } = stepOutputs[3]?.prospect;
   const toggleErrors = (name: string) => {
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
@@ -81,7 +81,7 @@ export default function ApplicationForm() {
             onValidateForm={validateForm}
             errors={errors}
             toggleErrors={toggleErrors}
-            preFilledFields={userInfo}
+            //preFilledFields={userInfo}
           />
         </div>
       ) : verificationStatus === "verifying" ? (

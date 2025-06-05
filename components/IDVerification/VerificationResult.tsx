@@ -24,9 +24,9 @@ const VerificationResult: React.FC<VerificationResultProps> = ({
         }`}
       >
         {isSuccessTitle ? (
-          <CheckCircle className="h-12 w-12 text-green-500" />
+          <CheckCircle className="md:h-12 md:w-12 text-green-500" />
         ) : (
-          <XCircle className="h-12 w-12 text-red-500" />
+          <XCircle className="md:h-12 md:w-12 text-red-500" />
         )}
       </div>
 
@@ -53,7 +53,7 @@ const VerificationResult: React.FC<VerificationResultProps> = ({
       {!isSuccessTitle && (
         <button
           onClick={onReset}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${"bg-blue-500 hover:bg-blue-600 text-white"}`}
+          className={`px-3 md:px-6 py-2 rounded-lg text-sm md:text-base md:font-medium transition-colors duration-200 ${"bg-blue-600 hover:bg-blue-700 text-white"}`}
         >
           Try Again
         </button>

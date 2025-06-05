@@ -6,7 +6,7 @@ interface ApplicationFormProps {
   onSubmit: (info: ApplicationFormInfo) => void;
   isLoading: boolean;
   onValidateForm: (formData: ApplicationFormInfo) => boolean;
-  preFilledFields: Partial<ProspectInfo>;
+  preFilledFields?: Partial<ProspectInfo>;
  
   errors: Record<string, string>;
   toggleErrors: (name: string) => void;
@@ -16,7 +16,7 @@ export const Form: React.FC<ApplicationFormProps> = ({
   onSubmit,
   isLoading,
   onValidateForm,
-  preFilledFields,
+  preFilledFields={},
   errors,
   toggleErrors,
 }) => {
