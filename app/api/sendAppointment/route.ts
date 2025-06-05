@@ -4,6 +4,7 @@ import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 const AWS_ACCESS_KEY_ID = process.env.ACCESS_KEY_ID!;
 const AWS_SECRET_ACCESS_KEY = process.env.ACCESS_KEY_SECRET!;
 const AWS_REGION = process.env.REGION!;
+console.log("AWS", AWS_ACCESS_KEY_ID, AWS_REGION);
 
 export async function POST(req: Request) {
   const { name, email, message, landlordName, landlordEmail, street } =

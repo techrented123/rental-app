@@ -1,6 +1,5 @@
 "use client";
 import * as React from "react";
-import { useSearchParams } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import FormStepper from "@/components/ui/stepper";
 import Link from "next/link";

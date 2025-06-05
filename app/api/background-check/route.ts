@@ -86,9 +86,11 @@ export async function POST(request: NextRequest) {
         },
       ],
     });
-
+    console.log("userInput: ", userInput);
     const content = response.choices?.[0]?.message?.content;
     let openAIResult;
+    console.log("content: ", content);
+    console.log(process.env.OPEN_AI_API_KEY);
     try {
       openAIResult = JSON.parse(
         content?.replace(/```json\s*|\s*```/g, "") || "{}"
@@ -97,6 +99,7 @@ export async function POST(request: NextRequest) {
       console.error("JSON parse error:", parseError);
       throw new Error("Failed to parse model response");
     }
+    console.log("openAIResult: ", openAIResult);
 
     // Transform the OpenAI response into our BackgroundCheckResult format
     const result: BackgroundCheckResult = {
