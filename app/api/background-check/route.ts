@@ -1,9 +1,10 @@
 import OpenAI from "openai";
 import { ProspectInfo, BackgroundCheckResult } from "../../../types";
+import { NextRequest } from "next/server";
 
 // Initialize OpenAI client with your API key
 const client = new OpenAI({
-  apiKey: process.env.OPEN_AI_KEY,
+  apiKey: process.env.OPEN_AI_API_KEY,
 });
 
 // System prompt instructions for background check
@@ -47,7 +48,7 @@ Make sure you return valid links.
 Only output valid JSON. If no records are found for a property, set its value to an empty array or empty string as appropriate.
 `;
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const formData: ProspectInfo = await request.json();
 
