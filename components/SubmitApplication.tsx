@@ -22,6 +22,7 @@ const SubmitApplication = () => {
   const { rentalInfo, stepOutputs, restartApplication } =
     useRentalApplicationContext();
   const { landlordEmail, landlordName, slug } = rentalInfo;
+
   async function sendApplication() {
     setLoading(true);
     const body = {
@@ -37,9 +38,10 @@ const SubmitApplication = () => {
       });
       const data = await response.json();
       if (data) {
-        router.push(`https://rented123.com/?slug=${slug}`);
+        router.push(`https://rented123.com/`);
       }
       setIsEmailSent(true);
+      restartApplication();
     } catch (e) {
       console.error(e);
     } finally {
@@ -109,7 +111,7 @@ const SubmitApplication = () => {
               </li>
             </ul>
             <div className="flex flex-col-reverse md:flex-row mt-9 justify-center items-center md:justify-between gap-2">
-              <RestartApplication />
+              {!loading && <RestartApplication />}
               <button
                 onClick={() => sendApplication()}
                 className="flex gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
@@ -149,7 +151,7 @@ const SubmitApplication = () => {
             </div>
           </div>
         ) : (
-          <div className="mt-40 flex flex-col items-center justify-center text-gray-500 ">
+          <div className="mt-40 flex flex-col items-center justify-center text-green-500 ">
             <p>Application successfully submitted. We will be in touch. </p>
             <p>Kindly send the rent deposit to {rentalInfo.landlordEmail}</p>
           </div>

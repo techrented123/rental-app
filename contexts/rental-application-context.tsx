@@ -51,8 +51,7 @@ export function RentalApplicationProvider({
   const restartApplication = () => {
     setStepOutputs([]);
     setRentApplicationStatus(1);
-    window.localStorage.setItem("last_saved_step", JSON.stringify(1));
-    window.localStorage.setItem("step_outputs", JSON.stringify([]));
+    window.localStorage.clear();
   };
 
   const updateRentalInfo = React.useCallback((newRentalInfo: any) => {

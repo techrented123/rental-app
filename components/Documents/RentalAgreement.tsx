@@ -8,6 +8,7 @@ export function RentalAgreement() {
   const [signingUrl, setSigningUrl] = useState<string>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [signComplete, setSignComplete] = useState(false);
   const { updateStepOutput, rentalInfo, stepOutputs } =
     useRentalApplicationContext();
 
@@ -61,6 +62,7 @@ export function RentalAgreement() {
           completed: () => {
             console.log("Tenant has completed signing.");
             updateStepOutput(true);
+            setSignComplete(true);
           },
           closed: () => {
             console.log("Signing modal closed.");
@@ -91,12 +93,16 @@ export function RentalAgreement() {
         proceedBtnText="Continue"
         onProceed={startSigning}
       >
-        <button
-          disabled={loading || !!signingUrl}
-          className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
-        >
-          {loading ? "Preparing document…" : "Sign Lease Agreement"}
-        </button>
+        {!signComplete ? (
+          <button
+            disabled={loading || !!signingUrl}
+            className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
+          >
+            {loading ? "Preparing document…" : "Sign Lease Agreement"}
+          </button>
+        ) : (
+          <div className="w-[80%] mx-auto">Please proceed to the next step</div>
+        )}
       </AlertDialogBox>
     </div>
   );
