@@ -82,7 +82,7 @@ const PDFVerifier = ({
   }, [reportType]);
 
   return (
-    <div className="bg-white rounded-xl overflow-hidden transition-all duration-300 mt-4">
+    <div className="bg-white rounded-xl !h-[400px] overflow-hidden transition-all duration-300 mt-4">
       <div
         className={`px-6 md:py-6 sm:px-8 py-3
         `}

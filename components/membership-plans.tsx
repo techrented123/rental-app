@@ -114,7 +114,7 @@ const Plans = () => {
                       {" "}
                       <Button
                         size="lg"
-                        className="w-full mt-6 bg-blue-600 hover:bg-blue-500 flex items-center gap-2"
+                        className="w-full mt-6 bg-blue-500 hover:bg-blue-600 flex items-center gap-2"
                       >
                         Continue with {plan.name} Plan{" "}
                         <ExternalLink size={18} />
