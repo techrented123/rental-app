@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 
 // Initialize OpenAI client with your API key
 const client = new OpenAI({
-  apiKey: process.env.OPEN_AI_API_KEY,
+  apiKey: process.env.NEXT_PUBLIC_OPEN_AI_API_KEY,
 });
 
 // System prompt instructions for background check
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
     const content = response.choices?.[0]?.message?.content;
     let openAIResult;
     console.log("content: ", content);
-    console.log(process.env.OPEN_AI_API_KEY);
+    console.log(process.env.NEXT_PUBLIC_OPEN_AI_API_KEY);
     try {
       openAIResult = JSON.parse(
         content?.replace(/```json\s*|\s*```/g, "") || "{}"
