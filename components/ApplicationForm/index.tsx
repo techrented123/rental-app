@@ -72,7 +72,7 @@ export default function ApplicationForm() {
   };
 
   return (
-    <main className="container mx-auto px-4 py-3 md:py-8 w-full">
+    <main className="container mx-auto px-4 py-3 md:py-8 w-full ">
       {verificationStatus === "idle" ? (
         <div className="bg-white rounded-lg shadow-none p-2 md:p-6">
           <Form

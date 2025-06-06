@@ -44,9 +44,9 @@ export const Form: React.FC<BackgroundCheckFormProps> = ({
       onSubmit(formData);
     }
   };
-
+  //"w-full overflow-scroll  max-h-[350px] md:max-h-full"
   return (
-    <div className="w-full overflow-scroll max-h-[350px] md:max-h-full">
+    <div className="">
       <div className="md:flex hidden items-center mb-6">
         <UserCheck className="h-6 w-6 text-blue-600 mr-2" />
         <h2 className="text-xl font-semibold text-gray-800">
@@ -304,7 +304,17 @@ export const Form: React.FC<BackgroundCheckFormProps> = ({
             )}
           </button>
           <div className="flex items-start justify-center !gap-0 text-center text-sm text-gray-500 mt-3 ">
-            <span>
+            <span className="md:hidden">
+              You agree to Rented123 using AI to run a background check on you.{" "}
+              <a
+                href="https://rented123.com/"
+                className="underline"
+                target="_blank"
+              >
+                Privacy policy
+              </a>
+            </span>
+            <span className="hidden md:block">
               By proceeding you agree to Rented123 using AI to run a background
               check on you. Your personal information will not be stored
               anywhere. For more information, see our{" "}

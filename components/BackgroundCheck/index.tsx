@@ -82,7 +82,11 @@ export default function BackgroundCheck() {
   };
 
   return (
-    <main className="md:container mx-auto md:px-4 px-1 py-3 md:py-8">
+    <main
+      className={`md:container mx-auto md:px-4 px-1 py-3 md:py-8 ${
+        results ? "h-[500px]" : "max-h-[60vh]"
+      }`}
+    >
       <div className="grid grid-cols-1 gap-8">
         {!results ? (
           <div className="bg-white rounded-lg p-2 ">

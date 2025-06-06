@@ -152,7 +152,7 @@ export const Form: React.FC<ApplicationFormProps> = ({
   };
 
   return (
-    <div className="w-full overflow-auto max-h-[390px] md:max-h-full">
+    <div className="w-full overflow-auto max-h-[490px] md:max-h-full">
       <div className=" md:mb-6 flex flex-col items-center">
         <div className="md:flex hidden">
           <UserCheck className="h-6 w-6 text-blue-700 mr-2" />
