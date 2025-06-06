@@ -81,8 +81,12 @@ const SubmitApplication = () => {
   }, [stepOutputs]);
 
   return (
-    <div className="flex flex-col justify-center gap-10">
-      <h6 className="text-lg font-medium text-gray-700 ">Application Review</h6>
+    <div className="flex flex-col justify-center gap-10 h-[450px]">
+      {isEmailSent && (
+        <h6 className="text-lg font-medium text-gray-700 ">
+          Application Review
+        </h6>
+      )}{" "}
       <div className="w-full">
         {!isEmailSent ? (
           <div>
@@ -149,7 +153,7 @@ const SubmitApplication = () => {
             </div>
           </div>
         ) : (
-          <div className="mt-40 flex flex-col items-center justify-center text-green-500 ">
+          <div className="mt-10 md:mt-40 flex flex-col items-center justify-center text-green-500 ">
             <p>Application successfully submitted. We will be in touch. </p>
             <p>Kindly send the rent deposit to {rentalInfo.landlordEmail}</p>
             <p>You can now close the application.</p>
