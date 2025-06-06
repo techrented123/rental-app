@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const API_BASE = "https://www.signwell.com/api/v1";
-const API_KEY = process.env.SIGNWELL_API_KEY!;
+const API_KEY = process.env.NEXT_PUBLIC_SIGNWELL_API_KEY!;
 const TEST_MODE = process.env.NODE_ENV !== "production";
 const templateIds = [
   "68b8e681-118d-4e92-8b8b-12ae4f338df2",

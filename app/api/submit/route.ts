@@ -1,9 +1,9 @@
 import { SESClient, SendRawEmailCommand } from "@aws-sdk/client-ses";
 import { NextRequest, NextResponse } from "next/server";
 
-const AWS_ACCESS_KEY_ID = process.env.ACCESS_KEY_ID!;
-const AWS_SECRET_ACCESS_KEY = process.env.ACCESS_KEY_SECRET!;
-const AWS_REGION = process.env.REGION!;
+const AWS_ACCESS_KEY_ID = process.env.NEXT_PUBLIC_ACCESS_KEY_ID!;
+const AWS_SECRET_ACCESS_KEY = process.env.NEXT_PUBLIC_ACCESS_KEY_SECRET!;
+const AWS_REGION = process.env.NEXT_PUBLIC_REGION!;
 
 const ses = new SESClient({
   region: AWS_REGION,
@@ -36,7 +36,9 @@ export async function POST(req: NextRequest) {
     const rawLines: string[] = [];
 
     // Email headers
-    rawLines.push(`From: "Rented123 Property Management" <reports@rented123.com>`);
+    rawLines.push(
+      `From: "Rented123 Property Management" <reports@rented123.com>`
+    );
     rawLines.push(`To: tambi@rented123.com`);
     rawLines.push(`Subject: Rental Application for Your Property`);
     rawLines.push(`MIME-Version: 1.0`);
@@ -96,11 +98,11 @@ export async function POST(req: NextRequest) {
     rawLines.push("");
 
     const rawMessage = rawLines.join(newline);
-    const rawBuffer:any = Buffer.from(rawMessage, "utf-8");
+    const rawBuffer: any = Buffer.from(rawMessage, "utf-8");
 
     // 3) Send via SES
     const sendCmd = new SendRawEmailCommand({
-      RawMessage: { Data: rawBuffer},
+      RawMessage: { Data: rawBuffer },
     });
     const result = await ses.send(sendCmd);
 

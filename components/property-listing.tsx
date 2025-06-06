@@ -74,6 +74,7 @@ export default function PropertyListing() {
       setLoading(false);
       return;
     }
+    updateRentalInfo({slug})
     fetch(`/api/property?slug=${slug}`)
       .then((res) => {
         if (!res.ok) throw new Error(res.statusText);

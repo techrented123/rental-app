@@ -21,13 +21,13 @@ const SubmitApplication = () => {
   const router = useRouter();
   const { rentalInfo, stepOutputs, restartApplication } =
     useRentalApplicationContext();
-
+  const { landlordEmail, landlordName, slug } = rentalInfo;
   async function sendApplication() {
     setLoading(true);
     const body = {
       mergedPDF,
-      landlordEmail: rentalInfo.landlordEmail,
-      landlordName: rentalInfo.landlordName,
+      landlordEmail,
+      landlordName,
     };
     try {
       const response = await fetch("/api/submit", {
@@ -37,7 +37,7 @@ const SubmitApplication = () => {
       });
       const data = await response.json();
       if (data) {
-        router.push(`https://rented123.com/`);
+        router.push(`https://rented123.com/?slug=${slug}`);
       }
       setIsEmailSent(true);
     } catch (e) {
