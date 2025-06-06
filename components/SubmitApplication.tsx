@@ -37,9 +37,7 @@ const SubmitApplication = () => {
         body: JSON.stringify({ ...body }),
       });
       const data = await response.json();
-      if (data) {
-        router.push(`https://rented123.com/`);
-      }
+
       setIsEmailSent(true);
       restartApplication();
     } catch (e) {
@@ -154,6 +152,7 @@ const SubmitApplication = () => {
           <div className="mt-40 flex flex-col items-center justify-center text-green-500 ">
             <p>Application successfully submitted. We will be in touch. </p>
             <p>Kindly send the rent deposit to {rentalInfo.landlordEmail}</p>
+            <p>You can now close the application.</p>
           </div>
         )}
       </div>
