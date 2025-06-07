@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
 
     // Email headers
     rawLines.push(
-      `From: "Rented123 Property Management" <reports@rented123.com>`
+      `From: "Rented123 Property Management" <admin@rented123.com>`
     );
     rawLines.push(`To: tambi@rented123.com`);
     rawLines.push(`Subject: Rental Application for Your Property`);

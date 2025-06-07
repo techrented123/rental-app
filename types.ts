@@ -9,7 +9,6 @@ export interface ProspectInfo {
   lastName: string;
   email: string;
   city: string;
-  dob: string;
   state: string;
   city2: string | undefined;
   state2: string | undefined;

@@ -21,11 +21,11 @@ export async function POST(req: Request) {
     },
   });
   const params = {
-    Source: "reports@rented123.com",
+    Source: "admin@rented123.com",
     Destination: {
       ToAddresses: ["tambi@rented123.com"] /*  landlordEmail
-        ? ["reports@rented123.com", landlordEmail]
-        : ["reports@rented123.com"],
+        ? ["info@rented123.com", landlordEmail]
+        : ["info@rented123.com"],
     }, */,
     },
     Message: {
