@@ -6,9 +6,14 @@ import { generateBackgroundCheckPDF } from "@/lib/pdfService";
 interface ResultsPanelProps {
   results: BackgroundCheckResult | null;
   isLoading: boolean;
+  error: string | null;
 }
 
-const ResultsPanel: React.FC<ResultsPanelProps> = ({ results, isLoading }) => {
+const ResultsPanel: React.FC<ResultsPanelProps> = ({
+  results,
+  isLoading,
+  error,
+}) => {
   const handleDownloadPDF = () => {
     if (results) {
       generateBackgroundCheckPDF(results, true);
@@ -28,9 +33,18 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({ results, isLoading }) => {
     }
   };
 
+  React.useEffect(() => {
+    if (window.innerWidth <= 768 && error) {
+      window.scrollTo(0, document.body.scrollHeight);
+    }
+  }, [window, error]);
+
   if (isLoading) {
     return (
       <div className="h-full flex flex-col items-center justify-center py-12">
+        <p className="mb-4 text-gray-600">
+          Generating AI background check results...
+        </p>
         <div className="animate-pulse w-full max-w-md">
           <div className="h-8 bg-gray-200 rounded mb-4"></div>
           <div className="h-4 bg-gray-200 rounded mb-2 w-3/4"></div>
@@ -42,13 +56,24 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({ results, isLoading }) => {
 
           <div className="h-10 bg-gray-200 rounded-lg w-full"></div>
         </div>
-        <p className="mt-4 text-gray-600">
-          Generating AI background check results...
-        </p>
       </div>
     );
   }
-
+  if (error) {
+    return (
+      <div className="relative h-full">
+        <div className="absolute top-[40%] pt-5 pb-9 text-red-600 text-center">
+          {error}. If the issue persist, please contact us at{" "}
+          <a
+            href="mailto:tech@rented123.com,tambi@rented123.com"
+            className="underline"
+          >
+            tech@rented123.com
+          </a>
+        </div>
+      </div>
+    );
+  }
   if (!results) {
     return (
       <div className="h-full flex flex-col items-center justify-center py-12">

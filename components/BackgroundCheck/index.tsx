@@ -6,6 +6,8 @@ import { Form } from "./Form";
 
 export default function BackgroundCheck() {
   const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+
   const inputFields = {
     firstName: "",
     lastName: "",
@@ -70,40 +72,53 @@ export default function BackgroundCheck() {
         },
         body: JSON.stringify({ ...prospectInfo }),
       });
+      if (!response.ok)
+        throw new Error("A network error occured. Please try again");
       const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
       setResults(data);
       updateRentApplicationStatus(4);
       updateStepOutput(data);
     } catch (error) {
       console.error("Error performing background check:", error);
+      setApiError(
+        error instanceof Error ? error.message : "Something Unexpected Happened"
+      );
     } finally {
       setIsLoading(false);
     }
   };
-
+  console.log({ apiError });
   return (
     <main
       className={`md:container mx-auto md:px-4 px-1 py-3 md:py-8 ${
         results ? "h-[500px]" : "max-h-[60vh]"
       }`}
     >
-      <div className="grid grid-cols-1 gap-8">
-        {!results ? (
-          <div className="bg-white rounded-lg p-2 ">
-            <Form
-              onSubmit={handleSubmit}
-              isLoading={isLoading}
-              onValidateForm={validateForm}
-              inputFields={inputFields}
-              errors={errors}
-              toggleErrors={toggleErrors}
-            />
-          </div>
-        ) : (
-          <div className="bg-white rounded-lg p-1 md:p-6">
-            <ResultsPanel results={results} isLoading={isLoading} />
-          </div>
-        )}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/*     {!results ? ( */}
+        <div className="bg-white rounded-lg p-2 ">
+          <Form
+            onSubmit={handleSubmit}
+            isLoading={isLoading}
+            onValidateForm={validateForm}
+            inputFields={inputFields}
+            errors={errors}
+            toggleErrors={toggleErrors}
+          />
+        </div>
+
+        <div
+          className={`bg-white rounded-lg p-1 md:p-6 md:shadow-md mt-[-10px] md:mt-0`}
+        >
+          <ResultsPanel
+            results={results}
+            isLoading={isLoading}
+            error={apiError}
+          />
+        </div>
       </div>
     </main>
   );
