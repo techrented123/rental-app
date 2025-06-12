@@ -17,7 +17,7 @@ type FinalOutput = Array<ApplicationFormInfo | BackgroundCheckResult | string>;
 const SubmitApplication = () => {
   const [mergedPDF, setMergedPDF] = React.useState("");
   const [isEmailSent, setIsEmailSent] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const router = useRouter();
   const { rentalInfo, stepOutputs, restartApplication } =
     useRentalApplicationContext();
@@ -81,12 +81,9 @@ const SubmitApplication = () => {
   }, [stepOutputs]);
 
   return (
-    <div className="flex flex-col justify-center gap-10 h-[450px]">
-      {isEmailSent && (
-        <h6 className="text-lg font-medium text-gray-700 ">
-          Application Review
-        </h6>
-      )}{" "}
+    <div className="flex flex-col  gap-10 h-[450px]">
+      <h6 className="text-lg font-medium text-gray-700 ">Application Review</h6>
+
       <div className="w-full">
         {!isEmailSent ? (
           <div>
@@ -112,8 +109,10 @@ const SubmitApplication = () => {
                 Documents Signed (Sent to Email)
               </li>
             </ul>
-            <div className="flex flex-col-reverse md:flex-row mt-9 justify-center items-center md:justify-between gap-2">
-              {!loading && <RestartApplication />}
+            <div
+              className={`flex flex-col-reverse md:flex-row mt-9 justify-center items-center md:justify-between gap-2`}
+            >
+              <RestartApplication disable={loading} />
               <button
                 onClick={() => sendApplication()}
                 className="flex gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
