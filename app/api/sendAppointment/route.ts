@@ -5,7 +5,6 @@ const AWS_ACCESS_KEY_ID = process.env.NEXT_PUBLIC_ACCESS_KEY_ID!;
 const AWS_SECRET_ACCESS_KEY = process.env.NEXT_PUBLIC_ACCESS_KEY_SECRET!;
 const AWS_REGION = process.env.NEXT_PUBLIC_REGION!;
 
-
 export async function POST(req: Request) {
   const { name, email, message, landlordName, landlordEmail, street } =
     await req.json();
@@ -23,10 +22,9 @@ export async function POST(req: Request) {
   const params = {
     Source: "admin@rented123.com",
     Destination: {
-      ToAddresses: ["tambi@rented123.com"] /*  landlordEmail
-        ? ["info@rented123.com", landlordEmail]
-        : ["info@rented123.com"],
-    }, */,
+      ToAddresses: landlordEmail
+        ? ["admin@rented123.com", landlordEmail]
+        : ["admin@rented123.com"],
     },
     Message: {
       Subject: {
