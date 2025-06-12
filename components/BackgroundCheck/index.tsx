@@ -8,13 +8,14 @@ export default function BackgroundCheck() {
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
-  const inputFields = {
+  const inputFields: ProspectInfo = {
     firstName: "",
     lastName: "",
     email: "",
     city: "",
     state: "",
     city2: "",
+    truthCheck: false,
     state2: "",
     lengthOfStay: "yes",
   };
@@ -90,7 +91,7 @@ export default function BackgroundCheck() {
       setIsLoading(false);
     }
   };
-  console.log({ apiError });
+
   return (
     <main
       className={`md:container mx-auto md:px-4 px-1 py-3 md:py-8 ${
@@ -98,7 +99,6 @@ export default function BackgroundCheck() {
       }`}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/*     {!results ? ( */}
         <div className="bg-white rounded-lg p-2 ">
           <Form
             onSubmit={handleSubmit}
