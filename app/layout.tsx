@@ -10,6 +10,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Rental Application Process",
   description: "Complete your rental application in 7 simple steps",
+  icons: {
+    icon: "/logo.png",
+  },
 };
 
 export default function RootLayout({
