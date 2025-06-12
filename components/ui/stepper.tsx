@@ -2,6 +2,12 @@ import React, { useState } from "react";
 import { ChevronRight, LucideProps } from "lucide-react";
 import { useRentalApplicationContext } from "@/contexts/rental-application-context";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./tooltip";
 
 export interface Steps {
   content: React.ReactElement;
@@ -162,22 +168,36 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
             {/* Navigation */}
             {activeStep !== steps.length - 1 && (
               <div className="flex justify-end py-2 px-4 mt-auto border-t bg-gray-50">
-                {/*  <button
-                  className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100 transition-colors"
-                  onClick={handlePrev}
-                  disabled={activeStep === 0}
-                >
-                  Previous
-                </button> */}
-
-                <Button
-                  size="lg"
-                  onClick={handleNext}
-                  disabled={stepOutputs[activeStep] === undefined}
-                  className="bg-blue-500 flex justify-end items-center gap-1 px-3 py-1 hover:bg-blue-600 "
-                >
-                  Next <ChevronRight size={18} />
-                </Button>
+                {stepOutputs[activeStep] === undefined ? (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="inline-block">
+                          <Button
+                            size="lg"
+                            onClick={handleNext}
+                            disabled 
+                            className="bg-blue-500 !cursor-not-allowed flex justify-end items-center gap-1 px-3 py-1 hover:bg-blue-600 "
+                          >
+                            Next <ChevronRight size={18} />
+                          </Button>
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Please finish this step before proceeding to the next
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ) : (
+                  <Button
+                    size="lg"
+                    onClick={handleNext}
+                    disabled={stepOutputs[activeStep] === undefined}
+                    className="bg-blue-500 flex justify-end items-center gap-1 px-3 py-1 hover:bg-blue-600 "
+                  >
+                    Next <ChevronRight size={18} />
+                  </Button>
+                )}
               </div>
             )}
           </div>
