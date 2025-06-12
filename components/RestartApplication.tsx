@@ -3,7 +3,7 @@ import { RotateCcw } from "lucide-react";
 import { useRentalApplicationContext } from "@/contexts/rental-application-context";
 import AlertDialogBox from "./ui/alert-dialog";
 
-const RestartApplication = () => {
+const RestartApplication = ({ disable }: { disable: boolean | undefined }) => {
   const { restartApplication } = useRentalApplicationContext();
 
   const handleRestart = () => {
@@ -19,7 +19,10 @@ const RestartApplication = () => {
         proceedBtnText="Yes, restart application"
         onProceed={handleRestart}
       >
-        <button className="flex gap-2 px-4 py-2 border border-[ring-offset-color] hover:bg-accent hover:text-accent-foreground ring-offset-background rounded transition-colors">
+        <button
+          disabled={disable}
+          className="flex gap-2 px-4 py-2 border border-[ring-offset-color] hover:bg-accent hover:text-accent-foreground ring-offset-background rounded transition-colors"
+        >
           <RotateCcw /> Restart Application
         </button>
       </AlertDialogBox>
