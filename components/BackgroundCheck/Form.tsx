@@ -6,9 +6,9 @@ import { UserCheck, AlertCircle } from "lucide-react";
 interface BackgroundCheckFormProps {
   onSubmit: (info: ProspectInfo) => void;
   isLoading: boolean;
-  onValidateForm: (formData: any) => boolean;
-  inputFields: any;
-  errors: any;
+  onValidateForm: (formData: ProspectInfo) => boolean;
+  inputFields: ProspectInfo;
+  errors: Partial<Record<keyof ProspectInfo, string>>;
   toggleErrors: (name: string) => void;
 }
 
@@ -25,11 +25,22 @@ export const Form: React.FC<BackgroundCheckFormProps> = ({
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    const target = e.target;
+    const name = target.name;
+
+    // If it's a checkbox, target is HTMLInputElement & has `.checked`
+    if (target instanceof HTMLInputElement && target.type === "checkbox") {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: target.checked,
+      }));
+    } else {
+      // Otherwise it's a text input or select, so use `value`
+      setFormData((prev) => ({
+        ...prev,
+        [name]: target.value,
+      }));
+    }
 
     // Clear error when field is updated
 
@@ -267,6 +278,26 @@ export const Form: React.FC<BackgroundCheckFormProps> = ({
             </div>
           </div>
         )}
+        <div className="flex items-start flex-col space-x-6">
+          <label className="inline-flex items-center">
+            <input
+              type="checkbox"
+              name="truthCheck"
+              checked={formData.truthCheck}
+              onChange={handleChange}
+              className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <span className="ml-2 text-sm text-gray-700 block  font-medium">
+              I confirm every information entered above is true
+            </span>
+          </label>
+          {errors.truthCheck && (
+            <p className="mt-1 text-sm text-red-600 flex items-center">
+              <AlertCircle className="h-4 w-4 mr-1" />
+              {errors.truthCheck}
+            </p>
+          )}
+        </div>
         <div className="mt-6">
           <button
             type="submit"

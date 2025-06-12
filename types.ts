@@ -10,6 +10,7 @@ export interface ProspectInfo {
   email: string;
   city: string;
   state: string;
+  truthCheck: boolean;
   city2: string | undefined;
   state2: string | undefined;
   lengthOfStay: "yes" | "no";
