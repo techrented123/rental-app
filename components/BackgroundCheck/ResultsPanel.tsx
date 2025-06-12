@@ -34,10 +34,10 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
   };
 
   React.useEffect(() => {
-    if (window.innerWidth <= 768 && error) {
+    if (window.innerWidth <= 768 && (error || results)) {
       window.scrollTo(0, document.body.scrollHeight);
     }
-  }, [window, error]);
+  }, [error, results]);
 
   if (isLoading) {
     return (
