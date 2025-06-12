@@ -192,7 +192,6 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
                   <Button
                     size="lg"
                     onClick={handleNext}
-                    disabled={stepOutputs[activeStep] === undefined}
                     className="bg-blue-500 flex justify-end items-center gap-1 px-3 py-1 hover:bg-blue-600 "
                   >
                     Next <ChevronRight size={18} />
