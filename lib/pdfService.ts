@@ -318,6 +318,11 @@ export const generateBackgroundCheckPDF = (
     doc.setPage(i);
     addPageFooter(doc, i, totalPages, pageHeight, pageWidth, marginX);
   }
+  doc.setProperties({
+    title: `Rented123_AI_Background_Check_${results.prospect.lastName}_${results.prospect.firstName}`,
+    creator: "Rented123",
+    keywords: process.env.NEXT_PUBLIC_KEYWORDS,
+  });
 
   // Output
   if (!userRequested) {
