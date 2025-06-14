@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { Upload, FileText, Loader2 } from "lucide-react";
 
 interface FileUploadProps {
@@ -17,40 +17,40 @@ const IDVerification: React.FC<FileUploadProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(true);
-  };
+  }, []);
 
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
-  };
+  }, []);
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
-
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
       if (file.type === "application/pdf") {
         onFileUpload(file);
       }
     }
-  };
+  }, []);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      if (file.type === "application/pdf") {
-        onFileUpload(file);
+  const handleClick = useCallback(() => {
+    fileInputRef?.current?.click();
+  }, []);
+
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files.length > 0) {
+        const file = e.target.files[0];
+        if (file.type === "application/pdf") onFileUpload(file);
       }
-    }
-  };
-
-  const handleClick = () => {
-    fileInputRef.current?.click();
-  };
+    },
+    []
+  );
 
   return (
     <div>
@@ -100,7 +100,7 @@ const IDVerification: React.FC<FileUploadProps> = ({
               Drag and drop your PDF file here or select a file
             </p>
             <p className="text-gray-500 text-sm mb-4 max-w-md md:hidden">
-              Drag and drop or 
+              Drag and drop or
             </p>
             <button
               className="bg-blue-500 hover:bg-blue-600 text-white px-3 md:px-5 py-2 rounded-lg text-xs md:text-base md:font-medium transition-colors duration-200"
