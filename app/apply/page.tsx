@@ -81,10 +81,15 @@ export default function Home() {
 
   React.useEffect(() => {
     const last_step = localStorage.getItem("last_saved_step");
+    const rentalInfo = localStorage.getItem("rental_and_applicant_info");
     if (last_step) {
       setLastSavedStep(JSON.parse(last_step));
     }
-  }, [slug]);
+    if (rentalInfo) {
+      const parsedRentalInfo = JSON.parse(rentalInfo);
+      setSlug(parsedRentalInfo.slug);
+    }
+  }, []);
 
   return (
     <div className="md:mt-3 flex-col md:flex justify-start h-screen items-start gap-4 md:gap-0">

@@ -92,6 +92,7 @@ export default function PropertyListing() {
         landlordName: "Rob Boies",
         address: prop.PropertyID.Address,
         rent: prop.Floorplan.EffectiveRent.$.Min,
+        slug,
       });
     }
   }, [prop, updateRentalInfo]);
