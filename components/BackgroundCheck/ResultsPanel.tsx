@@ -96,7 +96,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
     results.socialMedia.found;
 
   return (
-    <div className="!max-h-[370px]">
+    <div className="!max-h-[370px] md:!max-h-[540px] overflow-auto">
       <div className="flex flex-col md:flex-row gap-4 md:justify-between items-center mb-6 ">
         <div className="hidden md:flex">
           <FileText className="h-6 w-6 text-blue-700 mr-2" />
@@ -104,15 +104,14 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
             Background Check Results
           </h2>
         </div>
-        {showDownloadButton && (
-          <button
-            onClick={handleDownloadPDF}
-            className="text-md md:text-lg w-fit flex items-center text-center px-3 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition-colors"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Download PDF
-          </button>
-        )}
+
+        <button
+          onClick={handleDownloadPDF}
+          className="text-sm flex items-center text-center px-3 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition-colors"
+        >
+          <Download className="h-4 w-4 mr-2" />
+          Download
+        </button>
       </div>
 
       <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-6">
@@ -284,6 +283,9 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
         <h4 className="font-medium mb-2">Overall Recommendation</h4>
         <p className="text-gray-800">{results.overallRecommendation}</p>
       </div>
+      <p className="text-xs text-center py-4 text-gray-500">
+        AI can make mistakes. Some results may not be completely accurate
+      </p>
     </div>
   );
 };

@@ -66,7 +66,7 @@ export const Form: React.FC<BackgroundCheckFormProps> = ({
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4 px-2.5">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1  gap-4">
           <div>
             <label
               htmlFor="firstName"
@@ -127,7 +127,7 @@ export const Form: React.FC<BackgroundCheckFormProps> = ({
             <input
               type="email"
               id="email"
-              placeholder="Enter your most widely used email address"
+              placeholder="Most widely used email "
               name="email"
               value={formData.email}
               onChange={handleChange}
@@ -345,7 +345,7 @@ export const Form: React.FC<BackgroundCheckFormProps> = ({
                 Privacy policy
               </a>
             </span>
-            <span className="hidden md:block">
+            <span className="hidden md:block text-xs">
               By proceeding you agree to Rented123 using AI to run a background
               check on you. Your personal information will not be stored
               anywhere. For more information, see our{" "}
