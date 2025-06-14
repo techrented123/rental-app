@@ -74,7 +74,7 @@ export default function PropertyListing() {
       setLoading(false);
       return;
     }
-    updateRentalInfo({slug})
+    updateRentalInfo({ slug });
     fetch(`/api/property?slug=${slug}`)
       .then((res) => {
         if (!res.ok) throw new Error(res.statusText);
@@ -96,7 +96,33 @@ export default function PropertyListing() {
     }
   }, [prop, updateRentalInfo]);
 
-  if (loading) return <p className="p-8 text-center">Loading…</p>;
+  if (loading)
+    return (
+      <div className="animate-pulse p-8 min-h-screen">
+        <div className="p-3 grid md:grid-cols-2 gap-4 h-[40vh] md:h-[60vh]">
+          <div className="bg-gray-200 rounded-xl relative bg-cover bg-center cursor-pointer col-span-2 md:col-span-1"></div>
+          <div className="bg-gray-200 hidden md:grid grid-cols-2 gap-2 md:relative rounded-lg">
+            {Array(5)
+              .fill(0)
+              .slice(1, 5)
+              .map((_, index) => (
+                <div
+                  key={index}
+                  className="relative bg-cover bg-gray-200  bg-center cursor-pointer rounded-lg"
+                >
+                  <div className="absolute inset-0 bg-black/20 hover:bg-black/30 transition-colors rounded-md" />
+                </div>
+              ))}
+          </div>
+        </div>
+        <div className="container mx-auto px-4 py-8  ">
+          <div className="grid md:grid-cols-3 gap-8 ">
+            <div className="md:col-span-2 bg-gray-200 h-[40vh] rounded-xl"></div>
+            <div className="md:col-span-1 mb-6 bg-gray-200 rounded-xl"></div>
+          </div>
+        </div>
+      </div>
+    );
   if (error) return <p className="p-8 text-center text-red-600">{error}</p>;
   if (!prop) return null;
 
