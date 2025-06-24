@@ -6,12 +6,12 @@ import {
   Home,
   MapPin,
   Maximize2,
-  Share2,
   ChevronLeft,
   ChevronRight,
   X,
   Image,
   Newspaper,
+  ChevronDown,
 } from "lucide-react";
 type RawRoom = { $: { RoomType: string }; Count: string };
 type RawFile = { Src: string };
@@ -53,11 +53,13 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import Link from "next/link";
 import { useRentalApplicationContext } from "@/contexts/rental-application-context";
 import ContactForm from "./ContactForm";
+import { useRouter } from "next/navigation";
+import AddressMap from "./AddressMap";
 
 export default function PropertyListing() {
   const params = useSearchParams();
   const slug = params.get("slug") || "";
-
+  const router = useRouter();
   const [prop, setProp] = useState<RawProperty | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -66,12 +68,14 @@ export default function PropertyListing() {
   const [mobileImageIndex, setMobileImageIndex] = useState(0);
   const [open, setOpen] = useState(false);
   const [showResponse, setShowResponse] = useState(false);
+  const [linesNumber, setLinesNumber] = useState(3);
 
   const { updateRentalInfo } = useRentalApplicationContext();
   useEffect(() => {
     if (!slug) {
       setError("No property specified.");
       setLoading(false);
+      router.push("/404");
       return;
     }
     updateRentalInfo({ slug });
@@ -148,6 +152,8 @@ export default function PropertyListing() {
     Information: { StructureType: type, LongDescription: description },
   } = prop;
 
+  const sentences = description.split(".");
+  console.log({ sentences });
   // normalize rooms
   const rooms = Array.isArray(prop.Floorplan.Room)
     ? prop.Floorplan.Room
@@ -206,7 +212,6 @@ export default function PropertyListing() {
       });
       if (!response.ok) throw new Error(``);
       const data = await response.json();
-      console.log(data.$metadata);
       if (data.$metadata.httpStatusCode === 200) {
         setShowResponse(true);
       }
@@ -327,20 +332,37 @@ export default function PropertyListing() {
             <Separator className="my-8" />
 
             <div className="prose max-w-none">
-              <h3 className="text-xl md:text-2xl font-semibold mb-4">
+              <h3 className="text-xl md:text-xl font-semibold mb-4">
                 Property Details
               </h3>
-              <div className="text-gray-600 mb-4">
-                {description.split(".").map((sentence, index) =>
-                  index === 3 ? (
-                    <div className="mb-2" key={index}>
-                      {sentence}.
-                    </div>
-                  ) : (
-                    sentence + "."
-                  )
+              <div className="mb-4 space-y-1">
+                <div className={`text-gray-600 line-clamp-${linesNumber}`}>
+                  {description}
+                </div>
+                {sentences.length > 2 && (
+                  <div>
+                    {linesNumber === 3 ? (
+                      <span
+                        onClick={() => setLinesNumber(sentences.length - 1)}
+                        className="hover:cursor-pointer underline"
+                      >
+                        Show More
+                      </span>
+                    ) : (
+                      <span
+                        onClick={() => setLinesNumber(3)}
+                        className="hover:cursor-pointer underline"
+                      >
+                        Show Less
+                      </span>
+                    )}
+                  </div>
                 )}
               </div>
+              <h3 className="text-xl md:text-xl font-semibold my-4 pt-2">
+                Location
+              </h3>
+              <AddressMap address={`${street} ${city} ${state}`} />
             </div>
           </div>
 
@@ -424,6 +446,7 @@ export default function PropertyListing() {
         </DialogContent>
       </Dialog>
       <ContactForm
+        title={street}
         onSubmit={submitHandler}
         open={open}
         onOpen={setOpen}

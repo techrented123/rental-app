@@ -3,15 +3,17 @@ import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Toast, ToastProvider, ToastTitle, ToastViewport } from "./ui/toast";
 import { Appointment } from "@/types";
-
+import { Calendar, Send } from "lucide-react";
 const ContactForm = ({
   onSubmit,
   open,
   onOpen,
   showResponse,
+  title,
 }: {
   onSubmit: (formData: Appointment) => void;
   open: boolean;
+  title: string;
   showResponse: boolean;
   onOpen: (open: boolean) => void;
 }) => {
@@ -21,7 +23,10 @@ const ContactForm = ({
     name: "",
     email: "",
     message: "",
+    move_in_date: "",
+    phone_number: "",
   });
+  const [focused, setFocused] = useState(false);
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -31,13 +36,27 @@ const ContactForm = ({
 
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.email || !formData.name || !formData.message) return;
+    if (
+      !formData.email ||
+      !formData.name ||
+      !formData.message ||
+      !formData.move_in_date
+    )
+      return;
     onSubmit(formData);
-    setFormData({ name: "", email: "", message: "" });
+    setFormData({
+      name: "",
+      email: "",
+      message: "",
+      phone_number: "",
+      move_in_date: "",
+    });
   };
+
   React.useEffect(() => {
     return () => clearTimeout(timerRef.current);
   }, []);
+
   return (
     <ToastProvider swipeDirection="right">
       <Dialog open={open} onOpenChange={onOpen}>
@@ -52,7 +71,7 @@ const ContactForm = ({
         ) : (
           <DialogContent className="w-[80%] rounded-lg">
             <DialogTitle className="text-center font-medium text-lg">
-              Request Viewing
+              {title}
             </DialogTitle>
 
             <form onSubmit={submitHandler} className="space-y-5">
@@ -60,24 +79,57 @@ const ContactForm = ({
                 type="text"
                 name="name"
                 value={formData.name}
-                placeholder="Name"
+                placeholder="Full Name"
                 aria-required
                 required
                 onChange={handleChange}
                 className={`w-full px-3 py-2 border ${"border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
               />
-              <input
-                type="email"
-                name="email"
-                aria-required
-                required
-                value={formData.email}
-                placeholder="Email Address"
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border ${"border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
-              />
+
+              <div className="grid md:grid-cols-2 gap-2">
+                <input
+                  type="email"
+                  name="email"
+                  aria-required
+                  required
+                  value={formData.email}
+                  placeholder="Email Address"
+                  onChange={handleChange}
+                  className={`w-full px-3 py-2 border ${"border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                />
+                <input
+                  type="phone"
+                  name="phone_number"
+                  value={formData.phone_number}
+                  placeholder="Phone"
+                  onChange={handleChange}
+                  className={`w-full px-3 py-2 border ${"border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                />
+              </div>
+              <div className="flex items-center pr-1 rounded-md justify-between border focus:ring-2 focus:ring-blue-500 border-gray-300">
+                <input
+                  type={focused ? "date" : "text"}
+                  name="move_in_date"
+                  aria-required
+                  onFocus={() => setFocused(true)}
+                  onBlur={(e) => {
+                    if (!e.target.value) setFocused(false);
+                  }}
+                  required
+                  value={formData.move_in_date}
+                  placeholder={focused ? "" : "Preferred Move-in Date"}
+                  onChange={handleChange}
+                  className="w-full pl-2 pr-0 py-2 bg-transparent outline-none"
+                />
+                {!focused && (
+                  <span>
+                    <Calendar size={15} />
+                  </span>
+                )}
+              </div>
+
               <textarea
-                placeholder="What day and time will work best for you..."
+                placeholder="Leave us a message..."
                 rows={5}
                 cols={10}
                 value={formData.message}
@@ -88,7 +140,7 @@ const ContactForm = ({
                 className={`w-full px-3 py-2 border ${"border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
               ></textarea>
               <Button
-                className="bg-blue-600 hover:bg-blue-500 w-full"
+                className="bg-blue-600 hover:bg-blue-500 w-full flex items-center gap-1"
                 type="submit"
                 /* onClick={() => {
                 setShowToast(false);
@@ -100,6 +152,7 @@ const ContactForm = ({
               }} */
               >
                 Send
+                <Send size={15} />
               </Button>
             </form>
 

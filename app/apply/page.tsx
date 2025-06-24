@@ -93,7 +93,7 @@ export default function Home() {
 
   return (
     <div className="md:mt-3 flex-col md:flex justify-start h-screen items-start gap-4 md:gap-0">
-      <div className="p-2 hover:bg-blue-100 ml-2.5 w-[40px] h-[40px] rounded-full ">
+      <div className="p-2 md:hover:bg-blue-400 md:hover:text-white ml-2.5 w-[40px] h-[40px] rounded-full ">
         <Link href={`/?slug=${slug}`} className="">
           <ChevronLeft />
         </Link>
