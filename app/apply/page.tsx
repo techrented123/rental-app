@@ -90,11 +90,14 @@ export default function Home() {
       setSlug(parsedRentalInfo.slug);
     }
   }, []);
+  const handleClick = () => {
+    console.log(343)
+  };
 
   return (
     <div className="md:mt-3 flex-col md:flex justify-start h-screen items-start gap-4 md:gap-0">
       <div className="p-2 md:hover:bg-blue-400 md:hover:text-white ml-2.5 w-[40px] h-[40px] rounded-full ">
-        <Link href={`/?slug=${slug}`} className="">
+        <Link href={`/?slug=${slug}`} className="" onClick={handleClick}>
           <ChevronLeft />
         </Link>
       </div>

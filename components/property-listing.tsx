@@ -342,7 +342,7 @@ export default function PropertyListing() {
                 <div className={`text-gray-600 line-clamp-${linesNumber}`}>
                   {description}
                 </div>
-                {sentences.length > 3 && (
+                {/*   {sentences.length > 3 && (
                   <div>
                     {linesNumber === 3 ? (
                       <span
@@ -364,7 +364,7 @@ export default function PropertyListing() {
                       </span>
                     )}
                   </div>
-                )}
+                )} */}
               </div>
               <h3 className="text-xl md:text-xl font-semibold my-4 pt-2">
                 Location
