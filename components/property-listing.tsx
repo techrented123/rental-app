@@ -86,7 +86,10 @@ export default function PropertyListing() {
       })
       .then((data: RawProperty) => setProp(data))
       .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        setLinesNumber(3);
+      });
   }, [slug]);
 
   useEffect(() => {
@@ -153,7 +156,7 @@ export default function PropertyListing() {
   } = prop;
 
   const sentences = description.split(".");
-  console.log({ sentences });
+
   // normalize rooms
   const rooms = Array.isArray(prop.Floorplan.Room)
     ? prop.Floorplan.Room
@@ -346,7 +349,7 @@ export default function PropertyListing() {
                         onClick={() => {
                           setLinesNumber(sentences.length);
                         }}
-                        className="hover:cursor-pointer underline"
+                        className="hover:cursor-pointer underline text-blue-600"
                       >
                         Show More
                       </span>
@@ -355,7 +358,7 @@ export default function PropertyListing() {
                         onClick={() => {
                           setLinesNumber(3);
                         }}
-                        className="hover:cursor-pointer underline"
+                        className="hover:cursor-pointer text-gray-600 underline"
                       >
                         Show Less
                       </span>
