@@ -339,18 +339,22 @@ export default function PropertyListing() {
                 <div className={`text-gray-600 line-clamp-${linesNumber}`}>
                   {description}
                 </div>
-                {sentences.length > 2 && (
+                {sentences.length > 3 && (
                   <div>
                     {linesNumber === 3 ? (
                       <span
-                        onClick={() => setLinesNumber(sentences.length - 1)}
+                        onClick={() => {
+                          setLinesNumber(sentences.length);
+                        }}
                         className="hover:cursor-pointer underline"
                       >
                         Show More
                       </span>
                     ) : (
                       <span
-                        onClick={() => setLinesNumber(3)}
+                        onClick={() => {
+                          setLinesNumber(3);
+                        }}
                         className="hover:cursor-pointer underline"
                       >
                         Show Less
