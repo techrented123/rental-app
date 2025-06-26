@@ -3,7 +3,7 @@ import { Suspense } from "react";
 
 export default function Home() {
   return (
-    <Suspense fallback={<p>Loading query params…</p>}>
+    <Suspense fallback={''}>
       <div className="!overflow-y-auto h-screen">
         <PropertyListing />
       </div>
