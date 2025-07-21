@@ -54,7 +54,7 @@ const Plans = () => {
       <div className="container mx-auto px-4 max-h-[400px]">
         <Card className="max-w-6xl mx-auto border-none">
           <CardHeader className="pt-0">
-            <CardTitle className="text-2xl font-bold text-center hidden md:flex">
+            <CardTitle className="text-2xl font-bold text-center hidden md:block">
               Renting is better as a Member
             </CardTitle>
             <p className="text-center text-muted-foreground mt-4 md:mt-2">

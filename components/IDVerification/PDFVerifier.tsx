@@ -110,7 +110,11 @@ const PDFVerifier = ({
       <div className="px-6 sm:px-8">
         <p className="text-gray-700 mt-2 text-center text-sm font-medium gap-1 flex items-center justify-center">
           <a
-            href="https://rented123.com/sign-up/silver"
+            href={
+              reportType === "ID verification"
+                ? `https://rented123.com/product/id-verification/`
+                : "https://rented123.com/product/credit-check/"
+            }
             target="_blank"
             className="underline text-gray-550"
           >
