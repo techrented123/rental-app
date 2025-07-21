@@ -5,16 +5,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Check, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
+/*
+24/7/365 Rental Support & Advice
+ Landlord Certification & Reference Letter
+ Earn loyalty Points with affiliate partners
+ Rent Reporting to Credit Companies
+*/
 const membershipPlans = [
   {
     id: "bronze",
     name: "Bronze",
     price: 4.99,
     benefits: [
-      "Standard application processing",
-      "Basic background check",
-      "Landlord certification check and reference letter",
-      "48-hour response time",
+      " 24/7/365 Rental Support & Advice",
+      "Landlord Certification & Reference Letter",
     ],
   },
   {
@@ -22,12 +26,10 @@ const membershipPlans = [
     name: "Silver",
     price: 9.99,
     benefits: [
-      "Priority application processing",
-      "Comprehensive background check",
-      "Credit score insights",
-      "24/7 phone support",
-      "24-hour response time",
-      "Rental history verification",
+      "24/7/365 Rental Support & Advice",
+      "Landlord Certification & Reference Letter",
+      "Earn loyalty Points with affiliate partners",
+      "Rent Reporting to Credit Companies",
     ],
   },
   {
@@ -35,14 +37,11 @@ const membershipPlans = [
     name: "Gold",
     price: 24.99,
     benefits: [
-      "Instant application processing",
-      "Advanced background check",
       "Full credit report",
-      "Dedicated support agent",
-      "Instant response time",
-      "Rental history verification",
-      "Income verification",
-      "Guaranteed approval decision",
+      "24/7/365 Rental Support & Advice",
+      "Landlord Certification & Reference Letter",
+      "Earn loyalty Points with affiliate partners",
+      "Rent Reporting to Credit Companies",
     ],
   },
 ];
@@ -108,7 +107,7 @@ const Plans = () => {
                     </div>
 
                     <Link
-                      href={`https://rented123.com/sign-up/${plan.id}`}
+                      href={`https://rented123.com/${plan.id}`}
                       target="_blank"
                     >
                       {" "}
