@@ -319,8 +319,8 @@ export const generateBackgroundCheckPDF = (
     addPageFooter(doc, i, totalPages, pageHeight, pageWidth, marginX);
   }
   doc.setProperties({
-    title: `Rented123_AI_Background_Check_${results.prospect.lastName}_${results.prospect.firstName}`,
-    creator: "Rented123",
+    title: `Rented123_AI_Background_Check`,
+    author: "Rented123",
     keywords: process.env.NEXT_PUBLIC_KEYWORDS,
   });
 
@@ -463,7 +463,7 @@ export async function mergePdfs(
   }
 
   // 4) Serialize to Uint8Array and wrap in a Blob
-  const mergedBytes = await mergedPdf.save(); // Uint8Array
+  const mergedBytes = (await mergedPdf.save()) as any; // Uint8Array
   return new Blob([mergedBytes], { type: "application/pdf" });
 }
 
