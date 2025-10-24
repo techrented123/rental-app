@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { ApplicationFormInfo, ProspectInfo } from "@/types";
+import { ApplicantInfo, ApplicationFormInfo } from "@/types";
 
 import { UserCheck, AlertCircle, Plus, X } from "lucide-react";
 interface ApplicationFormProps {
   onSubmit: (info: ApplicationFormInfo) => void;
   isLoading: boolean;
   onValidateForm: (formData: ApplicationFormInfo) => boolean;
-  preFilledFields: Partial<ProspectInfo>;
- 
+  preFilledFields: Partial<ApplicantInfo>;
+
   errors: Record<string, string>;
   toggleErrors: (name: string) => void;
 }
@@ -22,8 +22,9 @@ export const Form: React.FC<ApplicationFormProps> = ({
 }) => {
   const [formData, setFormData] = useState<ApplicationFormInfo>({
     applicant: {
-      firstName: preFilledFields.firstName ?? "",
-      lastName: preFilledFields.lastName ?? "",
+      fullName: preFilledFields.fullName ?? "",
+      dob: preFilledFields.dob ?? "",
+      gender: preFilledFields.gender ?? "",
       email: preFilledFields.email ?? "",
       address: "",
       city: preFilledFields.city ?? "",
@@ -168,64 +169,33 @@ export const Form: React.FC<ApplicationFormProps> = ({
             {" "}
             Personal Information
           </h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             <div>
               <label
-                htmlFor="applicant_firstName"
+                htmlFor="applicant_fullName"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                First Name
-              </label>
-
-              <input
-                id="applicant_firstName"
-                name="applicant_firstName"
-                type="text"
-                value={formData.applicant.firstName}
-                onChange={handleChange}
-                minLength={2}
-                required
-                aria-required
-                className={`
-      w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500
-      ${errors["applicant_firstName"] ? "border-red-500" : "border-gray-300"}
-    `}
-              />
-
-              {errors["applicant_firstName"] && (
-                <p className="mt-1 text-sm text-red-600 flex items-center">
-                  <AlertCircle className="h-4 w-4 mr-1" />
-                  {errors["applicant_firstName"]}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label
-                htmlFor="applicant_lastName"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Last Name
+                Full Name
               </label>
               <input
                 type="text"
                 minLength={2}
                 required
                 aria-required
-                id="applicant_lastName"
-                name="applicant_lastName"
-                value={formData.applicant.lastName}
+                id="applicant_fullName"
+                name="applicant_fullName"
+                value={formData.applicant.fullName}
                 onChange={handleChange}
                 className={`w-full px-3 py-2 border ${
-                  errors["applicant_lastName"]
+                  errors["applicant_fullName"]
                     ? "border-red-500"
                     : "border-gray-300"
                 } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
               />
-              {errors["applicant_lastName"] && (
+              {errors["applicant_fullName"] && (
                 <p className="mt-1 text-sm text-red-600 flex items-center">
                   <AlertCircle className="h-4 w-4 mr-1" />
-                  {errors["applicant_lastName"]}
+                  {errors["applicant_fullName"]}
                 </p>
               )}
             </div>
@@ -956,7 +926,7 @@ ${errors[cityFieldName] ? "border-red-500" : "border-gray-300"}
               name="truthConfirmation_name"
               type="text"
               value={
-                formData.applicant.firstName + " " + formData.applicant.lastName
+                formData.applicant.fullName
               }
               readOnly
               className={`

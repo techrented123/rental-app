@@ -12,8 +12,7 @@ import {
   CreditCard,
 } from "lucide-react";
 import Plans from "@/components/membership-plans";
-import PDFVerifier from "@/components/IDVerification/PDFVerifier";
-import BackgroundCheck from "@/components/BackgroundCheck";
+import PDFVerifier from "@/components/CompleteVerification/PDFVerifier";
 import ApplicationForm from "@/components/ApplicationForm";
 import { RentalAgreement } from "@/components/Documents/RentalAgreement";
 import SubmitApplication from "@/components/SubmitApplication";
@@ -29,19 +28,15 @@ const steps = [
     content: <Plans />,
   },
   {
-    title: "ID Verification",
+    title: "Complete 3-in-1 Verification Report",
     icon: Building2,
     content: (
       <PDFVerifier
-        reportType="ID verification"
-        verificationParams={{
-          title: ["ID Verification Result"],
-          keywordsLength: 3,
-        }}
+       
       />
     ),
   },
-  {
+  /* {
     title: "Credit Check",
     icon: DollarSign,
     content: (
@@ -58,7 +53,7 @@ const steps = [
     title: "AI Background Check",
     icon: Users,
     content: <BackgroundCheck />,
-  },
+  }, */
   {
     title: "Application Form",
     icon: FileText,

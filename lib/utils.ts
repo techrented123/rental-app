@@ -51,3 +51,41 @@ export function base64ToFile(
   // Build a File
   return new File([buffer], fileName, { type: mimeType });
 }
+
+export const storeFileInIndexedDB = async (file: File, key: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("RentalAppFiles", 1);
+
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const db = request.result;
+      const transaction = db.transaction(["files"], "readwrite");
+      const store = transaction.objectStore("files");
+      store.put(file, key);
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error);
+    };
+
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      db.createObjectStore("files");
+    };
+  });
+};
+
+export const getFileFromIndexedDB = async (key: string): Promise<File | null> => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("RentalAppFiles", 1);
+
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const db = request.result;
+      const transaction = db.transaction(["files"], "readonly");
+      const store = transaction.objectStore("files");
+      const getRequest = store.get(key);
+
+      getRequest.onsuccess = () => resolve(getRequest.result || null);
+      getRequest.onerror = () => reject(getRequest.error);
+    };
+  });
+};

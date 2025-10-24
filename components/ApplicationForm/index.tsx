@@ -4,8 +4,9 @@ import { ApplicationFormInfo } from "@/types";
 import { useRentalApplicationContext } from "@/contexts/rental-application-context";
 import VerificationResult, {
   VerificationStatus,
-} from "../IDVerification/VerificationResult";
+} from "../CompleteVerification/VerificationResult";
 import { Loader2 } from "lucide-react";
+import { sub } from "date-fns";
 type ErrorMap = Record<string, string>;
 
 export default function ApplicationForm() {
@@ -16,8 +17,18 @@ export default function ApplicationForm() {
 
   const { updateStepOutput, updateRentApplicationStatus, stepOutputs } =
     useRentalApplicationContext();
+  console.log({ stepOutputs });
+  const { subject } = stepOutputs[1];
+  const parsedSubject = JSON.parse(subject);
+  const { name, dob, gender } = parsedSubject;
+  const names = name.split(" ");
+  const fullName = names[1] + " " + names[2] + " " + names[0];
+  const date = new Date(dob).toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 
-  const { state, lengthOfStay, ...userInfo } = stepOutputs[3].prospect;
   const toggleErrors = (name: string) => {
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
@@ -81,7 +92,7 @@ export default function ApplicationForm() {
             onValidateForm={validateForm}
             errors={errors}
             toggleErrors={toggleErrors}
-            preFilledFields={userInfo}
+            preFilledFields={{ fullName, dob, gender }}
           />
         </div>
       ) : verificationStatus === "verifying" ? (

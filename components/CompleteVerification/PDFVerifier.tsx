@@ -5,15 +5,9 @@ import VerificationResult, { VerificationStatus } from "./VerificationResult";
 import { PDFDocument } from "pdf-lib";
 import { useRentalApplicationContext } from "@/contexts/rental-application-context";
 import { ExternalLink } from "lucide-react";
-import { fileToBase64 } from "@/lib/utils";
+import { fileToBase64, storeFileInIndexedDB } from "@/lib/utils";
 
-const PDFVerifier = ({
-  reportType,
-  verificationParams: { keywordsLength, title: expectedTitles },
-}: {
-  reportType: string;
-  verificationParams: { keywordsLength: number; title: string[] };
-}) => {
+const PDFVerifier = () => {
   const [verificationStatus, setVerificationStatus] =
     useState<VerificationStatus>("idle");
 
@@ -29,17 +23,22 @@ const PDFVerifier = ({
 
     const title = pdf.getTitle() || "";
     const author = pdf.getAuthor() || "";
-    const keywords = (pdf.getKeywords() || "").split(" ");
-
+    const keywords = pdf.getKeywords() || "";
+    const subject = pdf.getSubject() || "";
+    const expectedTitle = process.env.NEXT_PUBLIC_TITLE;
+    const expectedAuthor = process.env.NEXT_PUBLIC_AUTHOR;
+    const expectedKeywords = process.env.NEXT_PUBLIC_KEYWORDS;
+    console.log({ title, author, keywords, subject });
+    console.log({ expectedTitle, expectedAuthor, expectedKeywords });
     if (
-      !expectedTitles.includes(title) ||
-      author !== "Rented123" ||
-      keywords.length !== keywordsLength
+      title === expectedTitle &&
+      author === expectedAuthor &&
+      keywords === expectedKeywords
     ) {
-      return { isValid: false, message: "Invalid document" };
+      return { isValid: true, message: "Valid Document", subject };
     }
 
-    return { isValid: true, message: "Valid Document" };
+    return { isValid: false, message: "Invalid document" };
   };
 
   const handleFileUpload = async (file: File) => {
@@ -49,11 +48,17 @@ const PDFVerifier = ({
     setIsVerifying(true);
     setVerificationStatus("verifying");
     try {
-      const { isValid, message } = await verifyPDF(file);
+      const { isValid, message, subject } = await verifyPDF(file);
       if (isValid) {
-        const b64 = await fileToBase64(file);
-        updateStepOutput(b64);
-        updateRentApplicationStatus(reportType !== "credit" ? 2 : 3);
+        try {
+          const fileKey = `pdf_verification_${Date.now()}`;
+          await storeFileInIndexedDB(file, fileKey);
+          updateStepOutput({ key: fileKey, fileName: file.name, subject });
+          updateRentApplicationStatus(2);
+        } catch (base64Error) {
+          console.error("Error converting file to base64:", base64Error);
+          throw base64Error; // Re-throw to trigger the outer catch
+        }
       }
       // Simulate a delay to show the loading state
       setTimeout(() => {
@@ -62,6 +67,7 @@ const PDFVerifier = ({
 
         setIsVerifying(false);
       }, 1500);
+      console.log({ isValid, message });
     } catch (error) {
       setTimeout(() => {
         setVerificationStatus("error");
@@ -79,20 +85,19 @@ const PDFVerifier = ({
 
   React.useEffect(() => {
     handleReset();
-  }, [reportType]);
+  }, []);
 
   return (
     <div className="bg-white rounded-xl !h-[400px] overflow-hidden transition-all duration-300 mt-4">
       <div
         className={`px-6 md:py-6 sm:px-8 py-3
-        `}
+       `}
       >
         {verificationStatus === "idle" || verificationStatus === "verifying" ? (
           <FileUpload
             onFileUpload={handleFileUpload}
             isVerifying={isVerifying}
             fileName={fileName}
-            reportType={reportType}
           />
         ) : (
           <VerificationResult
@@ -107,18 +112,14 @@ const PDFVerifier = ({
           />
         )}
       </div>
-      <div className="px-6 sm:px-8">
+      <div className="px-6 sm:px-8 ">
         <p className="text-gray-700 mt-2 text-center text-sm font-medium gap-1 flex items-center justify-center">
           <a
-            href={
-              reportType === "ID verification"
-                ? `https://rented123.com/product/id-verification/`
-                : "https://rented123.com/product/credit-check/"
-            }
+            href={"https://rented123.com/product/complete-verification/"}
             target="_blank"
             className="underline text-gray-550"
           >
-            I do not have a Rented123 {reportType} report{" "}
+            I do not have a Rented123 Complete 3-in-1 Verification report{" "}
           </a>{" "}
           <ExternalLink size={16} />
         </p>

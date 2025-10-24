@@ -5,14 +5,12 @@ interface FileUploadProps {
   onFileUpload: (file: File) => void;
   isVerifying?: boolean;
   fileName?: string | null;
-  reportType: string;
 }
 
-const IDVerification: React.FC<FileUploadProps> = ({
+const CompleteVerification: React.FC<FileUploadProps> = ({
   onFileUpload,
   isVerifying,
   fileName,
-  reportType,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -93,7 +91,7 @@ const IDVerification: React.FC<FileUploadProps> = ({
               <Upload className="h-4 w-4 md:h-8 md:w-8 text-blue-500" />
             </div>
             <h3 className="md:text-lg font-medium text-gray-700 mb-2">
-              Upload your {reportType} report
+              Upload your Complete 3-in-1 Verification Report
             </h3>
 
             <p className="text-gray-500 text-sm mb-4 max-w-md hidden md:block">
@@ -118,4 +116,4 @@ const IDVerification: React.FC<FileUploadProps> = ({
   );
 };
 
-export default IDVerification;
+export default CompleteVerification;

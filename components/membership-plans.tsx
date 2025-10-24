@@ -30,18 +30,20 @@ const membershipPlans = [
       "Landlord Certification & Reference Letter",
       "Earn loyalty Points with affiliate partners",
       "Rent Reporting to Credit Companies",
+      "Back Rent Reporting to Credit Companies",
     ],
   },
   {
     id: "gold",
     name: "Gold",
-    price: 24.99,
+    price: 29.99,
     benefits: [
       "Full credit report",
       "24/7/365 Rental Support & Advice",
       "Landlord Certification & Reference Letter",
       "Earn loyalty Points with affiliate partners",
       "Rent Reporting to Credit Companies",
+      "Back Rent Reporting to Credit Companies",
     ],
   },
 ];
@@ -107,7 +109,7 @@ const Plans = () => {
                     </div>
 
                     <Link
-                      href={`https://rented123.com/${plan.id}`}
+                      href={`https://services.dashboard.rented123.com/register/?plan=${plan.id}`}
                       target="_blank"
                     >
                       {" "}

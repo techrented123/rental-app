@@ -18,7 +18,10 @@ const defaultContext: RentalApplicationContextType = {
   stepOutputs: [],
   updateRentalInfo: (updatedRentalState: string) => {},
   updateRentApplicationStatus: (index: number) => {},
-  updateStepOutput: (updatedStepOutput: File | any) => {},
+  updateStepOutput: (updatedStepOutput: {
+    key: string;
+    fileName: string;
+  }) => {},
   restartApplication: () => {},
 };
 
