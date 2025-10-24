@@ -20,14 +20,25 @@ export default function ApplicationForm() {
   console.log({ stepOutputs });
   const { subject } = stepOutputs[1];
   const parsedSubject = JSON.parse(subject);
-  const { name, dob, gender } = parsedSubject;
+  const { name, dob, gender, email } = parsedSubject;
   const names = name.split(" ");
   const fullName = names[1] + " " + names[2] + " " + names[0];
-  const date = new Date(dob).toLocaleDateString("en-US", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+
+  // Map gender values to match form options
+  const mapGender = (genderValue: string) => {
+    const lowerGender = genderValue.toLowerCase();
+    if (lowerGender === "male" || lowerGender === "m") return "Male";
+    if (lowerGender === "female" || lowerGender === "f") return "Female";
+    if (lowerGender === "other") return "Other";
+    if (
+      lowerGender === "prefer not to say" ||
+      lowerGender === "prefer not to answer"
+    )
+      return "Prefer not to say";
+    return genderValue; // Return original if no match
+  };
+
+  const mappedGender = mapGender(gender);
 
   const toggleErrors = (name: string) => {
     setErrors((prev) => ({ ...prev, [name]: "" }));
@@ -35,6 +46,19 @@ export default function ApplicationForm() {
   const validateForm = (formData: ApplicationFormInfo): boolean => {
     const newErrors: ErrorMap = {};
     let isValid = true;
+    // Helper functions for validation
+    const isValidEmail = (email: string): boolean => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    };
+
+    const isValidPhone = (phone: string): boolean => {
+      // Remove all non-digit characters for validation
+      const digitsOnly = phone.replace(/\D/g, "");
+      // Check if it has 10-15 digits (international format)
+      return digitsOnly.length >= 10 && digitsOnly.length <= 15;
+    };
+
     // Recursive helper
     function check(value: object | string | boolean, path: string) {
       if (typeof value === "string") {
@@ -42,6 +66,32 @@ export default function ApplicationForm() {
         if (!value.trim()) {
           newErrors[path] = "This field is required";
           isValid = false;
+        } else {
+          // Additional validation for specific fields
+          if (path === "applicant_email") {
+            if (!isValidEmail(value.trim())) {
+              newErrors[path] = "Please enter a valid email address";
+              isValid = false;
+            }
+          } else if (path === "applicant_phone") {
+            if (!isValidPhone(value.trim())) {
+              newErrors[path] =
+                "Please enter a valid phone number (10-15 digits)";
+              isValid = false;
+            }
+          } else if (path.includes("emergencyContactPhone")) {
+            if (!isValidPhone(value.trim())) {
+              newErrors[path] =
+                "Please enter a valid phone number (10-15 digits)";
+              isValid = false;
+            }
+          } else if (path.includes("landlordPhone")) {
+            if (!isValidPhone(value.trim())) {
+              newErrors[path] =
+                "Please enter a valid phone number (10-15 digits)";
+              isValid = false;
+            }
+          }
         }
       } else if (typeof value === "boolean") {
         // only termsAndConditions is boolean; require true
@@ -92,7 +142,7 @@ export default function ApplicationForm() {
             onValidateForm={validateForm}
             errors={errors}
             toggleErrors={toggleErrors}
-            preFilledFields={{ fullName, dob, gender }}
+            preFilledFields={{ fullName, dob, gender: mappedGender, email }}
           />
         </div>
       ) : verificationStatus === "verifying" ? (

@@ -3,11 +3,10 @@ import * as React from "react";
 import { ChevronLeft } from "lucide-react";
 import FormStepper from "@/components/ui/stepper";
 import {
-  UserCircle,
-  Building2,
-  DollarSign,
+  Crown,
+  FileCheck,
   FileText,
-  Users,
+  PenTool,
   CheckCircle,
   CreditCard,
 } from "lucide-react";
@@ -24,17 +23,13 @@ const steps = [
   {
     title: "Membership Plans",
     description: "Optional",
-    icon: UserCircle,
+    icon: Crown,
     content: <Plans />,
   },
   {
-    title: "Complete 3-in-1 Verification Report",
-    icon: Building2,
-    content: (
-      <PDFVerifier
-       
-      />
-    ),
+    title: "Verification Report",
+    icon: FileCheck,
+    content: <PDFVerifier />,
   },
   /* {
     title: "Credit Check",
@@ -61,7 +56,7 @@ const steps = [
   },
   {
     title: "Signatures",
-    icon: CheckCircle,
+    icon: PenTool,
     content: <RentalAgreement />,
   },
   {
