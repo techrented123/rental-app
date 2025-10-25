@@ -112,7 +112,7 @@ export function RentalAgreement() {
             {loading ? "Preparing document…" : "Sign Lease Agreement"}
           </button>
         ) : (
-          <div className="w-[80%] mx-auto">Please proceed to the next step</div>
+          <div className="text-green-600w-[80%] mx-auto">Please proceed to the next step</div>
         )}
       </AlertDialogBox>
     </div>
