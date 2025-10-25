@@ -14,9 +14,6 @@ const ses = new SESClient({
 });
 
 export async function POST(req: NextRequest) {
-  if (req.method !== "POST") {
-    return NextResponse.json({ error: "Method Not Allowed" });
-  }
 
   try {
     const { landlordName, landlordEmail, mergedPDF } = await req.json();
@@ -28,7 +25,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 1) Convert Base64 to Buffer
-    const pdfBuffer = Buffer.from(mergedPDF, "base64");
+    /*   const pdfBuffer = Buffer.from(mergedPDF, "base64"); */
 
     // 2) Build raw MIME
     const boundary = "----=_MergedPdfBoundary123";
@@ -86,12 +83,14 @@ export async function POST(req: NextRequest) {
     rawLines.push("");
 
     // Break the PDF’s Base64 into 76-character lines (RFC 2045)
-    for (let i = 0; i < pdfBuffer.length; i += 57) {
+    /*   for (let i = 0; i < pdfBuffer.length; i += 57) {
       // 57 bytes → 76 base64 chars
       const chunk = pdfBuffer.slice(i, i + 57).toString("base64");
       rawLines.push(chunk);
     }
-    rawLines.push("");
+    rawLines.push(""); */
+    const chunked = mergedPDF.match(/.{1,76}/g) || [];
+    rawLines.push(...chunked);
 
     // Closing boundary
     rawLines.push(`--${boundary}--`);
@@ -105,10 +104,13 @@ export async function POST(req: NextRequest) {
       RawMessage: { Data: rawBuffer },
     });
     const result = await ses.send(sendCmd);
-
-    return NextResponse.json({ message: "Email sent", status: 200 });
+    console.log("Email sent successfully:", result);
+    return NextResponse.json({ message: "Email sent" }, { status: 200 });
   } catch (error: any) {
     console.error("Send-application error:", error);
-    return NextResponse.error();
+    return NextResponse.json(
+      { error: error.message || "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

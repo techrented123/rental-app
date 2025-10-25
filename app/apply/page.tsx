@@ -31,24 +31,6 @@ const steps = [
     icon: FileCheck,
     content: <PDFVerifier />,
   },
-  /* {
-    title: "Credit Check",
-    icon: DollarSign,
-    content: (
-      <PDFVerifier
-        reportType="credit"
-        verificationParams={{
-          title: ["Basic Credit Report", "Full Credit Report"],
-          keywordsLength: 2,
-        }}
-      />
-    ),
-  },
-  {
-    title: "AI Background Check",
-    icon: Users,
-    content: <BackgroundCheck />,
-  }, */
   {
     title: "Application Form",
     icon: FileText,

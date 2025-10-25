@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useState, useContext } from "react";
+import { useSearchParams } from "next/navigation";
 
 interface RentalApplicationContextType {
   currentRentApplicationStep: number;
@@ -36,10 +37,12 @@ export function RentalApplicationProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const params = useSearchParams();
+  const slug = params.get("slug") || "";
   const [currentRentApplicationStep, setRentApplicationStatus] =
     useState<number>(0);
 
-  const [rentalInfo, setRentalInfo] = useState({});
+  const [rentalInfo, setRentalInfo] = useState(slug ? { slug } : {});
 
   const [stepOutputs, setStepOutputs] = useState<any>([true]);
 
@@ -58,12 +61,19 @@ export function RentalApplicationProvider({
   };
 
   const updateRentalInfo = React.useCallback((newRentalInfo: any) => {
-    setRentalInfo((prev: any) => ({ ...prev, ...newRentalInfo }));
-    window.localStorage.setItem(
-      "rental_and_applicant_info",
-      JSON.stringify({ ...rentalInfo, ...newRentalInfo })
-    );
+    setRentalInfo((prev: any) => {
+      const updatedInfo = { ...prev, ...newRentalInfo };
+      // Save to localStorage with the updated state
+      window.localStorage.setItem(
+        "rental_and_applicant_info",
+        JSON.stringify(updatedInfo)
+      );
+      return updatedInfo;
+    });
+    console.log({ newRentalInfo });
   }, []);
+  
+  console.log({ rentalInfo });
 
   const updateRentApplicationStatus = React.useCallback((index: number) => {
     setRentApplicationStatus(index);

@@ -110,7 +110,7 @@ export function generateApplicationFormPDF(data: ApplicationFormInfo): Blob {
   doc.setFont("helvetica", "normal").setFontSize(11);
   const applicant = data.applicant;
   const infoLines = [
-    `Name: ${applicant.firstName} ${applicant.lastName}`,
+    `Name: ${applicant.fullName}`,
     `Email: ${applicant.email}`,
     `Phone: ${applicant.phone}`,
     `Address: ${applicant.address}, ${applicant.city}, ${applicant.state} ${applicant.postalCode}, ${applicant.country}`,

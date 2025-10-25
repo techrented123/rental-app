@@ -78,7 +78,7 @@ export default function PropertyListing() {
       router.push("/404");
       return;
     }
-    updateRentalInfo({ slug });
+    console.log("fetching property");
     fetch(`/api/property?slug=${slug}`)
       .then((res) => {
         if (!res.ok) throw new Error(res.statusText);
@@ -91,9 +91,10 @@ export default function PropertyListing() {
         setLinesNumber(3);
       });
   }, [slug]);
-
+  
   useEffect(() => {
     if (prop) {
+      console.log("updating rental info");
       updateRentalInfo({
         landlordEmail: prop.PropertyID.Address.Email,
         landlordName: "Rob Boies",

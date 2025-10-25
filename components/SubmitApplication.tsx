@@ -81,9 +81,7 @@ const SubmitApplication = () => {
     <div className="max-w-4xl mx-auto p-6">
       {/* Header Section */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-          <CheckCircle2 className="w-8 h-8 text-green-600" />
-        </div>
+     
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
           Application Review
         </h1>
@@ -203,7 +201,7 @@ const SubmitApplication = () => {
             </div>
           </div>
         ) : (
-          <div className="text-center py-12">
+          <div className="text-center py-8">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
               <CheckCircle2 className="w-10 h-10 text-green-600" />
             </div>

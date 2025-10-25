@@ -14,6 +14,7 @@ interface VerificationResultProps {
   subtitle: string | null;
   fileName?: string | null;
   onReset?: () => void;
+  showVerificationCompleteMessage?: boolean;
 }
 
 const VerificationResult: React.FC<VerificationResultProps> = ({
@@ -21,6 +22,7 @@ const VerificationResult: React.FC<VerificationResultProps> = ({
   title,
   subtitle,
   onReset,
+  showVerificationCompleteMessage = false,
 }) => {
   const isSuccessTitle = title.toLowerCase().includes("success");
 
@@ -71,7 +73,7 @@ const VerificationResult: React.FC<VerificationResultProps> = ({
       )}
 
       {/* Success State */}
-      {isSuccessTitle && (
+      {isSuccessTitle && showVerificationCompleteMessage && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
           <div className="flex items-start gap-3">
             <Shield className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
@@ -80,7 +82,8 @@ const VerificationResult: React.FC<VerificationResultProps> = ({
                 Verification Complete
               </h4>
               <p className="text-green-700 text-sm">
-                You can now proceed to the next step of your
+                Your document has been successfully verified and is ready for
+                submission. You can now proceed to the next step of your
                 application.
               </p>
             </div>

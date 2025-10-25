@@ -28,8 +28,6 @@ const PDFVerifier = () => {
     const expectedTitle = process.env.NEXT_PUBLIC_TITLE;
     const expectedAuthor = process.env.NEXT_PUBLIC_AUTHOR;
     const expectedKeywords = process.env.NEXT_PUBLIC_KEYWORDS;
-    console.log({ title, author, keywords, subject });
-    console.log({ expectedTitle, expectedAuthor, expectedKeywords });
     if (
       title === expectedTitle &&
       author === expectedAuthor &&
@@ -54,7 +52,7 @@ const PDFVerifier = () => {
           const fileKey = `pdf_verification_${Date.now()}`;
           await storeFileInIndexedDB(file, fileKey);
           updateStepOutput({ key: fileKey, fileName: file.name, subject });
-          updateRentApplicationStatus(2);
+          updateRentApplicationStatus(1);
         } catch (base64Error) {
           console.error("Error converting file to base64:", base64Error);
           throw base64Error; // Re-throw to trigger the outer catch
@@ -136,8 +134,9 @@ const PDFVerifier = () => {
                   : "Verification Failed"
               }
               subtitle={errorMessage}
-              fileName={fileName}
+              fileName={verificationStatus === "success" ? fileName : null}
               onReset={handleReset}
+              showVerificationCompleteMessage={true}
             />
           )}
         </div>

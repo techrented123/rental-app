@@ -188,6 +188,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         </div>
       ) : (
         <StandaloneSearchBox
+          libraries={["places"]}
           onLoad={loadHandler}
           onPlacesChanged={handleOnPlacesChanged}
         >
