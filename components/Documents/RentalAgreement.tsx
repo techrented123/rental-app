@@ -36,7 +36,6 @@ export function RentalAgreement() {
     lastName = names[1];
   }
 
-  console.log({ firstName, lastName, rentalInfo });
  
   // 2) Kick off creation & get the embed URL
   const startSigning = async () => {

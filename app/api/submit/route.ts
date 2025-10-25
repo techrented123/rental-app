@@ -46,38 +46,76 @@ export async function POST(req: NextRequest) {
     rawLines.push(`Content-Type: multipart/mixed; boundary="${boundary}"`);
     rawLines.push("");
 
-    // Part 1: Plain text body
-    rawLines.push(`--${boundary}`);
-    rawLines.push(`Content-Type: text/plain; charset="UTF-8"`);
-    rawLines.push(`Content-Transfer-Encoding: 7bit`);
-    rawLines.push("");
-    rawLines.push(`Hello ${landlordName},`);
-    rawLines.push(``);
-    rawLines.push(
-      `A tenant has applied for your property. Please see the attached merged application PDF.`
-    );
-    rawLines.push(``);
-    rawLines.push(`Please reach out if you have any questions.`);
-    rawLines.push(``);
-    rawLines.push(`Thank you,`);
-    rawLines.push(`The Rented123 Team`);
-    rawLines.push("");
-
-    // Part 2: HTML body (optional)
+    // Part 1: HTML body with beautiful styling
     rawLines.push(`--${boundary}`);
     rawLines.push(`Content-Type: text/html; charset="UTF-8"`);
     rawLines.push(`Content-Transfer-Encoding: 7bit`);
     rawLines.push("");
-    rawLines.push(`<p>Hello ${landlordName},</p>`);
-    rawLines.push(
-      `<p>A tenant has applied for your property. Please see the attached merged application PDF.</p>`
-    );
-    rawLines.push(`<p>Please reach out if you have any questions.</p>`);
-    rawLines.push(`<br>`);
-    rawLines.push(`<p>Thank you,<br>The Rented123 Team</p>`);
+    rawLines.push(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rental Application</title>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  
+  <!-- Header -->
+  <div style="background: linear-gradient(135deg, #32429B 0%, #4A5CC7 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+    <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 600;">New Rental Application</h1>
+    <p style="color: #E8EAF6; margin: 10px 0 0 0; font-size: 16px;">Rented123 Property Management</p>
+  </div>
+  
+  <!-- Main Content -->
+  <div style="background: #ffffff; padding: 40px; border: 1px solid #e5e7eb; border-top: none;">
+    <p style="font-size: 18px; margin-bottom: 20px;">Hello <strong>${landlordName}</strong>,</p>
+    
+    <p style="font-size: 16px; margin-bottom: 20px;">
+      Great news! A prospective tenant has submitted a complete rental application for your property. 
+      The application includes all necessary documentation and verification reports.
+    </p>
+    
+    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border-left: 4px solid #32429B; margin: 25px 0;">
+      <h3 style="color: #32429B; margin: 0 0 15px 0; font-size: 18px;">📋 Application Package Includes:</h3>
+      <ul style="margin: 0; padding-left: 20px;">
+        <li style="margin-bottom: 8px;"><strong>Application Form:</strong> Complete tenant information and rental history</li>
+        <li style="margin-bottom: 8px;"><strong>Verification Report:</strong> Identity and background verification documents</li>
+      </ul>
+    </div>
+    
+    <p style="font-size: 16px; margin-bottom: 20px;">
+      Please review the attached documents carefully. All information has been verified through our secure platform.
+    </p>
+    
+    <div style="background: #ecfdf5; padding: 20px; border-radius: 8px; border-left: 4px solid #10b981; margin: 25px 0;">
+      <p style="margin: 0; color: #065f46; font-weight: 500;">
+        💡 <strong>Next Steps:</strong> Contact the applicant directly to schedule a property viewing or discuss any questions you may have.
+      </p>
+    </div>
+    
+    <p style="font-size: 16px; margin-bottom: 20px;">
+      If you have any questions about this application or need assistance, please don't hesitate to reach out to our support team.
+    </p>
+    
+    <p style="font-size: 16px; margin-bottom: 0;">
+      Best regards,<br>
+      <strong>The Rented123 Team</strong>
+    </p>
+  </div>
+  
+  <!-- Footer -->
+  <div style="background: #f9fafb; padding: 20px; border-radius: 0 0 10px 10px; text-align: center; border: 1px solid #e5e7eb; border-top: none;">
+    <p style="margin: 0; color: #6b7280; font-size: 14px;">
+      This email was sent by Rented123 Property Management System<br>
+      <span style="color: #9ca3af;">© ${new Date().getFullYear()} Rented123. All rights reserved.</span>
+    </p>
+  </div>
+  
+</body>
+</html>`);
     rawLines.push("");
 
-    // Part 3: Application Form PDF Attachment
+    // Part 2: Application Form PDF Attachment
     rawLines.push(`--${boundary}`);
     rawLines.push(`Content-Type: application/pdf; name="application_form.pdf"`);
     rawLines.push(
@@ -91,7 +129,7 @@ export async function POST(req: NextRequest) {
     rawLines.push(...appFormChunked);
     rawLines.push("");
 
-    // Part 4: Verification Report PDF Attachment (if available)
+    // Part 3: Verification Report PDF Attachment (if available)
     if (verificationReportPDF) {
       rawLines.push(`--${boundary}`);
       rawLines.push(
