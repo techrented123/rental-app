@@ -116,7 +116,7 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
 
           <div className="flex flex-col flex-grow">
             {/* Horizontal Stepper (Mobile) */}
-            <div className="md:hidden pt-4 px-4 ">
+            {/*  <div className="md:hidden pt-4 px-4 ">
               <div className="flex items-center justify-between mb-2">
                 {steps.map((step, index) => {
                   const Icon = step.icon;
@@ -127,7 +127,7 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
                         flex flex-col items-center relative
                         ${
                           index < steps.length - 1 &&
-                          "after:content-[''] after:absolute after:top-4 after:left-1/2 after:w-[calc(100%-2rem)] after:h-0.5 after:bg-gray-200 after:translate-x-1/2 " +
+                          "after:content-[''] after:absolute after:top-4 after:left-1/2 after:w-full after:h-0.5 after:bg-gray-200 after:-translate-x-1/2 " +
                             (index < activeStep ? "after:!bg-primary" : "")
                         }
                       `}
@@ -159,8 +159,54 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
                   {steps[activeStep].description}
                 </p>
               </div>
-            </div>
+            </div> */}
+            {/* Horizontal Stepper (Mobile) */}
+            <div className="md:hidden pt-4 px-4 ">
+              <div className="flex items-center justify-between mb-2">
+                {steps.map((step, index) => {
+                  const Icon = step.icon;
+                  return (
+                    <React.Fragment key={index}>
+                      <div className="flex flex-col items-center relative">
+                        <div
+                          className={`
+                w-8 h-8 rounded-full border-2 flex items-center justify-center relative z-10 bg-white
+                transition-colors duration-300
+                ${
+                  index === activeStep
+                    ? "border-blue-500 text-primary"
+                    : index < activeStep
+                    ? "border-blue-500 bg-primary text-white !bg-blue-500"
+                    : "border-gray-500 text-gray-400"
+                }
+              `}
+                        >
+                          <Icon className="w-4 h-4" />
+                        </div>
+                      </div>
 
+                      {/* Connecting line */}
+                      {index < steps.length - 1 && (
+                        <div
+                          className={`
+                flex-1 h-0.5 mx-2
+                ${index < activeStep ? "bg-primary" : "bg-gray-200"}
+              `}
+                        />
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </div>
+              <div className="text-center mb-4">
+                <p className="font-medium text-primary">
+                  {steps[activeStep].title}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {steps[activeStep].description}
+                </p>
+              </div>
+            </div>
             {/* Step Content */}
             <div className="flex-grow p-3 overflow-auto">
               {steps[activeStep].content}

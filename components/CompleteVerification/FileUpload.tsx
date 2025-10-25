@@ -118,7 +118,7 @@ const CompleteVerification: React.FC<FileUploadProps> = ({
               </h3>
 
               {/* Description */}
-              <p className="text-gray-600 text-sm sm:text-base mb-6 max-w-md mx-auto leading-relaxed">
+              <p className="hidden sm:block text-gray-600 text-xs sm:text-sm mb-6 max-w-md mx-auto leading-relaxed">
                 Drag and drop your PDF file here, or click to browse and select
                 a file
               </p>
@@ -127,12 +127,11 @@ const CompleteVerification: React.FC<FileUploadProps> = ({
               <div className="bg-gray-50 rounded-lg p-4 mb-6 w-full max-w-sm">
                 <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
                   <FileText className="w-4 h-4" />
-                  <span>PDF files only • Max 10MB</span>
+                  <span className="text-xs">PDF files only • Max 10MB</span>
                 </div>
               </div>
 
               {/* Upload Button */}
-  
 
               {/* Mobile Alternative */}
               <p className="text-gray-500 text-xs mt-4 sm:hidden">
