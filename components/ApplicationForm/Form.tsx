@@ -557,7 +557,7 @@ export const Form: React.FC<ApplicationFormProps> = ({
                   </p>
                 )}
               </div>
-              <div >
+              <div>
                 <label
                   htmlFor="applicant_emergencyContactLastName"
                   className="block text-sm font-medium text-gray-700 mb-2"
@@ -825,7 +825,7 @@ export const Form: React.FC<ApplicationFormProps> = ({
                       htmlFor={fromDateFieldName}
                       className="block text-sm font-medium text-gray-700 mb-2"
                     >
-                      Rental Dates
+                      Rental Start Date
                     </label>
                     <input
                       type="date"
@@ -840,6 +840,7 @@ export const Form: React.FC<ApplicationFormProps> = ({
                           ? "border-red-500"
                           : "border-gray-300"
                       } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                      max={index > 0 ? arr[index - 1].toDate : undefined}
                     />
                     {errors[fromDateFieldName] && (
                       <p className="mt-1 text-sm text-red-600 flex items-center">
@@ -853,7 +854,7 @@ export const Form: React.FC<ApplicationFormProps> = ({
                       htmlFor={toDateFieldName}
                       className="block text-sm font-medium text-gray-700 mb-2"
                     >
-                      To Date
+                      Rental End Date
                     </label>
                     <input
                       type="date"
@@ -869,6 +870,7 @@ export const Form: React.FC<ApplicationFormProps> = ({
                           : "border-gray-300"
                       } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
                       min={item.fromDate}
+                      max={index > 0 ? arr[index - 1].fromDate : undefined}
                     />
                     {errors[toDateFieldName] && (
                       <p className="mt-1 text-sm text-red-600 flex items-center">

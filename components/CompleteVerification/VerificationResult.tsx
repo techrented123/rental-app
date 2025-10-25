@@ -49,7 +49,7 @@ const VerificationResult: React.FC<VerificationResultProps> = ({
         </h2>
 
         <p
-          className={`text-lg sm:text-xl mb-6 ${
+          className={`text-md sm:text-xl mb-6 ${
             isSuccessTitle ? "text-green-700" : "text-red-700"
           }`}
         >
