@@ -1,6 +1,6 @@
 "use client";
-import { generateApplicationFormPDF, mergePdfs } from "@/lib/pdfService";
-import { base64ToFile, getFileFromIndexedDB } from "@/lib/utils";
+import { generateApplicationFormPDF } from "@/lib/pdfService";
+import { getFileFromIndexedDB } from "@/lib/utils";
 import React from "react";
 import {
   CircleCheck,
@@ -14,7 +14,6 @@ import {
 import { useRentalApplicationContext } from "@/contexts/rental-application-context";
 import RestartApplication from "./RestartApplication";
 import { ApplicationFormInfo } from "@/types";
-import { useRouter } from "next/navigation";
 
 type FinalOutput = Array<ApplicationFormInfo | string>;
 
@@ -28,7 +27,6 @@ const SubmitApplication = () => {
   });
   const [isEmailSent, setIsEmailSent] = React.useState(false);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const router = useRouter();
   const { rentalInfo, stepOutputs, restartApplication } =
     useRentalApplicationContext();
   const { landlordEmail, landlordName, slug } = rentalInfo;
@@ -50,7 +48,7 @@ const SubmitApplication = () => {
       const data = await response.json();
 
       setIsEmailSent(true);
-      restartApplication();
+      await restartApplication();
     } catch (e) {
       console.error(e);
     } finally {

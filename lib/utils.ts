@@ -52,7 +52,10 @@ export function base64ToFile(
   return new File([buffer], fileName, { type: mimeType });
 }
 
-export const storeFileInIndexedDB = async (file: File, key: string): Promise<void> => {
+export const storeFileInIndexedDB = async (
+  file: File,
+  key: string
+): Promise<void> => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open("RentalAppFiles", 1);
 
@@ -73,7 +76,26 @@ export const storeFileInIndexedDB = async (file: File, key: string): Promise<voi
   });
 };
 
-export const getFileFromIndexedDB = async (key: string): Promise<File | null> => {
+export const clearIndexedDB = async (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("RentalAppFiles", 1);
+
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const db = request.result;
+      const transaction = db.transaction(["files"], "readwrite");
+      const store = transaction.objectStore("files");
+      const clearRequest = store.clear();
+
+      clearRequest.onsuccess = () => resolve();
+      clearRequest.onerror = () => reject(clearRequest.error);
+    };
+  });
+};
+
+export const getFileFromIndexedDB = async (
+  key: string
+): Promise<File | null> => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open("RentalAppFiles", 1);
 

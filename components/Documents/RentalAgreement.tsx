@@ -37,24 +37,7 @@ export function RentalAgreement() {
   }
 
   console.log({ firstName, lastName, rentalInfo });
-  /*
-  {
-    "landlordEmail": "rob@rented123.com",
-    "landlordName": "Rob Boies",
-    "address": {
-        "$": {
-            "AddressType": "property"
-        },
-        "Address": "1010 Osprey Court",
-        "City": "Gilbert",
-        "State": "AZ",
-        "PostalCode": "85234",
-        "Email": "rob@rented123.com"
-    },
-    "rent": "3000",
-    "slug": "1010-osprey-court-1"
-}
-  */
+ 
   // 2) Kick off creation & get the embed URL
   const startSigning = async () => {
     setLoading(true);

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useState, useContext } from "react";
-import { useSearchParams } from "next/navigation";
+import { clearIndexedDB } from "@/lib/utils";
 
 interface RentalApplicationContextType {
   currentRentApplicationStep: number;
@@ -37,12 +37,10 @@ export function RentalApplicationProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const params = useSearchParams();
-  const slug = params.get("slug") || "";
   const [currentRentApplicationStep, setRentApplicationStatus] =
     useState<number>(0);
 
-  const [rentalInfo, setRentalInfo] = useState(slug ? { slug } : {});
+  const [rentalInfo, setRentalInfo] = useState({});
 
   const [stepOutputs, setStepOutputs] = useState<any>([true]);
 
@@ -54,10 +52,18 @@ export function RentalApplicationProvider({
     );
   };
 
-  const restartApplication = () => {
+  const restartApplication = async () => {
     setStepOutputs([]);
     setRentApplicationStatus(1);
     window.localStorage.clear();
+
+    // Clear IndexedDB to free up storage space
+    try {
+      await clearIndexedDB();
+      console.log("IndexedDB cleared successfully");
+    } catch (error) {
+      console.error("Error clearing IndexedDB:", error);
+    }
   };
 
   const updateRentalInfo = React.useCallback((newRentalInfo: any) => {
@@ -72,7 +78,7 @@ export function RentalApplicationProvider({
     });
     console.log({ newRentalInfo });
   }, []);
-  
+
   console.log({ rentalInfo });
 
   const updateRentApplicationStatus = React.useCallback((index: number) => {
