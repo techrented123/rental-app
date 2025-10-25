@@ -14,12 +14,16 @@ const ses = new SESClient({
 });
 
 export async function POST(req: NextRequest) {
-
   try {
-    const { landlordName, landlordEmail, mergedPDF } = await req.json();
-    if (!landlordName || !landlordEmail || !mergedPDF) {
+    const {
+      landlordName,
+      landlordEmail,
+      applicationFormPDF,
+      verificationReportPDF,
+    } = await req.json();
+    if (!landlordName || !landlordEmail || !applicationFormPDF) {
       return NextResponse.json({
-        error: "Missing landlordName, landlordEmail, or mergedPDF",
+        error: "Missing landlordName, landlordEmail, or applicationFormPDF",
         status: 400,
       });
     }
@@ -73,24 +77,37 @@ export async function POST(req: NextRequest) {
     rawLines.push(`<p>Thank you,<br>The Rented123 Team</p>`);
     rawLines.push("");
 
-    // Part 3: Attachment (base64‐encoded PDF)
+    // Part 3: Application Form PDF Attachment
     rawLines.push(`--${boundary}`);
-    rawLines.push(`Content-Type: application/pdf; name="application.pdf"`);
+    rawLines.push(`Content-Type: application/pdf; name="application_form.pdf"`);
     rawLines.push(
-      `Content-Disposition: attachment; filename="application.pdf"`
+      `Content-Disposition: attachment; filename="application_form.pdf"`
     );
     rawLines.push(`Content-Transfer-Encoding: base64`);
     rawLines.push("");
 
-    // Break the PDF’s Base64 into 76-character lines (RFC 2045)
-    /*   for (let i = 0; i < pdfBuffer.length; i += 57) {
-      // 57 bytes → 76 base64 chars
-      const chunk = pdfBuffer.slice(i, i + 57).toString("base64");
-      rawLines.push(chunk);
+    // Break the Application Form PDF's Base64 into 76-character lines (RFC 2045)
+    const appFormChunked = applicationFormPDF.match(/.{1,76}/g) || [];
+    rawLines.push(...appFormChunked);
+    rawLines.push("");
+
+    // Part 4: Verification Report PDF Attachment (if available)
+    if (verificationReportPDF) {
+      rawLines.push(`--${boundary}`);
+      rawLines.push(
+        `Content-Type: application/pdf; name="verification_report.pdf"`
+      );
+      rawLines.push(
+        `Content-Disposition: attachment; filename="verification_report.pdf"`
+      );
+      rawLines.push(`Content-Transfer-Encoding: base64`);
+      rawLines.push("");
+
+      // Break the Verification Report PDF's Base64 into 76-character lines
+      const verificationChunked = verificationReportPDF.match(/.{1,76}/g) || [];
+      rawLines.push(...verificationChunked);
+      rawLines.push("");
     }
-    rawLines.push(""); */
-    const chunked = mergedPDF.match(/.{1,76}/g) || [];
-    rawLines.push(...chunked);
 
     // Closing boundary
     rawLines.push(`--${boundary}--`);

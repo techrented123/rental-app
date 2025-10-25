@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { RentalApplicationProvider } from "@/contexts/rental-application-context";
+import { GoogleMapsProvider } from "@/components/providers/google-maps-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -36,8 +37,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <RentalApplicationProvider>
-            {children}
-            <Toaster />
+            <GoogleMapsProvider>
+              {children}
+              <Toaster />
+            </GoogleMapsProvider>
           </RentalApplicationProvider>
         </ThemeProvider>
       </body>

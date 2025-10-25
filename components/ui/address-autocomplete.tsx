@@ -1,7 +1,8 @@
 "use client";
 import { useCallback, useRef } from "react";
-import { useJsApiLoader, StandaloneSearchBox } from "@react-google-maps/api";
+import { StandaloneSearchBox } from "@react-google-maps/api";
 import { AlertCircle } from "lucide-react";
+import { useGoogleMaps } from "../providers/google-maps-provider";
 
 interface AddressComponents {
   street: string;
@@ -45,12 +46,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   }
   const inputRef = useRef<InputRef | null>();
 
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string,
-    libraries: ["places"],
-    region: "ca",
-  });
+  const { isLoaded, loadError } = useGoogleMaps();
 
   // Canadian postal code validation
   const isValidCanadianPostalCode = (postalCode: string): boolean => {
@@ -153,6 +149,44 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     onChange(e.target.value);
   };
 
+  if (loadError) {
+    return (
+      <div>
+        {label && (
+          <label
+            htmlFor={id}
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            {label}
+          </label>
+        )}
+        <input
+          type="text"
+          id={id}
+          name={name}
+          value={value}
+          onChange={handleInputChange}
+          placeholder={placeholder}
+          disabled={disabled}
+          required={required}
+          aria-required={required}
+          className={`w-full px-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+            error ? "border-red-500" : "border-gray-300"
+          } ${className}`}
+        />
+        <p className="text-xs text-red-500 mt-1">
+          Google Maps failed to load. Please refresh the page.
+        </p>
+        {error && (
+          <p className="mt-1 text-sm text-red-600 flex items-center">
+            <AlertCircle className="h-4 w-4 mr-1" />
+            {error}
+          </p>
+        )}
+      </div>
+    );
+  }
+
   const inputElement = (
     <input
       type="text"
@@ -188,7 +222,6 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         </div>
       ) : (
         <StandaloneSearchBox
-          libraries={["places"]}
           onLoad={loadHandler}
           onPlacesChanged={handleOnPlacesChanged}
         >

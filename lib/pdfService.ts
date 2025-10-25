@@ -105,7 +105,7 @@ export function generateApplicationFormPDF(data: ApplicationFormInfo): Blob {
     .setFontSize(12)
     .text("Applicant Information", marginX, cursorY);
   cursorY += lineHeight;
-
+console.log({ data });
   // Applicant Info Body
   doc.setFont("helvetica", "normal").setFontSize(11);
   const applicant = data.applicant;

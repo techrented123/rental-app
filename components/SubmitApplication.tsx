@@ -1,6 +1,6 @@
 "use client";
 import { generateApplicationFormPDF, mergePdfs } from "@/lib/pdfService";
-import { base64ToFile } from "@/lib/utils";
+import { base64ToFile, getFileFromIndexedDB } from "@/lib/utils";
 import React from "react";
 import {
   CircleCheck,
@@ -19,7 +19,13 @@ import { useRouter } from "next/navigation";
 type FinalOutput = Array<ApplicationFormInfo | string>;
 
 const SubmitApplication = () => {
-  const [mergedPDF, setMergedPDF] = React.useState("");
+  const [pdfs, setPdfs] = React.useState<{
+    applicationForm: string | null;
+    verificationReport: string | null;
+  }>({
+    applicationForm: null,
+    verificationReport: null,
+  });
   const [isEmailSent, setIsEmailSent] = React.useState(false);
   const [loading, setLoading] = React.useState<boolean>(false);
   const router = useRouter();
@@ -30,9 +36,10 @@ const SubmitApplication = () => {
   async function sendApplication() {
     setLoading(true);
     const body = {
-      mergedPDF,
       landlordEmail,
       landlordName,
+      applicationFormPDF: pdfs.applicationForm,
+      verificationReportPDF: pdfs.verificationReport,
     };
     try {
       const response = await fetch("/api/submit", {
@@ -52,36 +59,67 @@ const SubmitApplication = () => {
   }
 
   const recoverBlobs = React.useCallback(async (stepOutputs: FinalOutput) => {
-    const filteredOutput = stepOutputs
-      .filter((step) => typeof step !== "boolean")
-      .map((step: string | ApplicationFormInfo, index: number) => {
-        if (typeof step === "string") {
-          return base64ToFile(
-            step,
-            index === 0 ? "ID Verification" : "Credit Report",
-            "application/pdf"
+    if (stepOutputs.length === 0) {
+      return;
+    }
+    try {
+      // Check if we have the application form data at index 2
+      if (!stepOutputs[2]) {
+        console.error("Application form data not found at stepOutputs[2]");
+        return;
+      }
+
+      // Generate application form PDF
+      const applicationFormPDF = generateApplicationFormPDF(
+        stepOutputs[2] as ApplicationFormInfo
+      );
+
+      // Convert application form PDF to base64
+      const appFormArrayBuffer = await applicationFormPDF.arrayBuffer();
+      const appFormBase64 = Buffer.from(appFormArrayBuffer).toString("base64");
+
+      // Get verification report from IndexedDB (stepOutputs[1] contains the file key)
+      const verificationStep = stepOutputs[1];
+      let verificationBase64 = null;
+
+      if (
+        verificationStep &&
+        typeof verificationStep === "object" &&
+        "key" in verificationStep
+      ) {
+        const verificationFileKey = (verificationStep as any).key;
+        // Retrieve file from IndexedDB and convert to base64
+        const verificationFile = await getFileFromIndexedDB(
+          verificationFileKey
+        );
+        if (verificationFile) {
+          const verificationArrayBuffer = await verificationFile.arrayBuffer();
+          verificationBase64 = Buffer.from(verificationArrayBuffer).toString(
+            "base64"
           );
         }
-        return generateApplicationFormPDF(step as ApplicationFormInfo);
+      }
+
+      // Store both PDFs for email sending
+      setPdfs({
+        applicationForm: appFormBase64,
+        verificationReport: verificationBase64,
       });
-    const mergedBlob = await mergePdfs(
-      filteredOutput as [File, File, Blob, Blob],
-      rentalInfo
-    );
-    const arrayBuffer = await mergedBlob.arrayBuffer();
-    const base64PDF = Buffer.from(arrayBuffer).toString("base64");
-    setMergedPDF(base64PDF);
+
+      console.log("Both PDFs prepared for email");
+    } catch (error) {
+      console.error("Error preparing PDFs:", error);
+    }
   }, []);
 
   React.useEffect(() => {
     recoverBlobs(stepOutputs);
-  }, [stepOutputs]);
+  }, [stepOutputs, recoverBlobs]);
 
   return (
     <div className="max-w-4xl mx-auto p-6">
       {/* Header Section */}
       <div className="text-center mb-8">
-     
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
           Application Review
         </h1>
@@ -210,24 +248,16 @@ const SubmitApplication = () => {
             </h2>
             <div className="bg-green-50 border border-green-200 rounded-xl p-6 max-w-md mx-auto">
               <div className="flex items-start gap-3 mb-4">
-                <Mail className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
                 <div className="text-left">
                   <p className="font-medium text-green-900 mb-1">Next Steps:</p>
                   <p className="text-green-700 text-sm mb-2">
-                    Your application has been sent to{" "}
-                    <span className="font-medium">{landlordName}</span>
-                  </p>
-                  <p className="text-green-700 text-sm mb-3">
-                    Email: <span className="font-medium">{landlordEmail}</span>
+                    Please send your rent deposit to the landlord's email
+                    address - {"  "}
+                    <span className="font-medium">{landlordEmail}</span>
                   </p>
                 </div>
               </div>
               <div className="bg-white border border-green-200 rounded-lg p-4">
-                <p className="text-sm text-gray-700 mb-2">
-                  <span className="font-medium text-gray-900">Important:</span>{" "}
-                  Please send your rent deposit to the landlord's email address
-                  above.
-                </p>
                 <p className="text-sm text-gray-600">
                   You can now safely close this application.
                 </p>
