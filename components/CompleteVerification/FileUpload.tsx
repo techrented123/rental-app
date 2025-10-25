@@ -132,15 +132,7 @@ const CompleteVerification: React.FC<FileUploadProps> = ({
               </div>
 
               {/* Upload Button */}
-              <button
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleClick();
-                }}
-              >
-                Choose PDF File
-              </button>
+  
 
               {/* Mobile Alternative */}
               <p className="text-gray-500 text-xs mt-4 sm:hidden">

@@ -98,13 +98,12 @@ const PDFVerifier = () => {
           Upload your Complete 3-in-1 Verification Report to proceed with your
           application
         </p>
-     
       </div>
 
-      
       {/* Main Content */}
       <div className="bg-white rounded-xl overflow-hidden">
-          {/* Help Section */}
+        {/* Help Section - Only show when verification is not successful */}
+        {verificationStatus !== "success" && (
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-center">
             <AlertCircle className="w-4 h-4 text-gray-500 flex-shrink-0 hidden sm:block" />
             <p className="text-gray-600 text-sm">
@@ -120,6 +119,7 @@ const PDFVerifier = () => {
               </a>
             </p>
           </div>
+        )}
         <div className="p-4 pt-1 sm:p-6 ">
           {verificationStatus === "idle" ||
           verificationStatus === "verifying" ? (
@@ -141,10 +141,7 @@ const PDFVerifier = () => {
             />
           )}
         </div>
-
       </div>
-
-  
     </div>
   );
 };

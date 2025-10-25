@@ -80,8 +80,7 @@ const VerificationResult: React.FC<VerificationResultProps> = ({
                 Verification Complete
               </h4>
               <p className="text-green-700 text-sm">
-                Your document has been successfully verified and is ready for
-                submission. You can now proceed to the next step of your
+                You can now proceed to the next step of your
                 application.
               </p>
             </div>
