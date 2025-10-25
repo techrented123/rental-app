@@ -18,7 +18,9 @@ const membershipPlans = [
     price: 4.99,
     benefits: [
       " 24/7/365 Rental Support & Advice",
+      "Quarterly Real Estate, Mortgage & Financial Planning Updates",
       "Landlord Certification & Reference Letter",
+      "Discounts on rent guarantee programs",
     ],
   },
   {

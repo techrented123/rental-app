@@ -7,7 +7,6 @@ import {
   FileCheck,
   FileText,
   PenTool,
-  CheckCircle,
   CreditCard,
 } from "lucide-react";
 import Plans from "@/components/membership-plans";

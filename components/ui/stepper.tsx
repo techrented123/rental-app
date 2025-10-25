@@ -43,7 +43,7 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
   }, [lastSavedStep]);
 
   const { stepOutputs } = useRentalApplicationContext();
-  console.log({ stepOutputs,steps,activeStep });
+  console.log({ stepOutputs, steps, activeStep });
   //container mx-auto py-0 px-4 h-full overflow-auto
   return (
     <div className="h-[100%] w-[90%] md:w-[80%] mx-auto overflow-auto">
@@ -127,7 +127,7 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
                         flex flex-col items-center relative
                         ${
                           index < steps.length - 1 &&
-                          "after:content-[''] after:absolute after:top-4 after:left-1/2 after:w-full after:h-0.5 after:bg-gray-200 " +
+                          "after:content-[''] after:absolute after:top-4 after:left-1/2 after:w-[calc(100%-2rem)] after:h-0.5 after:bg-gray-200 after:translate-x-1/2 " +
                             (index < activeStep ? "after:!bg-primary" : "")
                         }
                       `}
@@ -177,7 +177,7 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
                           <Button
                             size="lg"
                             onClick={handleNext}
-                            disabled 
+                            disabled
                             className="bg-blue-500 !cursor-not-allowed flex justify-end items-center gap-1 px-3 py-1 hover:bg-blue-600 "
                           >
                             Next <ChevronRight size={18} />
