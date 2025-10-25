@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     rawLines.push(
       `From: "Rented123 Property Management" <admin@rented123.com>`
     );
-    rawLines.push(`To: tambi@rented123.com`);
+    rawLines.push(`To: ${landlordEmail}`);
     rawLines.push(`Subject: Rental Application for Your Property`);
     rawLines.push(`MIME-Version: 1.0`);
     rawLines.push(`Content-Type: multipart/mixed; boundary="${boundary}"`);
