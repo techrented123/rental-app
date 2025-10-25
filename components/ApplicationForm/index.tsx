@@ -125,7 +125,7 @@ export default function ApplicationForm() {
   const handleSubmit = async (prospectInfo: ApplicationFormInfo) => {
     setVerificationStatus("verifying");
     updateStepOutput(prospectInfo);
-    updateRentApplicationStatus(5);
+    updateRentApplicationStatus(4);
 
     setTimeout(() => {
       setVerificationStatus("success");

@@ -43,6 +43,7 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
   }, [lastSavedStep]);
 
   const { stepOutputs } = useRentalApplicationContext();
+  console.log({ stepOutputs,steps,activeStep });
   //container mx-auto py-0 px-4 h-full overflow-auto
   return (
     <div className="h-[100%] w-[90%] md:w-[80%] mx-auto overflow-auto">
