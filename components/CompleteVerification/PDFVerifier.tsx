@@ -4,8 +4,8 @@ import FileUpload from "./FileUpload";
 import VerificationResult, { VerificationStatus } from "./VerificationResult";
 import { PDFDocument } from "pdf-lib";
 import { useRentalApplicationContext } from "@/contexts/rental-application-context";
-import { ExternalLink } from "lucide-react";
-import { fileToBase64, storeFileInIndexedDB } from "@/lib/utils";
+import { ExternalLink, AlertCircle } from "lucide-react";
+import { storeFileInIndexedDB } from "@/lib/utils";
 
 const PDFVerifier = () => {
   const [verificationStatus, setVerificationStatus] =
@@ -88,42 +88,63 @@ const PDFVerifier = () => {
   }, []);
 
   return (
-    <div className="bg-white rounded-xl !h-[400px] overflow-hidden transition-all duration-300 mt-4">
-      <div
-        className={`px-6 md:py-6 sm:px-8 py-3
-       `}
-      >
-        {verificationStatus === "idle" || verificationStatus === "verifying" ? (
-          <FileUpload
-            onFileUpload={handleFileUpload}
-            isVerifying={isVerifying}
-            fileName={fileName}
-          />
-        ) : (
-          <VerificationResult
-            title={
-              verificationStatus === "success"
-                ? "Verification Successful"
-                : "Verification Failed"
-            }
-            subtitle={errorMessage}
-            fileName={fileName}
-            onReset={handleReset}
-          />
-        )}
-      </div>
-      <div className="px-6 sm:px-8 ">
-        <p className="text-gray-700 mt-2 text-center text-sm font-medium gap-1 flex items-center justify-center">
-          <a
-            href={"https://rented123.com/product/complete-verification/"}
-            target="_blank"
-            className="underline text-gray-550"
-          >
-            I do not have a Rented123 Complete 3-in-1 Verification report{" "}
-          </a>{" "}
-          <ExternalLink size={16} />
+    <div className="max-w-4xl mx-auto p-4 sm:p-6">
+      {/* Header Section */}
+      <div className="text-center mb-8">
+        <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+          Document Verification
+        </h3>
+        <p className="text-gray-600 text-sm sm:text-base max-w-2xl mx-auto">
+          Upload your Complete 3-in-1 Verification Report to proceed with your
+          application
         </p>
+     
       </div>
+
+      
+      {/* Main Content */}
+      <div className="bg-white rounded-xl overflow-hidden">
+          {/* Help Section */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-center">
+            <AlertCircle className="w-4 h-4 text-gray-500 flex-shrink-0 hidden sm:block" />
+            <p className="text-gray-600 text-sm">
+              Don't have a verification report?{" "}
+              <a
+                href="https://rented123.com/product/complete-verification/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-700 underline font-medium inline-flex items-center gap-1"
+              >
+                Get one here
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </p>
+          </div>
+        <div className="p-4 pt-1 sm:p-6 ">
+          {verificationStatus === "idle" ||
+          verificationStatus === "verifying" ? (
+            <FileUpload
+              onFileUpload={handleFileUpload}
+              isVerifying={isVerifying}
+              fileName={fileName}
+            />
+          ) : (
+            <VerificationResult
+              title={
+                verificationStatus === "success"
+                  ? "Verification Successful"
+                  : "Verification Failed"
+              }
+              subtitle={errorMessage}
+              fileName={fileName}
+              onReset={handleReset}
+            />
+          )}
+        </div>
+
+      </div>
+
+  
     </div>
   );
 };
