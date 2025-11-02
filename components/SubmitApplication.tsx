@@ -8,12 +8,12 @@ import {
   CheckCircle2,
   FileText,
   Shield,
-  Mail,
   Clock,
 } from "lucide-react";
 import { useRentalApplicationContext } from "@/contexts/rental-application-context";
 import RestartApplication from "./RestartApplication";
 import { ApplicationFormInfo } from "@/types";
+import { clearTrackingCookies } from "@/lib/tracking";
 
 type FinalOutput = Array<ApplicationFormInfo | string>;
 
@@ -27,7 +27,7 @@ const SubmitApplication = () => {
   });
   const [isEmailSent, setIsEmailSent] = React.useState(false);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const { rentalInfo, stepOutputs, restartApplication } =
+  const { rentalInfo, stepOutputs, restartApplication, sessionId } =
     useRentalApplicationContext();
   const { landlordEmail, landlordName, slug } = rentalInfo;
 
@@ -46,6 +46,22 @@ const SubmitApplication = () => {
         body: JSON.stringify({ ...body }),
       });
       const data = await response.json();
+
+      // Clear tracking data when application is completed
+      if (sessionId) {
+        try {
+          await fetch("/api/track/clear", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ sessionId }),
+          });
+        } catch (error) {
+          console.error("Error clearing tracking data:", error);
+        }
+        clearTrackingCookies();
+      }
 
       setIsEmailSent(true);
       await restartApplication();

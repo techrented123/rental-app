@@ -1,22 +1,19 @@
 "use client";
 import * as React from "react";
+import { Suspense } from "react";
 import { ChevronLeft } from "lucide-react";
 import FormStepper from "@/components/ui/stepper";
-import {
-  Crown,
-  FileCheck,
-  FileText,
-  PenTool,
-  CreditCard,
-} from "lucide-react";
+import { Crown, FileCheck, FileText, PenTool, CreditCard } from "lucide-react";
 import Plans from "@/components/membership-plans";
 import PDFVerifier from "@/components/CompleteVerification/PDFVerifier";
 import ApplicationForm from "@/components/ApplicationForm";
 import { RentalAgreement } from "@/components/Documents/RentalAgreement";
 import SubmitApplication from "@/components/SubmitApplication";
 import AlertDialogBox from "@/components/ui/alert-dialog";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useRentalApplicationContext } from "@/contexts/rental-application-context";
+import { getTrackingDataFromCookie } from "@/lib/tracking";
 
 const steps = [
   {
@@ -48,10 +45,17 @@ const steps = [
   },
 ];
 
-export default function Home() {
+function ApplyPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [slug, setSlug] = React.useState("");
   const [lastSavedStep, setLastSavedStep] = React.useState(0);
+  const { sessionId, updateRentApplicationStatus } =
+    useRentalApplicationContext();
+
+  // Check for resume parameter
+  const shouldResume = searchParams.get("resume") === "true";
+  const resumeSessionId = searchParams.get("sessionId");
 
   React.useEffect(() => {
     const last_step = localStorage.getItem("last_saved_step");
@@ -63,7 +67,48 @@ export default function Home() {
       const parsedRentalInfo = JSON.parse(rentalInfo);
       setSlug(parsedRentalInfo.slug);
     }
-  }, []);
+
+    // Track initial page load
+    if (sessionId) {
+      const rentalInfo = localStorage.getItem("rental_and_applicant_info");
+      const rentalData = rentalInfo ? JSON.parse(rentalInfo) : {};
+
+      fetch("/api/track", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          step: lastSavedStep || 0,
+          address: rentalData.address,
+          property: rentalData.slug || rentalData.property,
+        }),
+      }).catch(console.error);
+    }
+
+    // Handle resume from email link
+    if (shouldResume && resumeSessionId) {
+      // Fetch tracking data from DynamoDB via API
+      fetch(`/api/track?sessionId=${resumeSessionId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.trackingData) {
+            const step = data.trackingData.step || 0;
+            setLastSavedStep(step);
+            updateRentApplicationStatus(step);
+          } else {
+            // Fallback to cookie if API doesn't have data
+            const trackingData = getTrackingDataFromCookie();
+            if (trackingData?.step !== undefined) {
+              setLastSavedStep(trackingData.step);
+              updateRentApplicationStatus(trackingData.step);
+            }
+          }
+        })
+        .catch(console.error);
+    }
+  }, [sessionId, shouldResume, resumeSessionId, updateRentApplicationStatus]);
+
   const handleClick = () => {
     router.push(`/?slug=${slug}`);
   };
@@ -83,5 +128,19 @@ export default function Home() {
 
       <FormStepper steps={steps} lastSavedStep={lastSavedStep} />
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          Loading...
+        </div>
+      }
+    >
+      <ApplyPageContent />
+    </Suspense>
   );
 }
