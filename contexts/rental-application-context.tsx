@@ -3,7 +3,11 @@
 import React, { createContext, useState, useContext, useCallback } from "react";
 import Cookies from "js-cookie";
 import { clearIndexedDB } from "@/lib/utils";
-import { getOrCreateSessionId, updateTrackingCookie } from "@/lib/tracking";
+import {
+  getOrCreateSessionId,
+  updateTrackingCookie,
+  getTrackingDataFromCookie,
+} from "@/lib/tracking";
 
 interface RentalApplicationContextType {
   currentRentApplicationStep: number;
@@ -14,6 +18,7 @@ interface RentalApplicationContextType {
   updateStepOutput: (updatedStepOutput: File | any) => void;
   restartApplication: () => void;
   sessionId: string | null;
+  trackActivity: (step: number, email?: string, name?: string) => Promise<void>;
 }
 
 const defaultContext: RentalApplicationContextType = {
@@ -28,6 +33,7 @@ const defaultContext: RentalApplicationContextType = {
   }) => {},
   restartApplication: () => {},
   sessionId: null,
+  trackActivity: async () => {},
 };
 
 export const RentalApplicationContext =
@@ -114,14 +120,33 @@ export function RentalApplicationProvider({
       );
 
       // Track activity and extract name/email from verification PDF
+      // PDF email can override/confirm the entered email
       if (updatedStepOutput?.subject) {
         try {
           const subject = JSON.parse(updatedStepOutput.subject);
-          const { name, email } = subject;
+          const { name, email: pdfEmail } = subject;
 
-          // Track with extracted name/email
-          if (sessionId && name && email) {
-            await trackActivity(currentRentApplicationStep, email, name);
+          // Get existing email from tracking cookie (if any)
+          const existingTracking = getTrackingDataFromCookie();
+          const existingEmail = existingTracking?.email;
+
+          // Use PDF email if available (it can override/confirm entered email)
+          // Always track with PDF email if it exists, even if different from entered email
+          if (sessionId && pdfEmail) {
+            // If PDF email differs from entered email, it overrides
+            // If it matches, it confirms
+            await trackActivity(
+              currentRentApplicationStep,
+              pdfEmail,
+              name || undefined
+            );
+          } else if (sessionId && name && existingEmail) {
+            // If only name is extracted but email already exists, just update name
+            await trackActivity(
+              currentRentApplicationStep,
+              existingEmail,
+              name
+            );
           }
         } catch (e) {
           console.error("Error parsing subject from verification PDF:", e);
@@ -224,6 +249,7 @@ export function RentalApplicationProvider({
         updateStepOutput,
         restartApplication,
         sessionId,
+        trackActivity,
       }}
     >
       {children}

@@ -50,15 +50,16 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import Link from "next/link";
 import { useRentalApplicationContext } from "@/contexts/rental-application-context";
 import ContactForm from "./ContactForm";
 import { useRouter } from "next/navigation";
 import AddressMap from "./AddressMap";
+import { EmailCollectionDialog } from "./EmailCollectionDialog";
 
 export default function PropertyListing() {
   const params = useSearchParams();
   const slug = params.get("slug") || "";
+  const resume = params.get("resume");
   const router = useRouter();
   const [prop, setProp] = useState<RawProperty | null>(null);
   const [loading, setLoading] = useState(true);
@@ -69,6 +70,7 @@ export default function PropertyListing() {
   const [open, setOpen] = useState(false);
   const [showResponse, setShowResponse] = useState(false);
   const [linesNumber, setLinesNumber] = useState(3);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
 
   const { updateRentalInfo } = useRentalApplicationContext();
   useEffect(() => {
@@ -91,7 +93,7 @@ export default function PropertyListing() {
         setLinesNumber(3);
       });
   }, [slug]);
-  
+
   useEffect(() => {
     if (prop) {
       console.log("updating rental info");
@@ -392,22 +394,39 @@ export default function PropertyListing() {
                 Request Viewing
               </Button>{" "}
               <Separator className="my-5" />
-              <Link
-                href={`/apply/?slug=${slug}`}
-                className="flex items-center text-white "
+              <Button
+                className="w-full bg-blue-600 hover:bg-blue-500 text-white"
+                variant="default"
+                onClick={() => {
+                  // Skip email dialog if resuming (they already have email)
+                  if (resume === "true") {
+                    router.push(
+                      `/apply/?slug=${slug}&resume=true&sessionId=${
+                        params.get("sessionId") || ""
+                      }`
+                    );
+                  } else {
+                    setEmailDialogOpen(true);
+                  }
+                }}
               >
-                <Button
-                  className="w-full bg-blue-600 hover:bg-blue-500"
-                  variant="default"
-                >
-                  <Newspaper className="h-4 w-4 mr-2" />
-                  Apply now
-                </Button>
-              </Link>
+                <Newspaper className="h-4 w-4 mr-2" />
+                Apply now
+              </Button>
             </Card>
           </div>
         </div>
       </div>
+
+      {/* Email Collection Dialog */}
+      <EmailCollectionDialog
+        open={emailDialogOpen}
+        onOpenChange={setEmailDialogOpen}
+        onSuccess={() => {
+          router.push(`/apply/?slug=${slug}`);
+        }}
+        propertySlug={slug}
+      />
 
       {/* Lightbox */}
       <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
