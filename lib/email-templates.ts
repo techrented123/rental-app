@@ -2,6 +2,7 @@ export function getUserReminderEmail(
   name: string | undefined,
   sessionId: string,
   stepNumber: number,
+  propertySlug: string | undefined,
   baseUrl: string = process.env.NEXT_PUBLIC_BASE_URL || "https://rented123.com"
 ): string {
   const stepNames = [
@@ -11,7 +12,12 @@ export function getUserReminderEmail(
     "Signatures",
     "Confirmation",
   ];
-  const resumeUrl = `${baseUrl}/apply?resume=true&sessionId=${sessionId}`;
+  // Slug is the first parameter, then resume and sessionId
+  const resumeUrl = propertySlug
+    ? `${baseUrl}/apply?slug=${encodeURIComponent(
+        propertySlug
+      )}&resume=true&sessionId=${sessionId}`
+    : `${baseUrl}/apply?resume=true&sessionId=${sessionId}`;
 
   return `
 <!DOCTYPE html>
@@ -94,6 +100,7 @@ export function getSalesNotificationEmail(
     step: number;
     lastActivity: number;
     address?: string;
+    property?: string;
     location?: {
       city?: string;
       region?: string;
@@ -127,7 +134,12 @@ export function getSalesNotificationEmail(
     : "Unknown";
 
   const lastActivityDate = new Date(trackingData.lastActivity).toLocaleString();
-  const resumeUrl = `${baseUrl}/apply?resume=true&sessionId=${trackingData.sessionId}`;
+  // Slug is the first parameter, then resume and sessionId
+  const resumeUrl = trackingData.property
+    ? `${baseUrl}/apply?slug=${encodeURIComponent(
+        trackingData.property
+      )}&resume=true&sessionId=${trackingData.sessionId}`
+    : `${baseUrl}/apply?resume=true&sessionId=${trackingData.sessionId}`;
 
   return `
 <!DOCTYPE html>

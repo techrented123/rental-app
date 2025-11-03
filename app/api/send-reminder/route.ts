@@ -58,6 +58,7 @@ export async function POST(req: NextRequest) {
       trackingData.name,
       sessionId,
       trackingData.step,
+      trackingData.property, // Pass property slug
       BASE_URL
     );
 

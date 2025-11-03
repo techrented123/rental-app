@@ -50,25 +50,45 @@ function ApplyPageContent() {
   const searchParams = useSearchParams();
   const [slug, setSlug] = React.useState("");
   const [lastSavedStep, setLastSavedStep] = React.useState(0);
-  const { sessionId, updateRentApplicationStatus } =
+  const { sessionId, updateRentApplicationStatus, updateRentalInfo } =
     useRentalApplicationContext();
 
   // Check for resume parameter
   const shouldResume = searchParams.get("resume") === "true";
   const resumeSessionId = searchParams.get("sessionId");
+  const urlSlug = searchParams.get("slug"); // Get slug from URL (first parameter)
 
   React.useEffect(() => {
     const last_step = localStorage.getItem("last_saved_step");
     const rentalInfo = localStorage.getItem("rental_and_applicant_info");
+
+    // PRIORITY 1: Use localStorage step if available
+    let currentStep = 0;
     if (last_step) {
-      setLastSavedStep(JSON.parse(last_step));
-    }
-    if (rentalInfo) {
-      const parsedRentalInfo = JSON.parse(rentalInfo);
-      setSlug(parsedRentalInfo.slug);
+      currentStep = JSON.parse(last_step);
+      setLastSavedStep(currentStep);
+      // Immediately update the application status from localStorage
+      updateRentApplicationStatus(currentStep);
     }
 
-    // Track initial page load
+    // Use slug from URL if present (from resume link), otherwise use localStorage
+    if (urlSlug) {
+      setSlug(urlSlug);
+      // Update rentalInfo with slug from URL if not already set
+      if (rentalInfo) {
+        const parsedRentalInfo = JSON.parse(rentalInfo);
+        if (parsedRentalInfo.slug !== urlSlug) {
+          updateRentalInfo({ slug: urlSlug });
+        }
+      } else {
+        updateRentalInfo({ slug: urlSlug });
+      }
+    } else if (rentalInfo) {
+      const parsedRentalInfo = JSON.parse(rentalInfo);
+      setSlug(parsedRentalInfo.slug || "");
+    }
+
+    // Track initial page load using step from localStorage (prioritized)
     if (sessionId) {
       const rentalInfo = localStorage.getItem("rental_and_applicant_info");
       const rentalData = rentalInfo ? JSON.parse(rentalInfo) : {};
@@ -79,7 +99,7 @@ function ApplyPageContent() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          step: lastSavedStep || 0,
+          step: currentStep, // Use step from localStorage (already set above)
           address: rentalData.address,
           property: rentalData.slug || rentalData.property,
         }),
@@ -87,27 +107,48 @@ function ApplyPageContent() {
     }
 
     // Handle resume from email link
+    // PRIORITY: localStorage first, DynamoDB only as fallback if localStorage is empty
     if (shouldResume && resumeSessionId) {
-      // Fetch tracking data from DynamoDB via API
-      fetch(`/api/track?sessionId=${resumeSessionId}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data?.trackingData) {
-            const step = data.trackingData.step || 0;
-            setLastSavedStep(step);
-            updateRentApplicationStatus(step);
-          } else {
-            // Fallback to cookie if API doesn't have data
-            const trackingData = getTrackingDataFromCookie();
-            if (trackingData?.step !== undefined) {
-              setLastSavedStep(trackingData.step);
-              updateRentApplicationStatus(trackingData.step);
+      const hasLocalStorageStep = last_step !== null && currentStep > 0;
+
+      if (!hasLocalStorageStep) {
+        // Only fetch from DynamoDB if localStorage doesn't have a step
+        fetch(`/api/track?sessionId=${resumeSessionId}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data?.trackingData) {
+              const step = data.trackingData.step || 0;
+              // Only update if we don't have localStorage step
+              setLastSavedStep(step);
+              updateRentApplicationStatus(step);
+              // Save to localStorage for future use (prioritize it next time)
+              localStorage.setItem("last_saved_step", JSON.stringify(step));
+            } else {
+              // Fallback to cookie if API doesn't have data
+              const trackingData = getTrackingDataFromCookie();
+              if (trackingData?.step !== undefined) {
+                setLastSavedStep(trackingData.step);
+                updateRentApplicationStatus(trackingData.step);
+                localStorage.setItem(
+                  "last_saved_step",
+                  JSON.stringify(trackingData.step)
+                );
+              }
             }
-          }
-        })
-        .catch(console.error);
+          })
+          .catch(console.error);
+      }
+      // If localStorage has step, we already used it above (lines 64-66)
+      // DynamoDB fetch is skipped - localStorage is prioritized
     }
-  }, [sessionId, shouldResume, resumeSessionId, updateRentApplicationStatus]);
+  }, [
+    sessionId,
+    shouldResume,
+    resumeSessionId,
+    updateRentApplicationStatus,
+    urlSlug,
+    updateRentalInfo,
+  ]);
 
   const handleClick = () => {
     router.push(`/?slug=${slug}`);
