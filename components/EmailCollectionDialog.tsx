@@ -132,7 +132,7 @@ export function EmailCollectionDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-500 text-white">
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
