@@ -39,11 +39,16 @@ export async function GET(req: NextRequest) {
 
     // Process each application
     for (const app of applications) {
-      const hoursInactive = (now - app.lastActivity) / (1000 * 60 * 60);
+      // Convert ISO string to timestamp for calculations
+      const lastActivityTimestamp = new Date(app.lastActivity).getTime();
+      const hoursInactive = (now - lastActivityTimestamp) / (1000 * 60 * 60);
 
       try {
         // Check for sales alert (24+ hours)
-        if (app.lastActivity <= salesAlertThreshold && !app.salesAlertSent) {
+        if (
+          lastActivityTimestamp <= salesAlertThreshold &&
+          !app.salesAlertSent
+        ) {
           const response = await fetch(
             `${req.nextUrl.origin}/api/send-sales-alert`,
             {
@@ -73,8 +78,8 @@ export async function GET(req: NextRequest) {
 
         // Check for user reminder (2+ hours, but less than 24 hours to avoid duplicates)
         if (
-          app.lastActivity <= userReminderThreshold &&
-          app.lastActivity > salesAlertThreshold &&
+          lastActivityTimestamp <= userReminderThreshold &&
+          lastActivityTimestamp > salesAlertThreshold &&
           !app.userReminderSent &&
           app.email // Only send if we have an email
         ) {
@@ -105,7 +110,7 @@ export async function GET(req: NextRequest) {
               );
             }
           }
-        } else if (app.lastActivity > userReminderThreshold) {
+        } else if (lastActivityTimestamp > userReminderThreshold) {
           results.skipped.tooRecent++;
         } else if (!app.email) {
           results.skipped.noEmail++;

@@ -61,8 +61,15 @@ export async function POST(req: NextRequest) {
     // Generate email HTML
     const htmlContent = getSalesNotificationEmail(
       {
-        ...trackingData,
+        name: trackingData.name,
+        email: trackingData.email,
+        step: trackingData.step,
+        lastActivity: trackingData.lastActivity,
         address: formattedAddress,
+        property: trackingData.property,
+        location: trackingData.location,
+        ip: trackingData.ip,
+        sessionId: trackingData.sessionId,
       },
       BASE_URL
     );
@@ -78,7 +85,8 @@ export async function POST(req: NextRequest) {
           Data: `⚠️ Incomplete Application Alert - ${
             trackingData.name || "Unknown User"
           } - ${Math.floor(
-            (Date.now() - trackingData.lastActivity) / (1000 * 60 * 60)
+            (Date.now() - new Date(trackingData.lastActivity).getTime()) /
+              (1000 * 60 * 60)
           )} hours inactive`,
         },
         Body: {

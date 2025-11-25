@@ -99,7 +99,7 @@ export function RentalApplicationProvider({
         // Update client-side cookie
         updateTrackingCookie({
           step,
-          lastActivity: Date.now(),
+          lastActivity: new Date().toISOString(),
           email,
           name,
           address,

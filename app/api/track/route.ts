@@ -184,7 +184,7 @@ export async function POST(req: NextRequest) {
     const trackingData: TrackingData = {
       sessionId,
       step: step ?? 0,
-      lastActivity: now,
+      lastActivity: new Date(now).toISOString(),
       email: email || undefined,
       source: "rental-application",
       property: property || "",

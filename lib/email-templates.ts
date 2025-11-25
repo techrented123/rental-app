@@ -98,7 +98,7 @@ export function getSalesNotificationEmail(
     name?: string;
     email?: string;
     step: number;
-    lastActivity: number;
+    lastActivity: string;
     address?: string;
     property?: string;
     location?: {
@@ -120,7 +120,8 @@ export function getSalesNotificationEmail(
   ];
 
   const hoursInactive = Math.floor(
-    (Date.now() - trackingData.lastActivity) / (1000 * 60 * 60)
+    (Date.now() - new Date(trackingData.lastActivity).getTime()) /
+      (1000 * 60 * 60)
   );
   const locationText = trackingData.location
     ? `${trackingData.location.city || ""}${
