@@ -2,6 +2,7 @@
 
 import React, { createContext, useState, useContext, useCallback } from "react";
 import Cookies from "js-cookie";
+import { useSearchParams } from "next/navigation";
 import { clearIndexedDB } from "@/lib/utils";
 import {
   getOrCreateSessionId,
@@ -11,14 +12,26 @@ import {
 
 interface RentalApplicationContextType {
   currentRentApplicationStep: number;
-  updateRentApplicationStatus: (index: number) => void;
+  updateRentApplicationStatus: (index: number, shouldTrack?: boolean) => void;
   rentalInfo: any;
   updateRentalInfo: (updatedrentalInfo: any) => void;
   stepOutputs: Array<File | any>;
   updateStepOutput: (updatedStepOutput: File | any) => void;
   restartApplication: () => void;
   sessionId: string | null;
-  trackActivity: (step: number, email?: string, name?: string) => Promise<void>;
+  trackActivity: (
+    step: number,
+    email?: string,
+    name?: string,
+    verification_report_url?: string,
+    data?: Record<string, any>,
+    signature?: boolean
+  ) => Promise<void>;
+  restoreState: (
+    newStepOutputs: any[],
+    newRentalInfo: any,
+    newStep: number
+  ) => void;
 }
 
 const defaultContext: RentalApplicationContextType = {
@@ -26,14 +39,26 @@ const defaultContext: RentalApplicationContextType = {
   rentalInfo: {},
   stepOutputs: [],
   updateRentalInfo: (updatedRentalState: string) => {},
-  updateRentApplicationStatus: (index: number) => {},
+  updateRentApplicationStatus: (index: number, shouldTrack?: boolean) => {},
   updateStepOutput: (updatedStepOutput: {
     key: string;
     fileName: string;
   }) => {},
   restartApplication: () => {},
   sessionId: null,
-  trackActivity: async () => {},
+  trackActivity: async (
+    step: number,
+    email?: string,
+    name?: string,
+    verification_report_url?: string,
+    data?: Record<string, any>,
+    signature?: boolean
+  ) => {},
+  restoreState: (
+    newStepOutputs: any[],
+    newRentalInfo: any,
+    newStep: number
+  ) => {},
 };
 
 export const RentalApplicationContext =
@@ -56,42 +81,66 @@ export function RentalApplicationProvider({
 
   const [sessionId, setSessionId] = useState<string | null>(null);
 
-  // Initialize session ID on mount
+  const searchParams = useSearchParams();
+
+  // Initialize session ID on mount - prioritize URL parameter
   React.useEffect(() => {
-    const id = getOrCreateSessionId();
-    setSessionId(id);
-  }, []);
+    const urlSessionId = searchParams?.get("sessionId");
+    
+    if (urlSessionId) {
+      // Use sessionId from URL and update cookie
+      setSessionId(urlSessionId);
+      Cookies.set("application_session_id", urlSessionId, { expires: 30 });
+      console.log("Using sessionId from URL:", urlSessionId);
+    } else {
+      // Fall back to cookie or generate new one
+      const id = getOrCreateSessionId();
+      setSessionId(id);
+    }
+  }, [searchParams]);
 
   // Track activity to server
   const trackActivity = useCallback(
-    async (step: number, email?: string, name?: string) => {
+    async (step: number, email?: string, name?: string, verification_report_url?: string, data?: Record<string, any>, signature?: boolean) => {
       if (!sessionId) return;
 
       // Get address from rentalInfo
       const address = (rentalInfo as any)?.address;
+      
+      // Try to get email from cookie if not provided
+      let currentEmail = email;
+      if (!currentEmail) {
+         const trackingData = getTrackingDataFromCookie();
+         currentEmail = trackingData?.email;
+      }
 
       try {
-        const response = await fetch("/api/track", {
+        const response = await fetch("/api/track-application", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            sessionId,
             step,
-            email,
+            email: currentEmail,
             name,
             address,
             property:
               (rentalInfo as any)?.slug || (rentalInfo as any)?.property,
+            verification_report_url,
+            data,
+            signature,
+            rentalInfo,
           }),
         });
 
-        const data = await response.json();
+        const responseData = await response.json();
 
         // Sync sessionId from server if it changed
-        if (data.sessionId && data.sessionId !== sessionId) {
-          setSessionId(data.sessionId);
-          Cookies.set("application_session_id", data.sessionId, {
+        if (responseData.sessionId && responseData.sessionId !== sessionId) {
+          setSessionId(responseData.sessionId);
+          Cookies.set("application_session_id", responseData.sessionId, {
             expires: 30,
           });
         }
@@ -113,11 +162,20 @@ export function RentalApplicationProvider({
 
   const updateStepOutput = useCallback(
     async (updatedStepOutput: any) => {
-      setStepOutputs((prev: any) => [...prev, updatedStepOutput]);
-      window.localStorage.setItem(
-        "step_outputs",
-        JSON.stringify([...stepOutputs, updatedStepOutput])
-      );
+      setStepOutputs((prev: any) => {
+        const newOutputs = [...prev];
+        // Ensure the array is long enough
+        while (newOutputs.length <= currentRentApplicationStep) {
+          newOutputs.push(undefined);
+        }
+        newOutputs[currentRentApplicationStep] = updatedStepOutput;
+        
+        window.localStorage.setItem(
+          "step_outputs",
+          JSON.stringify(newOutputs)
+        );
+        return newOutputs;
+      });
 
       // Track activity and extract name/email from verification PDF
       // PDF email can override/confirm the entered email
@@ -153,7 +211,7 @@ export function RentalApplicationProvider({
         }
       }
     },
-    [stepOutputs, sessionId, currentRentApplicationStep, trackActivity]
+    [sessionId, currentRentApplicationStep, trackActivity]
   );
 
   const restartApplication = async () => {
@@ -183,19 +241,7 @@ export function RentalApplicationProvider({
       });
 
       // Track address when rentalInfo is updated (if we have a sessionId)
-      if (sessionId && newRentalInfo?.address) {
-        fetch("/api/track", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            step: currentRentApplicationStep,
-            address: newRentalInfo.address,
-            property: newRentalInfo.slug || newRentalInfo.property,
-          }),
-        }).catch(console.error);
-      }
+      // Note: Address tracking is now handled by /api/track-application through trackActivity
 
       console.log({ newRentalInfo });
     },
@@ -205,12 +251,12 @@ export function RentalApplicationProvider({
   console.log({ rentalInfo });
 
   const updateRentApplicationStatus = React.useCallback(
-    async (index: number) => {
+    async (index: number, shouldTrack: boolean = true) => {
       setRentApplicationStatus(index);
       window.localStorage.setItem("last_saved_step", JSON.stringify(index));
 
       // Track step change
-      if (sessionId) {
+      if (sessionId && shouldTrack) {
         await trackActivity(index);
       }
     },
@@ -238,6 +284,30 @@ export function RentalApplicationProvider({
     }
   }, []);
 
+  const restoreState = useCallback((
+    newStepOutputs: any[],
+    newRentalInfo: any,
+    newStep: number
+  ) => {
+    if (newStepOutputs) {
+      setStepOutputs(newStepOutputs);
+      window.localStorage.setItem("step_outputs", JSON.stringify(newStepOutputs));
+    }
+    
+    if (newRentalInfo) {
+      setRentalInfo((prev: any) => {
+        const updated = { ...prev, ...newRentalInfo };
+        window.localStorage.setItem("rental_and_applicant_info", JSON.stringify(updated));
+        return updated;
+      });
+    }
+
+    if (newStep > 0) {
+      setRentApplicationStatus(newStep);
+      window.localStorage.setItem("last_saved_step", JSON.stringify(newStep));
+    }
+  }, []);
+
   return (
     <RentalApplicationContext.Provider
       value={{
@@ -250,6 +320,7 @@ export function RentalApplicationProvider({
         restartApplication,
         sessionId,
         trackActivity,
+        restoreState,
       }}
     >
       {children}

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { deleteTrackingData } from "@/lib/dynamodb";
+import { deleteApplicationTracking } from "@/lib/rental-tracking";
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,8 +12,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Delete tracking data from DynamoDB
-    await deleteTrackingData(sessionId);
+    // Delete tracking data from RentalApplicationTracking table
+    await deleteApplicationTracking(sessionId);
 
     return NextResponse.json(
       { message: "Tracking data cleared successfully" },

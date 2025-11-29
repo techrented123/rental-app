@@ -50,8 +50,9 @@ function ApplyPageContent() {
   const searchParams = useSearchParams();
   const [slug, setSlug] = React.useState("");
   const [lastSavedStep, setLastSavedStep] = React.useState(0);
-  const { sessionId, updateRentApplicationStatus, updateRentalInfo } =
+  const { sessionId, updateRentApplicationStatus, updateRentalInfo, restoreState } =
     useRentalApplicationContext();
+  const hasFetchedFromDB = React.useRef(false);
 
   // Check for resume parameter
   const shouldResume = searchParams.get("resume") === "true";
@@ -67,8 +68,8 @@ function ApplyPageContent() {
     if (last_step) {
       currentStep = JSON.parse(last_step);
       setLastSavedStep(currentStep);
-      // Immediately update the application status from localStorage
-      updateRentApplicationStatus(currentStep);
+      // Update application status without tracking (restoring state)
+      updateRentApplicationStatus(currentStep, false);
     }
 
     // Use slug from URL if present (from resume link), otherwise use localStorage
@@ -88,58 +89,54 @@ function ApplyPageContent() {
       setSlug(parsedRentalInfo.slug || "");
     }
 
-    // Track initial page load using step from localStorage (prioritized)
-    if (sessionId) {
-      const rentalInfo = localStorage.getItem("rental_and_applicant_info");
-      const rentalData = rentalInfo ? JSON.parse(rentalInfo) : {};
+    // Fetch from DynamoDB to ensure we have the latest state
+    // This runs in parallel with localStorage initialization to handle cross-device/browser resume
+    if (sessionId && !hasFetchedFromDB.current) {
+      hasFetchedFromDB.current = true;
+      fetch(`/api/track-application?sessionId=${sessionId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.trackingData) {
+            const serverStep = data.trackingData.step || 0;
+            console.log("Fetched tracking data from DynamoDB:", data.trackingData);
+            
+            // If server has a step, use it (it's the source of truth)
+            if (serverStep > 0) {
+              // Construct stepOutputs from server data
+              const newStepOutputs: any[] = [true]; // Step 0 is always true
+              
+              // Step 1: Verification Report
+              // We add a placeholder if URL exists, but we can't fully reconstruct the file object
+              // ApplicationForm handles missing stepOutputs[1] gracefully now
+              if (data.trackingData.verification_report_url) {
+                 newStepOutputs[1] = { 
+                   restoredFromServer: true, 
+                   url: data.trackingData.verification_report_url 
+                 };
+              } else {
+                 newStepOutputs[1] = undefined;
+              }
 
-      fetch("/api/track", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          step: currentStep, // Use step from localStorage (already set above)
-          address: rentalData.address,
-          property: rentalData.slug || rentalData.property,
-        }),
-      }).catch(console.error);
+              // Step 2: Application Form Data
+              if (data.trackingData.data) {
+                newStepOutputs[2] = data.trackingData.data;
+              }
+
+              // Restore state
+              restoreState(
+                newStepOutputs, 
+                data.trackingData.rentalInfo || (data.trackingData.property ? { slug: data.trackingData.property } : null),
+                serverStep
+              );
+            }
+          }
+        })
+        .catch((err) => console.error("Error fetching tracking data:", err));
     }
 
-    // Handle resume from email link
-    // PRIORITY: localStorage first, DynamoDB only as fallback if localStorage is empty
-    if (shouldResume && resumeSessionId) {
-      const hasLocalStorageStep = last_step !== null && currentStep > 0;
-
-      if (!hasLocalStorageStep) {
-        // Only fetch from DynamoDB if localStorage doesn't have a step
-        fetch(`/api/track?sessionId=${resumeSessionId}`)
-          .then((res) => res.json())
-          .then((data) => {
-            if (data?.trackingData) {
-              const step = data.trackingData.step || 0;
-              // Only update if we don't have localStorage step
-              setLastSavedStep(step);
-              updateRentApplicationStatus(step);
-              // Save to localStorage for future use (prioritize it next time)
-              localStorage.setItem("last_saved_step", JSON.stringify(step));
-            } else {
-              // Fallback to cookie if API doesn't have data
-              const trackingData = getTrackingDataFromCookie();
-              if (trackingData?.step !== undefined) {
-                setLastSavedStep(trackingData.step);
-                updateRentApplicationStatus(trackingData.step);
-                localStorage.setItem(
-                  "last_saved_step",
-                  JSON.stringify(trackingData.step)
-                );
-              }
-            }
-          })
-          .catch(console.error);
-      }
-      // If localStorage has step, we already used it above (lines 64-66)
-      // DynamoDB fetch is skipped - localStorage is prioritized
+    // Handle resume from email link (Legacy/Fallback logic)
+    if (shouldResume && resumeSessionId && !sessionId) {
+        // logic handled by main fetch above once sessionId is set
     }
   }, [
     sessionId,

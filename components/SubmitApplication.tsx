@@ -1,6 +1,5 @@
 "use client";
 import { generateApplicationFormPDF } from "@/lib/pdfService";
-import { getFileFromIndexedDB } from "@/lib/utils";
 import React from "react";
 import {
   CircleCheck,
@@ -27,9 +26,10 @@ const SubmitApplication = () => {
   });
   const [isEmailSent, setIsEmailSent] = React.useState(false);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const { rentalInfo, stepOutputs, restartApplication, sessionId } =
+  const { rentalInfo,restartApplication, sessionId } =
     useRentalApplicationContext();
-  const { landlordEmail, landlordName, slug } = rentalInfo;
+  const { landlordEmail, landlordName } = rentalInfo;
+  const dataFetchedRef = React.useRef(false);
 
   async function sendApplication() {
     setLoading(true);
@@ -72,66 +72,96 @@ const SubmitApplication = () => {
     }
   }
 
-  const recoverBlobs = React.useCallback(async (stepOutputs: FinalOutput) => {
-    if (stepOutputs.length === 0) {
-      return;
-    }
-    try {
-      // Check if we have the application form data at index 2
-      if (!stepOutputs[2]) {
-        console.error("Application form data not found at stepOutputs[2]");
-        return;
-      }
-
-      // Generate application form PDF
-      const applicationFormPDF = generateApplicationFormPDF(
-        stepOutputs[2] as ApplicationFormInfo
-      );
-
-      // Convert application form PDF to base64
-      const appFormArrayBuffer = await applicationFormPDF.arrayBuffer();
-      const appFormBase64 = Buffer.from(appFormArrayBuffer).toString("base64");
-
-      // Get verification report from IndexedDB (stepOutputs[1] contains the file key)
-      const verificationStep = stepOutputs[1];
-      let verificationBase64 = null;
-
-      if (
-        verificationStep &&
-        typeof verificationStep === "object" &&
-        "key" in verificationStep
-      ) {
-        const verificationFileKey = (verificationStep as any).key;
-        // Retrieve file from IndexedDB and convert to base64
-        const verificationFile = await getFileFromIndexedDB(
-          verificationFileKey
-        );
-        if (verificationFile) {
-          const verificationArrayBuffer = await verificationFile.arrayBuffer();
-          verificationBase64 = Buffer.from(verificationArrayBuffer).toString(
-            "base64"
-          );
-        }
-      }
-
-      // Store both PDFs for email sending
-      setPdfs({
-        applicationForm: appFormBase64,
-        verificationReport: verificationBase64,
-      });
-
-      console.log("Both PDFs prepared for email");
-    } catch (error) {
-      console.error("Error preparing PDFs:", error);
-    }
-  }, []);
-
   React.useEffect(() => {
-    recoverBlobs(stepOutputs);
-  }, [stepOutputs, recoverBlobs]);
+    if (!sessionId || dataFetchedRef.current) return;
+
+    const prepareSubmissionData = async () => {
+      try {
+        // Fetch tracking data from DynamoDB
+        const response = await fetch(`/api/track-application?sessionId=${sessionId}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch tracking data");
+        }
+        const { trackingData } = await response.json();
+
+        if (!trackingData) {
+          console.error("No tracking data found");
+          return;
+        }
+
+        const { data: applicationData, verification_report_url } = trackingData;
+
+        let appFormBase64 = null;
+        let verificationBase64 = null;
+
+        // 1. Generate Application Form PDF
+        if (applicationData) {
+          const applicationFormPDF = generateApplicationFormPDF(
+            applicationData as ApplicationFormInfo
+          );
+          const appFormArrayBuffer = await applicationFormPDF.arrayBuffer();
+          appFormBase64 = Buffer.from(appFormArrayBuffer).toString("base64");
+        } else {
+          console.error("Application data not found in tracking data");
+        }
+
+        // 2. Fetch Verification Report PDF
+        if (verification_report_url) {
+          try {
+            const reportResponse = await fetch(verification_report_url);
+            if (reportResponse.ok) {
+              const reportBlob = await reportResponse.blob();
+              const reportArrayBuffer = await reportBlob.arrayBuffer();
+              verificationBase64 = Buffer.from(reportArrayBuffer).toString("base64");
+            } else {
+              console.error("Failed to fetch verification report from S3");
+            }
+          } catch (error) {
+            console.error("Error fetching verification report:", error);
+          }
+        }
+
+        // Store both PDFs for email sending
+        console.log("setPdfs",appFormBase64,verificationBase64)
+        setPdfs({
+          applicationForm: appFormBase64,
+          verificationReport: verificationBase64,
+        });
+
+        dataFetchedRef.current = true;
+      } catch (error) {
+        console.error("Error preparing submission data:", error);
+      }
+    };
+
+    prepareSubmissionData();
+  }, [sessionId]);
 
   return (
     <div className="max-w-4xl mx-auto p-6">
+      {/* TEMPORARY: Code to check if you can actually fetching the pdf from s3 properly */}
+      {/* <div className="grid grid-cols-2 gap-4 mb-8">
+        {pdfs.applicationForm && (
+          <div>
+            <h3 className="font-bold mb-2">Application Form Preview</h3>
+            <iframe
+              src={`data:application/pdf;base64,${pdfs.applicationForm}`}
+              className="w-full h-[500px] border"
+            />
+          </div>
+        )}
+        {pdfs.verificationReport && (
+          <div>
+            <h3 className="font-bold mb-2">Verification Report Preview</h3>
+            <iframe
+              src={`data:application/pdf;base64,${pdfs.verificationReport}`}
+              className="w-full h-[500px] border"
+            />
+          </div>
+        )}
+      </div> */}
+      {/* END TEMPORARY */}
+
       {/* Header Section */}
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">

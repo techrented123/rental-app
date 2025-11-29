@@ -15,30 +15,45 @@ export default function ApplicationForm() {
   const [verificationStatus, setVerificationStatus] =
     useState<VerificationStatus>("idle");
 
-  const { updateStepOutput, updateRentApplicationStatus, stepOutputs } =
+  const { updateStepOutput, updateRentApplicationStatus, stepOutputs, trackActivity } =
     useRentalApplicationContext();
   console.log({ stepOutputs });
-  const { subject } = stepOutputs[1];
-  const parsedSubject = JSON.parse(subject);
-  const { name, dob, gender, email } = parsedSubject;
-  const names = name.split(" ");
-  const fullName = names[1] + " " + names[2] + " " + names[0];
 
-  // Map gender values to match form options
-  const mapGender = (genderValue: string) => {
-    const lowerGender = genderValue.toLowerCase();
-    if (lowerGender === "male" || lowerGender === "m") return "Male";
-    if (lowerGender === "female" || lowerGender === "f") return "Female";
-    if (lowerGender === "other") return "Other";
-    if (
-      lowerGender === "prefer not to say" ||
-      lowerGender === "prefer not to answer"
-    )
-      return "Prefer not to say";
-    return genderValue; // Return original if no match
-  };
+  // Safely extract verification data with fallbacks
+  let fullName = "";
+  let dob = "";
+  let mappedGender = "";
+  let email = "";
 
-  const mappedGender = mapGender(gender);
+  if (stepOutputs[1] && stepOutputs[1].subject) {
+    try {
+      const { subject } = stepOutputs[1];
+      const parsedSubject = JSON.parse(subject);
+      const { name, dob: parsedDob, gender, email: parsedEmail } = parsedSubject;
+      const names = name.split(" ");
+      fullName = names[1] + " " + names[2] + " " + names[0];
+      dob = parsedDob;
+      email = parsedEmail;
+
+      // Map gender values to match form options
+      const mapGender = (genderValue: string) => {
+        const lowerGender = genderValue.toLowerCase();
+        if (lowerGender === "male" || lowerGender === "m") return "Male";
+        if (lowerGender === "female" || lowerGender === "f") return "Female";
+        if (lowerGender === "other") return "Other";
+        if (
+          lowerGender === "prefer not to say" ||
+          lowerGender === "prefer not to answer"
+        )
+          return "Prefer not to say";
+        return genderValue; // Return original if no match
+      };
+
+      mappedGender = mapGender(gender);
+    } catch (error) {
+      console.error("Error parsing verification data:", error);
+    }
+  }
 
   const toggleErrors = (name: string) => {
     setErrors((prev) => ({ ...prev, [name]: "" }));
@@ -126,6 +141,9 @@ export default function ApplicationForm() {
     setVerificationStatus("verifying");
     updateStepOutput(prospectInfo);
     updateRentApplicationStatus(2);
+
+    // Track activity with form data and step 3
+    await trackActivity(3, undefined, undefined, undefined, prospectInfo);
 
     setTimeout(() => {
       setVerificationStatus("success");
