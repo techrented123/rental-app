@@ -91,7 +91,6 @@ export function RentalApplicationProvider({
       // Use sessionId from URL and update cookie
       setSessionId(urlSessionId);
       Cookies.set("application_session_id", urlSessionId, { expires: 30 });
-      console.log("Using sessionId from URL:", urlSessionId);
     } else {
       // Fall back to cookie or generate new one
       const id = getOrCreateSessionId();

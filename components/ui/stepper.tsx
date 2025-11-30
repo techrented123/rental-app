@@ -241,7 +241,6 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
             </div>
 
             {/* Navigation */}
-            {console.log("activeStep",steps.length)}
             {activeStep !== steps.length - 1 && (
               <div className="flex justify-end py-2 px-4 mt-auto border-t bg-gray-50">
                 {stepOutputs[activeStep] === undefined ? (
