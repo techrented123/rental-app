@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 export interface TrackingData {
   sessionId: string;
   step: number;
-  lastActivity: number;
+  lastActivity: string;
   email?: string;
   source: string;
   property: string;

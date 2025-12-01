@@ -63,7 +63,7 @@ export function EmailCollectionDialog({
       } else {
         // If no sessionId yet, still try to track (sessionId will be created)
         try {
-          await fetch("/api/track", {
+          await fetch("/api/track-application", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

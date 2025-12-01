@@ -25,10 +25,39 @@ interface StepperProps {
 
 export default function Stepper({ steps, lastSavedStep }: StepperProps) {
   const [activeStep, setActiveStep] = useState(lastSavedStep);
+  const { stepOutputs, trackActivity } = useRentalApplicationContext();
 
   const handleNext = () => {
     if (activeStep < steps.length - 1) {
-      setActiveStep((prev) => prev + 1);
+      const nextStep = activeStep + 1;
+      setActiveStep(nextStep);
+      // Check if we are moving from Verification step (index 1) to next
+      let verificationReportUrl = undefined;
+      if (activeStep === 1 && stepOutputs[1]) {
+        try {
+          const output = stepOutputs[1];
+          if (output && output.subject && output.fileName) {
+            const subjectData = JSON.parse(output.subject);
+            const email = subjectData.email;
+            if (email) {
+              const formattedEmail = email.replace(/\./g, "_dot_").replace(/@/g, "_at_");
+              const region = process.env.NEXT_PUBLIC_REGION || "us-east-1";
+              verificationReportUrl = `https://verified-id-reports.s3.${region}.amazonaws.com/${formattedEmail}/${output.fileName}`;
+              console.log("Constructed S3 URL:", verificationReportUrl);
+            }
+          }
+        } catch (e) {
+          console.error("Error constructing S3 URL:", e);
+        }
+      }
+
+      // Check if we are moving from Signature step (index 3) to next
+      let signature = undefined;
+      if (activeStep === 3) {
+        signature = true;
+      }
+
+      trackActivity(nextStep, undefined, undefined, verificationReportUrl, undefined, signature);
     }
   };
 
@@ -42,7 +71,6 @@ export default function Stepper({ steps, lastSavedStep }: StepperProps) {
     setActiveStep(lastSavedStep);
   }, [lastSavedStep]);
 
-  const { stepOutputs } = useRentalApplicationContext();
   console.log({ stepOutputs, steps, activeStep });
   //container mx-auto py-0 px-4 h-full overflow-auto
   return (

@@ -23,17 +23,19 @@ export function RentalAgreement() {
       document.body.removeChild(s);
     };
   }, []);
-
-  const { fullName, email } = stepOutputs[2].applicant;
+  
+  const applicant = stepOutputs[2]?.applicant || {};
+  const { fullName = "", email = "" } = applicant;
+  
   const names = fullName.split(" ");
   let firstName = "",
     lastName = "";
   if (names.length > 2) {
     lastName = names[2];
     firstName = names[0] + " " + names[1];
-  } else {
+  } else if (names.length > 0) {
     firstName = names[0];
-    lastName = names[1];
+    lastName = names[1] || "";
   }
 
  

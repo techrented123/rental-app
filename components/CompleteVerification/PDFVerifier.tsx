@@ -49,13 +49,24 @@ const PDFVerifier = () => {
       const { isValid, message, subject } = await verifyPDF(file);
       if (isValid) {
         try {
+          // Parse subject to get email
+          const subjectData = JSON.parse(subject);
+          const email = subjectData.email;
+
+          if (!email) {
+            throw new Error("Email not found in verification report");
+          }
+
+          // Store in IndexedDB for local reference
           const fileKey = `pdf_verification_${Date.now()}`;
           await storeFileInIndexedDB(file, fileKey);
+
+          // Update step output with file key
           updateStepOutput({ key: fileKey, fileName: file.name, subject });
           updateRentApplicationStatus(1);
-        } catch (base64Error) {
-          console.error("Error converting file to base64:", base64Error);
-          throw base64Error; // Re-throw to trigger the outer catch
+        } catch (error) {
+          console.error("Error processing file:", error);
+          throw error; // Re-throw to trigger the outer catch
         }
       }
       // Simulate a delay to show the loading state
