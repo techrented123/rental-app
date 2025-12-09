@@ -50,7 +50,7 @@ const PDFVerifier = () => {
       if (isValid) {
         try {
           // Parse subject to get email
-          const subjectData = JSON.parse(subject);
+          const subjectData = JSON.parse(subject as string);
           const email = subjectData.email;
 
           if (!email) {

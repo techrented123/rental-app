@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Suspense } from "react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { RentalApplicationProvider } from "@/contexts/rental-application-context";
@@ -36,12 +37,20 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <RentalApplicationProvider>
-            <GoogleMapsProvider>
-              {children}
-              <Toaster />
-            </GoogleMapsProvider>
-          </RentalApplicationProvider>
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center min-h-screen">
+                Loading...
+              </div>
+            }
+          >
+            <RentalApplicationProvider>
+              <GoogleMapsProvider>
+                {children}
+                <Toaster />
+              </GoogleMapsProvider>
+            </RentalApplicationProvider>
+          </Suspense>
         </ThemeProvider>
       </body>
     </html>
