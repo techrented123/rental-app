@@ -214,10 +214,9 @@ export function RentalApplicationProvider({
   );
 
   const restartApplication = async () => {
-    setStepOutputs([]);
-    setRentApplicationStatus(1);
+    // Clear storage first
     window.localStorage.clear();
-
+    
     // Clear IndexedDB to free up storage space
     try {
       await clearIndexedDB();
@@ -225,6 +224,13 @@ export function RentalApplicationProvider({
     } catch (error) {
       console.error("Error clearing IndexedDB:", error);
     }
+
+    // Reset state
+    setStepOutputs([]);
+    setRentalInfo({});
+    
+    // Update status to 1 and track it (this will also persist the step to localStorage)
+    await updateRentApplicationStatus(0, true);
   };
 
   const updateRentalInfo = React.useCallback(
