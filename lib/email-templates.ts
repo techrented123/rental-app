@@ -50,7 +50,7 @@ export function getUserReminderEmail(
       <h3 style="color: #32429B; margin: 0 0 15px 0; font-size: 18px;">📋 Your Progress:</h3>
       <p style="margin: 0; color: #4b5563;">
         <strong>Last Step:</strong> ${
-          stepNames[stepNumber] || "Step " + (stepNumber + 1)
+          stepNames[stepNumber] || "Step " + ((stepNumber || 0) + 1)
         }<br>
         <strong>Your progress has been saved</strong> and you can continue right where you left off.
       </p>

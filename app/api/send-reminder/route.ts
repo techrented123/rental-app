@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     const htmlContent = getUserReminderEmail(
       trackingData.name,
       sessionId,
-      trackingData.step,
+      trackingData?.step || 0,
       trackingData.property, // Pass property slug
       BASE_URL
     );
